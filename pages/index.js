@@ -6,11 +6,12 @@ import ExpenseForm from "../components/ExpenseForm.tsx";
 import FixedExpenseForm from "../components/FixedExpenseForm.tsx";
 import FixedExpenseList from "../components/FixedExpenseList.tsx";
 //import ExpenseTable from "../components/ExpenseTable.tsx";
-import ExpenseTable from "../components/ExpenseTable-chackra.tsx";
+//import ExpenseTable from "../components/ExpenseTable-chackra.tsx";
 import ExpenseTimeline from "../components/ExpenseTimeline.tsx";
 import { useRouter } from "next/router";
 import useExpense from "../hooks/useExpense.ts";
 import useExpenseCategory from "../hooks/useExpenseCategory.ts";
+import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
 
 // export const getServerSideProps = async ({ req }) => {
 //   const prisma = new PrismaClient();
@@ -30,9 +31,9 @@ import useExpenseCategory from "../hooks/useExpenseCategory.ts";
 // };
 
 export default function Home() {
-  const { expenses, categoryExpenses } = useExpense();
+  const { expenses, categoryGroupExpenses } = useExpense();
   //const [selectedExpense, setSelected] = useState(null);
-  const categoryNames = Object.keys(categoryExpenses);
+  const categoryNames = Object.keys(categoryGroupExpenses);
 
   return (
     <div className={styles.container}>
@@ -43,14 +44,15 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        {categoryNames.map((category, i) => (
+        <ExpenseTable expensesResult={categoryGroupExpenses} />
+        {/* {categoryNames.map((category, i) => (
           <ExpenseTable
             key={category}
             expenses={categoryExpenses[category]}
             name={category}
             displayMonths={i === 0}
           />
-        ))}
+        ))} */}
 
         <section className={"flex flex-row"}>
           {/* <ExpenseForm fixedExpenses={fixedExpenses} />
@@ -72,7 +74,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <span className={styles.logo}>K2600X - garantía de algo.kk..</span>
+          <span className={styles.logo}>K2600X - garantía de algo...</span>
         </a>
       </footer>
     </div>
