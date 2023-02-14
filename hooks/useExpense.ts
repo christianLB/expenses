@@ -37,9 +37,12 @@ interface IExpense {
 const useExpense = () => {
   const router = useRouter();
 
-  const { arrayData: expenses, loading } = useApi("http://10.0.0.4:1337/expenses", {
-    fetchOnInit: true,
-  });
+  const { arrayData: expenses, loading } = useApi(
+    "http://10.0.0.4:1337/expenses",
+    {
+      fetchOnInit: true,
+    }
+  );
 
   function groupExpensesByCategory(expenses: IExpense[]): {
     [key: string]: IExpense[];
@@ -54,73 +57,6 @@ const useExpense = () => {
     });
     return groupedExpenses;
   }
-
-  function groupExpensesByCategoryGroup(expenses: IExpense[]): {
-    [key: string]: { [key: string]: IExpense[] };
-  } {
-    const groupedExpenses = {};
-    expenses.forEach((expense) => {
-      const category = expense.expense_category.name;
-      const group = expense.expense_group?.name || "no-group";
-      if (!groupedExpenses[category]) {
-        groupedExpenses[category] = {};
-      }
-      if (!groupedExpenses[category][group]) {
-        groupedExpenses[category][group] = [];
-      }
-      groupedExpenses[category][group].push(expense);
-    });
-    return groupedExpenses;
-  }
-
-  function groupExpensesByGroup(expenses: IExpense[]): {
-    [key: string]: IExpense[];
-  } {
-    const groupedExpenses = {};
-    expenses.forEach((expense) => {
-      const group = expense.expense_group?.name || "";
-      if (!groupedExpenses[group]) {
-        groupedExpenses[group] = [];
-      }
-      groupedExpenses[group].push(expense);
-    });
-    return groupedExpenses;
-  }
-
-  //////////////////
-
-  const totalAmountPerMonth = (expenses) => {
-    // Group the expenses by month
-    const groupedExpenses = _.groupBy(expenses, (expense) => {
-      const date = new Date(expense.Date);
-      return date.getMonth();
-    });
-
-    // Get the total amount for each month
-    const monthlyTotals = _.map(groupedExpenses, (expensesForMonth) => {
-      return _.sumBy(expensesForMonth, "amount");
-    });
-
-    return monthlyTotals;
-  };
-
-  const groupExpenses = (expenses) => {
-    const categories = _.groupBy(
-      expenses,
-      (expense) => expense.expense_category.name
-    );
-
-    const groupedExpenses = _.mapValues(categories, (categoryExpenses) => {
-      const groupExpenses = _.groupBy(categoryExpenses, (expense) => {
-        return expense.expense_group ? expense.expense_group.name : "no group";
-      });
-      return _.mapValues(groupExpenses, (group) => {
-        return _.sumBy(group, "amount");
-      });
-    });
-
-    return groupedExpenses;
-  };
 
   function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
     const result = {};
@@ -138,6 +74,8 @@ const useExpense = () => {
       "Nov",
       "Dec",
     ];
+    const totals = {};
+    totals["totals"] = Array(12).fill(0);
 
     _.forEach(expenses, (expense) => {
       const month = monthNames.indexOf(
@@ -159,7 +97,10 @@ const useExpense = () => {
 
       result[category][group][month] += expense.amount;
       result[category]["totals"][month] += expense.amount;
+      totals["totals"][month] += expense.amount;
     });
+
+    result["totals"] = totals;
 
     return result;
   }
