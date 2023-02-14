@@ -45,7 +45,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        {loading && <Spinner />}
+        {loading && <><Spinner /> Cargando... Espere!</>}
         {!loading && <ExpenseTable expensesResult={categoryGroupExpenses} /> } 
         {/* {categoryNames.map((category, i) => (
           <ExpenseTable
