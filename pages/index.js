@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import useExpense from "../hooks/useExpense.ts";
 import useExpenseCategory from "../hooks/useExpenseCategory.ts";
 import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
+import {Spinner} from '@chakra-ui/react'
 
 // export const getServerSideProps = async ({ req }) => {
 //   const prisma = new PrismaClient();
@@ -31,7 +32,7 @@ import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
 // };
 
 export default function Home() {
-  const { expenses, categoryGroupExpenses } = useExpense();
+  const { expenses, categoryGroupExpenses, loading } = useExpense();
   //const [selectedExpense, setSelected] = useState(null);
   const categoryNames = Object.keys(categoryGroupExpenses);
 
@@ -44,7 +45,8 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <ExpenseTable expensesResult={categoryGroupExpenses} />
+        {loading && <Spinner />}
+        {!loading && <ExpenseTable expensesResult={categoryGroupExpenses} /> } 
         {/* {categoryNames.map((category, i) => (
           <ExpenseTable
             key={category}

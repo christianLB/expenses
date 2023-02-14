@@ -50,7 +50,7 @@ const ExpenseTable = ({ expensesResult }) => {
   return (
     <Table>
       <thead>
-        <tr style={{ backgroundColor: "GrayText", color: "white" }}>
+        <tr style={{ backgroundColor: "darkgray", color: "white" }}>
           <th style={{ width: "40px" }}></th>
           <th>Category/Group</th>
           {monthNames.map((month) => (
@@ -65,16 +65,15 @@ const ExpenseTable = ({ expensesResult }) => {
           ([category, groups]: [any, any], i) => {
             const color = colors[i];
             const isCollapsed: boolean = collapsed[category];
+            const groupsMap: any[] = Object.entries(groups).filter(([groupName]) => groupName !== "totals")
+            const hasGroups = groupsMap.length > 1
             return (
               <React.Fragment key={category}>
-                {!isCollapsed &&
-                  Object.entries(groups)
-                    .filter(([groupName]) => groupName !== "totals")
-                    .map(([groupName, amounts]: [any, any]) => (
+                {!isCollapsed && hasGroups && groupsMap.map(([groupName, amounts]: [any, any]) => (
                       <tr
                         key={groupName}
                         style={{
-                          ...(!isCollapsed ? { backgroundColor: color } : {}),
+                          ...(!isCollapsed || !hasGroups ? { backgroundColor: color } : {}),
                         }}
                       >
                         <td style={{ backgroundColor: color }}></td>
@@ -91,16 +90,17 @@ const ExpenseTable = ({ expensesResult }) => {
                             key={monthNames[index]}
                             style={{
                               paddingLeft: "5px",
+                              ...(!amount ? {textAlign: 'center'} : {})
                             }}
                           >
-                            {amount.toFixed(2)}
+                            {amount && amount.toFixed(2) || '--'}
                           </td>
                         ))}
                       </tr>
                     ))}
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ backgroundColor: color }}>
-                    <IconButton
+                    {hasGroups && <IconButton
                       onClick={() =>
                         setCollapsed((state) => ({
                           ...state,
@@ -117,21 +117,24 @@ const ExpenseTable = ({ expensesResult }) => {
                       size="sm"
                       variant="ghost"
                       aria-label={""}
-                    />
+                    />}
                   </td>
-                  <td style={{ backgroundColor: color }}>{category}</td>
+                  <td style={{ backgroundColor: color, borderBottom: '1px solid gray' }}>{category}</td>
                   {groups.totals.map((total, index) => (
                     <td
                       style={{
                         borderLeft: "1px solid #d2d2d2",
+                        backgroundColor: 'gray',
+                        color: 'white',
                         paddingLeft: "5px",
-                        ...(!isCollapsed
-                          ? { backgroundColor: "gray", color: "white" }
-                          : {}),
+                        ...(!total ?  {textAlign: 'center'} : {})
+                        //...(!isCollapsed
+                        //</tr>  ? { backgroundColor: "gray", color: "white" }
+                         // : {}),
                       }}
                       key={monthNames[index]}
                     >
-                      {total.toFixed(2)}
+                      {total && total.toFixed(2) || '--'}
                     </td>
                   ))}
                 </tr>

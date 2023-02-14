@@ -36,45 +36,8 @@ interface IExpense {
 
 const useExpense = () => {
   const router = useRouter();
-  //const [expenses, setExpenses] = useState();
-  // const [fixedExpenses, setFixedExpenses] = useState();
 
-  // const handleDeleteExpense = async (expenseId) => {
-  //   const response = await fetch("./api/expense/delete", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: expenseId,
-  //   });
-  //   const result = await response.json();
-  //   router.replace(router.asPath);
-  //   console.log("sos tarado eh", result);
-  // };
-
-  // const fetchAllExpenses = async () => {
-  //   const response = await fetch("./api/expense", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   const result = await response.json();
-  //   setExpenses(result);
-  // };
-
-  // const fetchAllFixedExpenses = async () => {
-  //   const response = await fetch("./api/fixedExpense", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   const result = await response.json();
-  //   setFixedExpenses(result);
-  // };
-
-  const { arrayData: expenses } = useApi("http://10.0.0.4:1337/expenses", {
+  const { arrayData: expenses, loading } = useApi("http://10.0.0.4:1337/expenses", {
     fetchOnInit: true,
   });
 
@@ -208,6 +171,7 @@ const useExpense = () => {
 
   return {
     expenses,
+    loading,
     categoryExpenses: groupExpensesByCategory(expenses),
     categoryGroupExpenses: getTotalsByCategoryAndGroup(expenses),
   };
