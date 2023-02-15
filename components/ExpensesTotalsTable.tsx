@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Table, IconButton, Box, Collapse } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import * as _ from 'lodash';
 
 const monthNames = [
   "Jan",
@@ -39,35 +40,9 @@ const colors = [
   "#E6F1F1",
 ];
 
-// const colors = [
-//   "#e2c6ff",
-//   "#d1c5e8",
-//   "#f1c5f9",
-//   "#c2e2b8",
-//   "#e5f5c5",
-//   "#f5b8c5",
-//   "#c5f9e2",
-//   "#b8e2c5",
-//   "#e2c5b8",
-//   "#c5f5e2",
-//   "#b8c5e2",
-//   "#f9c5e2",
-//   "#e2f5c5",
-//   "#c5b8e2",
-//   "#f5e2c5",
-//   "#e2c5f9",
-//   "#c5e2f5",
-//   "#b8f5c5",
-//   "#e2f9c5",
-//   "#f5c5e2",
-//   "#c5e2b8",
-//   "#b8c5f5",
-//   "#f9e2c5",
-//   "#c5b8f5",
-// ];
-
 const ExpenseTable = ({ expensesResult }) => {
-  const [collapsed, setCollapsed] = useState({});
+  const collapsedDefault = _.zipObject(_.keys(expensesResult), Array(Object.keys(expensesResult).length).fill(true));
+  const [collapsed, setCollapsed] = useState(collapsedDefault);
 
   return (
     <Table>
