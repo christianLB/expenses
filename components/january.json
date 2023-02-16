@@ -1,0 +1,262 @@
+[
+  {
+    "date": "02/01",
+    "amount": -801.25,
+    "desc": "TRANSFERENCIAS",
+    "desc2": "Renta dic 22"
+  },
+  {
+    "date": "02/01",
+    "amount": -49.37,
+    "desc": "ADEUDO DE IBERDROLA",
+    "desc2": "N 202236******6463 IBERDROLA CLIENTES, S.A.U"
+  },
+  {
+    "date": "02/01",
+    "amount": -50,
+    "desc": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+    "desc2": "494019******9736 ORANGE BANK MADRID"
+  },
+  {
+    "date": "02/01",
+    "amount": 0,
+    "desc": "SALDO INICIAL",
+    "desc2": ""
+  },
+  {
+    "date": "02/01",
+    "amount": 0,
+    "desc": "SALDO FINAL",
+    "desc2": ""
+  },
+  {
+    "date": "02/01",
+    "amount": 0,
+    "desc": "LIMITE DE CREDITO DISPONIBLE",
+    "desc2": ""
+  },
+  {
+    "date": "02/01",
+    "amount": -398.72,
+    "desc": "CARGO POR AMORTIZACION DE PRESTAMO/CREDITO",
+    "desc2": "0182-1074-11-0830081734"
+  },
+  {
+    "date": "02/01",
+    "amount": -43.01,
+    "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+    "desc2": "494019******9736 MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+    "date": "03/01",
+    "amount": -35.09,
+    "desc": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+    "desc2": "494019******9736 WWW.XOLO.IO"
+  },
+  {
+    "date": "03/01",
+    "amount": -6.8,
+    "desc": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+    "desc2": "494019******9736 EXPENDEDURIA N 3 CATARROJCATARROJA ES"
+  },
+  {
+    "date": "04/01",
+    "amount": 11.21,
+    "desc": "ABONO POR TRANSFERENCIA A SU FAVOR RECIBIDA EN EUROS",
+    "desc2": "LIQ. OP. Nº 000421826240001"
+  },
+  {
+    "date": "05/01",
+    "amount": -89.92,
+    "desc": "ADEUDO DE BBVA SEGUROS",
+    "desc2": "N 202300******3785 SANITAS S A DE SEGUROS"
+  },
+  {
+    "date": "05/01",
+    "amount": -0.97,
+    "desc": "ADEUDO MENSUAL DE TARJETA",
+    "desc2": "494000******6233"
+  }
+]
+
+[
+  {
+    "date": "05/01/2023",
+    "amount": "-10.32",
+    "desc": "COMPRA EN COMERCIO EXTRANJERO-COMISIÓN 3 % INCLUÍDA",
+    "desc2": "PAYU*Netflix"
+  },
+  {
+    "date": "05/01/2023",
+    "amount": "-103.00",
+    "desc": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",
+    "desc2": "AMAZON.ES*169BX3UL4 AMAZO"
+  },
+  {
+    "date": "09/01/2023",
+    "amount": "-7.30",
+    "desc": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+    "desc2": "EXPENDEDURIA N 3 CATARROJCATARROJA ES"
+  },
+  {
+    "date": "09/01/2023",
+    "amount": "100.00",
+    "desc": "BIZUM",
+    "desc2": "RECIBIDO: Ali"
+  },
+  {
+    "date": "12/01/2023",
+    "amount": "-2.06",
+    "desc": "PAGO CON TARJETA EN MEDICINA,FARMACIA Y SANIDAD",
+    "desc2": "FARMACIA NACHER CATARROJA ES"
+  },
+  {
+    "date": "16/01/2023",
+    "amount": "-50.00",
+    "desc": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+    "desc2": "ORANGE BANK MADRID"
+  },
+  {
+    "date": "16/01/2023",
+    "amount": "-350.00",
+    "desc": "TRANSFERENCIAS",
+    "desc2": "REDA KERROUMI. ALQUILER PISO MES ENERO DE 2023"
+  },
+  {
+    "date": "16/01/2023",
+    "amount": "-7.20",
+    "desc": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",
+    "desc2": "MDQ CATARROJA ES"
+  },
+  {
+    "date": "17/01/2023",
+    "amount": "-14.19",
+    "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+    "desc2": "MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+    "date": "17/01/2023",
+    "amount": "-26.95",
+    "desc": "ADEUDO ORANGE-FRANCE TELECOM",
+    "desc2": "N 202301******0630 Orange Espagne S.A.U-ORANGE ESPAGNE SA"
+  },
+  {
+    "date": "17/01/2023",
+    "amount": "-203.68",
+    "desc": "ADEUDO ORANGE-FRANCE TELECOM",
+    "desc2": "N 202301******6599 ORANGE ESPAGNE S.A."
+  },
+  {
+    "date": "18/01/2023",
+    "amount": "-34.99",
+    "desc": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",
+    "desc2": "AMZN MKTP ES*1A8DD6AD4 AM"
+  },
+  {
+  "date": "18/01/2023",
+  "amount": -13.88,
+  "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+  "desc2": "MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+  "date": "19/01/2023",
+  "amount": -17.67,
+  "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+  "desc2": "MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+  "date": "23/01/2023",
+  "amount": -30.93,
+  "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+  "desc2": "MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+  "date": "23/01/2023",
+  "amount": -139.80,
+  "desc": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",
+  "desc2": "AMAZON.ES*1A0TH2K14 AMAZO"
+  },
+  {
+  "date": "30/01/2023",
+  "amount": -11.04,
+  "desc": "PAGO CON TARJETA EN SUPERMERCADOS",
+  "desc2": "MERCADONA CAMI REAL 99 CATARROJA ES"
+  },
+  {
+  "date": "30/01/2023",
+  "amount": -60.00,
+  "desc": "RET. EFECTIVO A DEBITO CON TARJ. EN CAJERO. AUT.",
+  "desc2": "01829521 999"
+  },
+  {
+  "date": "30/01/2023",
+  "amount": -1475.39,
+  "desc": "CARGO POR PAGO DE IMPUESTOS - TRIBUTOS",
+  "desc2": "NRC. 1303973071353M9R1ACSXN"
+  }]
+
+  [  {    "date": "30/0130/01",    "description": "BIZUM RECIBIDO: Ali",    "amount": "100,00"  },  {    "date": "30/0130/01",    "description": "RET. EFECTIVO A DEBITO CON TARJ. EN CAJERO. AUT.",    "amount": "-150,00"  },  {    "date": "30/0127/01",    "description": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",    "amount": "-145,98"  },  {    "date": "30/0130/01",    "description": "PAGO CON TARJETA DE SERVICIOS VARIOS",    "amount": "-7,30"  },  {    "date": "31/0130/01",    "description": "PAGO CON TARJETA EN SUPERMERCADOS",    "amount": "-37,05"  },  {    "date": "31/0131/01",    "description": "CARGO POR AMORTIZACION DE PRESTAMO/CREDITO",    "amount": "-398,72"  },  {    "date": "31/0131/01",    "description": "ADEUDO DE CUOTA DE LA SEGURIDAD SOCIAL",    "amount": "-148,27"  }]
+
+
+  [
+    {
+      "date": "01/0201/02",
+      "description": "TRANSFERENCIAS",
+      "amount": "-801.25",
+      "balance": "7775.61EUR"
+    },
+    {
+      "date": "01/0201/02",
+      "description": "ADEUDO DE BBVA SEGUROS",
+      "amount": "-88.33",
+      "balance": "7687.28EUR"
+    },
+    {
+      "date": "01/0201/02",
+      "description": "ABONO POR TRANSFERENCIA A SU FAVOR RECIBIDA EN EUROS",
+      "amount": "3937.12",
+      "balance": null
+    },
+    {
+      "date": "02/0201/02",
+      "description": "PAGO CON TARJETA EN RESTAURANTES Y CAFETERIAS",
+      "amount": "-19.35",
+      "balance": null
+    },
+    {
+      "date": "02/0202/02",
+      "description": "ADEUDO DE IBERDROLA",
+      "amount": "-65.20",
+      "balance": null
+    },
+    {
+      "date": "03/0202/02",
+      "description": "PAGO CON TARJETA EN SUPERMERCADOS",
+      "amount": "-17.27",
+      "balance": null
+    },
+    {
+      "date": "03/0205/02",
+      "description": "ADEUDO MENSUAL DE TARJETA",
+      "amount": "-200.00",
+      "balance": null
+    },
+    {
+      "date": "03/0203/02",
+      "description": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+      "amount": "-50.00",
+      "balance": null
+    },
+    {
+      "date": "03/0203/02",
+      "description": "RET. EFECTIVO A DEBITO CON TARJ. EN CAJERO. AUT.",
+      "amount": "-50.00",
+      "balance": null
+    },
+    {
+      "date": "03/0201/02",
+      "description": "PAGO CON TARJETA DE SERVICIOS VARIOS",
+      "amount": "-35.09",
+      "balance": null
+    }
+  ]

@@ -58,6 +58,53 @@ const useExpense = () => {
     return groupedExpenses;
   }
 
+  // function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
+  //   const result = {};
+  //   const monthNames = [
+  //     "Jan",
+  //     "Feb",
+  //     "Mar",
+  //     "Apr",
+  //     "May",
+  //     "Jun",
+  //     "Jul",
+  //     "Aug",
+  //     "Sep",
+  //     "Oct",
+  //     "Nov",
+  //     "Dec",
+  //   ];
+  //   const totals = {};
+  //   totals["totals"] = Array(12).fill(0);
+
+  //   _.forEach(expenses, (expense) => {
+  //     const month = monthNames.indexOf(
+  //       new Date(expense.Date).toLocaleString("en-us", { month: "short" })
+  //     );
+  //     const category = expense.expense_category.name;
+  //     const group = expense.expense_group
+  //       ? expense.expense_group.name
+  //       : "no group";
+
+  //     if (!result[category]) {
+  //       result[category] = {};
+  //       result[category]["totals"] = Array(12).fill(0);
+  //     }
+
+  //     if (!result[category][group]) {
+  //       result[category][group] = Array(12).fill(0);
+  //     }
+
+  //     result[category][group][month] += expense.amount;
+  //     result[category]["totals"][month] += expense.amount;
+  //     totals["totals"][month] += expense.amount;
+  //   });
+
+  //   result["totals"] = totals;
+
+  //   return result;
+  // }
+
   function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
     const result = {};
     const monthNames = [
@@ -74,8 +121,9 @@ const useExpense = () => {
       "Nov",
       "Dec",
     ];
-    const totals = {};
-    totals["totals"] = Array(12).fill(0);
+
+    // Initialize the sum of all categories
+    let allCategoriesSum = Array(13).fill(0);
 
     _.forEach(expenses, (expense) => {
       const month = monthNames.indexOf(
@@ -88,19 +136,25 @@ const useExpense = () => {
 
       if (!result[category]) {
         result[category] = {};
-        result[category]["totals"] = Array(12).fill(0);
+        result[category]["totals"] = Array(13).fill(0);
       }
 
       if (!result[category][group]) {
-        result[category][group] = Array(12).fill(0);
+        result[category][group] = Array(13).fill(0);
       }
 
       result[category][group][month] += expense.amount;
+      result[category][group][12] += expense.amount;
       result[category]["totals"][month] += expense.amount;
-      totals["totals"][month] += expense.amount;
+      result[category]["totals"][12] += expense.amount;
+
+      allCategoriesSum[month] += expense.amount;
+      allCategoriesSum[12] += expense.amount;
     });
 
-    result["totals"] = totals;
+    // Add the total sum of all categories to the result
+    result["All Categories"] = {};
+    result["All Categories"]["totals"] = allCategoriesSum;
 
     return result;
   }
