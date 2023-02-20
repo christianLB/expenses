@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Table, IconButton, Box, Collapse } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import * as _ from "lodash";
@@ -26,7 +26,7 @@ const colors = [
   "#D9EDF7",
   "#CCE5FF",
   "#F1CCD9",
-  "#E6F1CC",
+  "#B6A1CF",
   "#F1D9CC",
   "#CCF1E6",
   "#D9CCF1",
@@ -41,24 +41,26 @@ const colors = [
 ];
 
 const ExpenseTable = ({ expensesResult }) => {
-  const collapsedDefault = _.zipObject(
-    _.keys(expensesResult),
-    Array(Object.keys(expensesResult).length).fill(true)
-  );
-  const [collapsed, setCollapsed] = useState(collapsedDefault);
-  const _INCOME = 'Income';
+  const [collapsed, setCollapsed] = useState({});
+  const _INCOME = "Income";
+  const _BALANCE = "Balance";
+
+  useLayoutEffect(() => {
+    const collapsedDefault = _.zipObject(
+      _.keys(expensesResult),
+      Array(Object.keys(expensesResult).length).fill(true)
+    );
+    setCollapsed(collapsedDefault);
+  }, [expensesResult]);
 
   return (
-    <Table style={{fontSize: '0.8rem'}}>
+    <Table style={{ fontSize: "0.8rem" }}>
       <thead>
         <tr style={{ backgroundColor: "darkgray", color: "white" }}>
           <th style={{ width: "40px" }}></th>
           <th>Category/Group</th>
           {monthNames.map((month) => (
-            <th
-              style={{ borderLeft: "1px solid white" }}
-              key={month}
-            >
+            <th style={{ borderLeft: "1px solid white" }} key={month}>
               {month}
             </th>
           ))}
@@ -74,54 +76,55 @@ const ExpenseTable = ({ expensesResult }) => {
               ([groupName]) => groupName !== "totals"
             );
             const hasGroups = groupsMap.length > 1;
+            const isIncome = category === _INCOME;
+            const isBalance = category === _BALANCE;
+
             return (
               <React.Fragment key={category}>
                 {!isCollapsed &&
                   hasGroups &&
                   groupsMap.map(([groupName, amounts]: [any, any]) => {
-                    const isIncome = groupName == _INCOME
-                    console.log(isIncome)
-                    return (<tr
-                      key={groupName}
-                      style={{
-                        ...(!isCollapsed || !hasGroups && !isIncome
-                          ? { backgroundColor: color }
-                          : {}),
-                        ...(isIncome
-                          ? { backgroundColor: 'light-blue' }
-                          : {})
-                      }}
-                    >
-                      <td style={{ backgroundColor: color }}></td>
-                      <td
+                    return (
+                      <tr
+                        key={groupName}
                         style={{
-                          backgroundColor: color,
-                          paddingLeft: "20px",
+                          backgroundColor: !isCollapsed ? color : "",
                         }}
                       >
-                        {groupName}
-                      </td>
-                      {Array.isArray(amounts) && amounts?.map((amount, index) => (
+                        <td style={{ backgroundColor: color }}></td>
                         <td
-                          key={monthNames[index] + 'amounts'}
                           style={{
-                            padding: "0 0.5%",
-                            ...(!amount
-                              ? {
-                                textAlign: "center",
-                                color: "#000",
-                                paddingLeft: "0",
-                              }
-                              : {}),
+                            backgroundColor: color,
+                            paddingLeft: "20px",
                           }}
                         >
-                          {(amount && amount.toFixed(2)) || "-"}
+                          {groupName}
                         </td>
-                      ))}
-                    </tr>)
-})}
+                        {Array.isArray(amounts) &&
+                          amounts?.map((amount, index) => (
+                            <td
+                              key={monthNames[index] + "amounts"}
+                              style={{
+                                padding: "0 0.5%",
+                                ...(!amount
+                                  ? {
+                                      textAlign: "center",
+                                      color: "#000",
+                                      paddingLeft: "0",
+                                    }
+                                  : {}),
+                              }}
+                            >
+                              {(amount && amount.toFixed(2)) || "-"}
+                            </td>
+                          ))}
+                      </tr>
+                    );
+                  })}
                 <tr style={{ fontWeight: "bold", height: "40px" }}>
-                  <td style={{ backgroundColor: color }}>
+                  <td
+                    style={{ backgroundColor: isIncome ? "lightblue" : color }}
+                  >
                     {hasGroups && (
                       <IconButton
                         onClick={() =>
@@ -145,7 +148,7 @@ const ExpenseTable = ({ expensesResult }) => {
                   </td>
                   <td
                     style={{
-                      backgroundColor: color,
+                      backgroundColor: isIncome ? "lightblue" : color,
                       borderBottom: "1px solid gray",
                     }}
                   >
@@ -155,14 +158,17 @@ const ExpenseTable = ({ expensesResult }) => {
                     <td
                       style={{
                         borderLeft: "1px solid #d2d2d2",
-                        backgroundColor: "gray",
+                        backgroundColor: isIncome
+                          ? "lightblue"
+                          : isBalance
+                          ? color
+                          : "gray",
                         color: "white",
                         padding: "0px 0.5%",
                         ...(!total
                           ? {
                               textAlign: "center",
-                              color: "#d2d2d2",
-                              //paddingLeft: "0",
+                              //color: "gray",
                             }
                           : {}),
                         ...(!isCollapsed && hasGroups
@@ -171,7 +177,7 @@ const ExpenseTable = ({ expensesResult }) => {
                             }
                           : {}),
                       }}
-                      key={monthNames[index]}
+                      key={monthNames[index] + "td"}
                     >
                       {(total && total.toFixed(2)) || "-"}
                     </td>

@@ -36,9 +36,8 @@ interface IExpense {
 }
 
 const useExpense = () => {
-
-  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome()
-  const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({})
+  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
+  const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
   const { arrayData: expenses, loading } = useApi(
     "http://10.0.0.4:1337/expenses",
@@ -81,8 +80,11 @@ const useExpense = () => {
     // Initialize the sum of all categories
     let allCategoriesSum = Array(13).fill(0);
 
-    const _tocalIncomePerMonth = [...totalIncomePerMonth, totalIncomePerMonth.reduce((total, item) => total + item)]
-    result["Income"] = { totals: _tocalIncomePerMonth }  
+    const _tocalIncomePerMonth = [
+      ...totalIncomePerMonth,
+      totalIncomePerMonth.reduce((total, item) => total + item),
+    ];
+    result["Income"] = { totals: _tocalIncomePerMonth };
     _.forEach(expenses, (expense) => {
       const month = monthNames.indexOf(
         new Date(expense.Date).toLocaleString("en-us", { month: "short" })
@@ -113,29 +115,31 @@ const useExpense = () => {
     // Add the total sum of all categories to the result
     result["All Categories"] = {};
     result["All Categories"]["totals"] = allCategoriesSum;
-    
+
     const balance = monthNames.map((month, i) => {
-      const totalIncome = result["Income"]["totals"][i] ?? 0
-      const totalExpense = result["All Categories"]["totals"][i] ?? 0 
-      return totalIncome - totalExpense
-    })
-    result["Balance"] = {}
-    result["Balance"].totals = balance
+      const totalIncome = result["Income"]["totals"][i] ?? 0;
+      const totalExpense = result["All Categories"]["totals"][i] ?? 0;
+      return totalIncome - totalExpense;
+    });
+    result["Balance"] = {};
+    result["Balance"].totals = balance;
     //aggregate total balance
-    result["Balance"]["totals"] = [...result["Balance"]["totals"], result["Balance"]["totals"].reduce((total, item) => total + item)]
+    result["Balance"]["totals"] = [
+      ...result["Balance"]["totals"],
+      result["Balance"]["totals"].reduce((total, item) => total + item),
+    ];
 
     return result;
   }
 
   useEffect(() => {
-    setCategoryGroupExpenses(getTotalsByCategoryAndGroup(expenses))
-    console.log(categoryGroupExpenses)
-  }, [expenses, incomes])
+    setCategoryGroupExpenses(getTotalsByCategoryAndGroup(expenses));
+  }, [expenses, incomes]);
 
   return {
     expenses,
     loading: loading || loadingIncomes,
-    categoryGroupExpenses
+    categoryGroupExpenses,
   };
 };
 
