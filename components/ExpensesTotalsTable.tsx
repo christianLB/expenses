@@ -46,22 +46,23 @@ const ExpenseTable = ({ expensesResult }) => {
     Array(Object.keys(expensesResult).length).fill(true)
   );
   const [collapsed, setCollapsed] = useState(collapsedDefault);
+  const _INCOME = 'Income';
 
   return (
-    <Table>
+    <Table style={{fontSize: '0.8rem'}}>
       <thead>
         <tr style={{ backgroundColor: "darkgray", color: "white" }}>
           <th style={{ width: "40px" }}></th>
           <th>Category/Group</th>
           {monthNames.map((month) => (
             <th
-              style={{ borderLeft: "1px solid white", width: "7%" }}
+              style={{ borderLeft: "1px solid white" }}
               key={month}
             >
               {month}
             </th>
           ))}
-          <th style={{ borderLeft: "1px solid white", width: "7%" }}></th>
+          <th style={{ borderLeft: "1px solid white" }}></th>
         </tr>
       </thead>
       <tbody>
@@ -77,13 +78,18 @@ const ExpenseTable = ({ expensesResult }) => {
               <React.Fragment key={category}>
                 {!isCollapsed &&
                   hasGroups &&
-                  groupsMap.map(([groupName, amounts]: [any, any]) => (
-                    <tr
+                  groupsMap.map(([groupName, amounts]: [any, any]) => {
+                    const isIncome = groupName == _INCOME
+                    console.log(isIncome)
+                    return (<tr
                       key={groupName}
                       style={{
-                        ...(!isCollapsed || !hasGroups
+                        ...(!isCollapsed || !hasGroups && !isIncome
                           ? { backgroundColor: color }
                           : {}),
+                        ...(isIncome
+                          ? { backgroundColor: 'light-blue' }
+                          : {})
                       }}
                     >
                       <td style={{ backgroundColor: color }}></td>
@@ -99,21 +105,21 @@ const ExpenseTable = ({ expensesResult }) => {
                         <td
                           key={monthNames[index] + 'amounts'}
                           style={{
-                            paddingLeft: "15px",
+                            padding: "0 0.5%",
                             ...(!amount
                               ? {
-                                  textAlign: "center",
-                                  color: "#000",
-                                  paddingLeft: "0",
-                                }
+                                textAlign: "center",
+                                color: "#000",
+                                paddingLeft: "0",
+                              }
                               : {}),
                           }}
                         >
-                          {(amount && amount.toFixed(2)) || "--"}
+                          {(amount && amount.toFixed(2)) || "-"}
                         </td>
                       ))}
-                    </tr>
-                  ))}
+                    </tr>)
+})}
                 <tr style={{ fontWeight: "bold", height: "40px" }}>
                   <td style={{ backgroundColor: color }}>
                     {hasGroups && (
@@ -151,12 +157,12 @@ const ExpenseTable = ({ expensesResult }) => {
                         borderLeft: "1px solid #d2d2d2",
                         backgroundColor: "gray",
                         color: "white",
-                        paddingLeft: "15px",
+                        padding: "0px 0.5%",
                         ...(!total
                           ? {
                               textAlign: "center",
                               color: "#d2d2d2",
-                              paddingLeft: "0",
+                              //paddingLeft: "0",
                             }
                           : {}),
                         ...(!isCollapsed && hasGroups
@@ -167,7 +173,7 @@ const ExpenseTable = ({ expensesResult }) => {
                       }}
                       key={monthNames[index]}
                     >
-                      {(total && total.toFixed(2)) || "--"}
+                      {(total && total.toFixed(2)) || "-"}
                     </td>
                   ))}
                 </tr>

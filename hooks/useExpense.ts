@@ -81,7 +81,8 @@ const useExpense = () => {
     // Initialize the sum of all categories
     let allCategoriesSum = Array(13).fill(0);
 
-    result["Income"] = { totals: [...totalIncomePerMonth, totalIncomePerMonth.reduce((total, item) => total + item)] }  
+    const _tocalIncomePerMonth = [...totalIncomePerMonth, totalIncomePerMonth.reduce((total, item) => total + item)]
+    result["Income"] = { totals: _tocalIncomePerMonth }  
     _.forEach(expenses, (expense) => {
       const month = monthNames.indexOf(
         new Date(expense.Date).toLocaleString("en-us", { month: "short" })
@@ -113,6 +114,15 @@ const useExpense = () => {
     result["All Categories"] = {};
     result["All Categories"]["totals"] = allCategoriesSum;
     
+    const balance = monthNames.map((month, i) => {
+      const totalIncome = result["Income"]["totals"][i] ?? 0
+      const totalExpense = result["All Categories"]["totals"][i] ?? 0 
+      return totalIncome - totalExpense
+    })
+    result["Balance"] = {}
+    result["Balance"].totals = balance
+    //aggregate total balance
+    result["Balance"]["totals"] = [...result["Balance"]["totals"], result["Balance"]["totals"].reduce((total, item) => total + item)]
 
     return result;
   }
