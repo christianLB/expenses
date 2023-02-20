@@ -95,9 +95,9 @@ const ExpenseTable = ({ expensesResult }) => {
                       >
                         {groupName}
                       </td>
-                      {amounts.map((amount, index) => (
+                      {Array.isArray(amounts) && amounts?.map((amount, index) => (
                         <td
-                          key={monthNames[index]}
+                          key={monthNames[index] + 'amounts'}
                           style={{
                             paddingLeft: "15px",
                             ...(!amount

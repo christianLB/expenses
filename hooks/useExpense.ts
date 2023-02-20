@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import react, { useEffect, useState } from "react";
 import * as _ from "lodash";
 import useApi from "./useApi.ts";
+import useIncome from "./useIncome.ts";
 
 interface IExpenseGroup {
   id: number;
@@ -35,7 +36,9 @@ interface IExpense {
 }
 
 const useExpense = () => {
-  const router = useRouter();
+
+  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome()
+  const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({})
 
   const { arrayData: expenses, loading } = useApi(
     "http://10.0.0.4:1337/expenses",
@@ -58,53 +61,6 @@ const useExpense = () => {
     return groupedExpenses;
   }
 
-  // function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
-  //   const result = {};
-  //   const monthNames = [
-  //     "Jan",
-  //     "Feb",
-  //     "Mar",
-  //     "Apr",
-  //     "May",
-  //     "Jun",
-  //     "Jul",
-  //     "Aug",
-  //     "Sep",
-  //     "Oct",
-  //     "Nov",
-  //     "Dec",
-  //   ];
-  //   const totals = {};
-  //   totals["totals"] = Array(12).fill(0);
-
-  //   _.forEach(expenses, (expense) => {
-  //     const month = monthNames.indexOf(
-  //       new Date(expense.Date).toLocaleString("en-us", { month: "short" })
-  //     );
-  //     const category = expense.expense_category.name;
-  //     const group = expense.expense_group
-  //       ? expense.expense_group.name
-  //       : "no group";
-
-  //     if (!result[category]) {
-  //       result[category] = {};
-  //       result[category]["totals"] = Array(12).fill(0);
-  //     }
-
-  //     if (!result[category][group]) {
-  //       result[category][group] = Array(12).fill(0);
-  //     }
-
-  //     result[category][group][month] += expense.amount;
-  //     result[category]["totals"][month] += expense.amount;
-  //     totals["totals"][month] += expense.amount;
-  //   });
-
-  //   result["totals"] = totals;
-
-  //   return result;
-  // }
-
   function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
     const result = {};
     const monthNames = [
@@ -125,6 +81,7 @@ const useExpense = () => {
     // Initialize the sum of all categories
     let allCategoriesSum = Array(13).fill(0);
 
+    result["Income"] = { totals: [...totalIncomePerMonth, totalIncomePerMonth.reduce((total, item) => total + item)] }  
     _.forEach(expenses, (expense) => {
       const month = monthNames.indexOf(
         new Date(expense.Date).toLocaleString("en-us", { month: "short" })
@@ -155,20 +112,20 @@ const useExpense = () => {
     // Add the total sum of all categories to the result
     result["All Categories"] = {};
     result["All Categories"]["totals"] = allCategoriesSum;
+    
 
     return result;
   }
 
-  console.log(
-    "getTotalsByCategoryAndGroup",
-    getTotalsByCategoryAndGroup(expenses)
-  );
+  useEffect(() => {
+    setCategoryGroupExpenses(getTotalsByCategoryAndGroup(expenses))
+    console.log(categoryGroupExpenses)
+  }, [expenses, incomes])
 
   return {
     expenses,
-    loading,
-    categoryExpenses: groupExpensesByCategory(expenses),
-    categoryGroupExpenses: getTotalsByCategoryAndGroup(expenses),
+    loading: loading || loadingIncomes,
+    categoryGroupExpenses
   };
 };
 
