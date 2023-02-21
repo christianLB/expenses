@@ -33,7 +33,7 @@ import NewExpense from "../components/NewExpense.tsx";
 // };
 
 export default function Home() {
-  const { expenses, categoryGroupExpenses, loading } = useExpense();
+  const { expenses, categoryGroupExpenses, loading, createExpenseHandler } = useExpense();
   //const [selectedExpense, setSelected] = useState(null);
   const categoryNames = Object.keys(categoryGroupExpenses);
 
@@ -53,7 +53,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <NewExpense />
+        <NewExpense onCreate={createExpenseHandler} />
         <ExpenseTable expensesResult={categoryGroupExpenses} />
         {/* {categoryNames.map((category, i) => (
           <ExpenseTable

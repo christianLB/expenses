@@ -101,7 +101,12 @@ function useApi(
 
       return fetch(_url, {
         method,
-        body: JSON.stringify(param.body || requestBody),
+        ...(method.toLocaleLowerCase() === 'post' ? {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(param.body || requestBody),
+        } : {}),
       });
     });
     await Promise.all(requests)

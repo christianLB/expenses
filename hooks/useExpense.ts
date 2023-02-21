@@ -46,6 +46,13 @@ const useExpense = () => {
     }
   );
 
+  const { request: createExpenseHandler, loading: creatingExpense } = useApi(
+    "http://10.0.0.4:1337/expenses",
+    {
+      method: 'POST'
+    }
+  );
+
   function groupExpensesByCategory(expenses: IExpense[]): {
     [key: string]: IExpense[];
   } {
@@ -89,7 +96,7 @@ const useExpense = () => {
       const month = monthNames.indexOf(
         new Date(expense.Date).toLocaleString("en-us", { month: "short" })
       );
-      const category = expense.expense_category.name;
+      const category = expense.expense_category ? expense.expense_category.name : 'Uncategorized';
       const group = expense.expense_group
         ? expense.expense_group.name
         : "no group";
@@ -139,7 +146,9 @@ const useExpense = () => {
   return {
     expenses,
     loading: loading || loadingIncomes,
+    creatingExpense,
     categoryGroupExpenses,
+    createExpenseHandler
   };
 };
 

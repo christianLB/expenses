@@ -19,42 +19,49 @@ interface TransactionInfo {
   notes?: string;
 }
 
+const formatDate = (date: string) => {
+  //const dateString = '20/02/2023';
+const [day, month, year] = date.split('/');
+  const dateObject = new Date(`${year}-${month}-${day}`);
+  return dateObject
+}
+
 function parseTransactionInfo(text: string): TransactionInfo | null {
   const fields = text.split("\n").map((line) => line.trim());
 
   const matchType = fields[0].match(/^Tipo de movimiento\s+(.+)/);
   const type = matchType ? matchType[1] : "";
 
-  const matchDescription = fields[1].match(/^Descripción\s+(.+)/);
+  const matchDescription = fields[1] && fields[1].match(/^Descripción\s+(.+)/) || '';
   const description = matchDescription ? matchDescription[1] : "";
 
-  const matchAmount = fields[2].match(
+  const matchAmount = fields[2] && fields[2].match(
     /^Importe\s+(-?\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?)/
-  );
+  ) || '';
   const amount = matchAmount
     ? parseFloat(matchAmount[1].replace(".", "").replace(",", "."))
     : NaN;
 
-  const matchCurrency = fields[3].match(/^Divisa\s+(.+)/);
+  const matchCurrency = fields[3] && fields[3].match(/^Divisa\s+(.+)/) || '';
   const currency = matchCurrency ? matchCurrency[1] : "";
 
-  const matchDate = fields[4].match(
+  const matchDate = fields[4] && fields[4].match(
     /^Fecha del movimiento\s+(\d{2}\/\d{2}\/\d{4})/
-  );
-  const date = matchDate ? new Date(matchDate[1]) : null;
+  ) || '';
+  const date = matchDate ? formatDate(matchDate[1]) : null;
 
-  const matchValueDate = fields[5].match(
+  const matchValueDate = fields[5] && fields[5].match(
     /^Fecha valor\s+(\d{2}\/\d{2}\/\d{4})/
-  );
-  const valueDate = matchValueDate ? new Date(matchValueDate[1]) : null;
+  ) || '';
+  const valueDate = matchValueDate ? formatDate(matchValueDate[1]) : null;
 
-  const matchAccount = fields[6].match(/^Cuenta cargo\/abono\s+(.+)/);
+  const matchAccount = fields[6] && fields[6].match(/^Cuenta cargo\/abono\s+(.+)/) || '';
   const account = matchAccount ? matchAccount[1] : "";
 
-  const matchAccountHolder = fields[7].match(/^Titular de la cuenta\s+(.+)/);
+  const matchAccountHolder = fields[7] && fields[7].match(/^Titular de la cuenta\s+(.+)/) || '';
   const accountHolder = matchAccountHolder ? matchAccountHolder[1] : "";
 
-  const matchNotes = fields[8].match(/^Observaciones\s+(.+)/);
+  const matchNotes = fields[8] && fields[8].match(/^Observaciones\s+(.+)/) || '';
   const notes = matchNotes ? matchNotes[1] : "";
 
   if (
@@ -84,34 +91,65 @@ function parseTransactionInfo(text: string): TransactionInfo | null {
   };
 }
 
-const NewExpense = () => {
+const NewExpense = ({ onCreate = (params) => { } }) => {
   const [text, setText] = useState("");
+  const [transaction, setTransaction] = useState<TransactionInfo>({})
+  
   const handleChange = (e: any) => {
     setText(e.target.value);
   };
 
   useEffect(() => {
-    const bka = `Tipo de movimiento Cuenta
-    Descripción LEROY MERLIN MASSANASSA MASSANASSA ES
-    Importe -143,56
-    Divisa EUR
-    Fecha del movimiento 20/02/2023
-    Fecha valor 18/02/2023
-    Cuenta cargo/abono ES36 0182 **** **** **** 8475
-    Titular de la cuenta Christian Alejandro Agüero Chao
-    Observaciones 4940197135669736 LEROY MERLIN MASSANASSA MASSANASSA ES`;
-
-    console.log("transaction", parseTransactionInfo(text));
+    const transaction = parseTransactionInfo(text)
+    if (transaction) setTransaction(transaction)
   }, [text]);
+  
+  const formatTransaction = (transaction: TransactionInfo = {}) => {
+    return {
+        desc: transaction.description,
+        amount: transaction.amount
+    }
+  }
+
+  const fields = Object.keys(transaction)
+  
+  const containerStyles = {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'space-between',
+    marginBottom: '20px',
+    fontSize: '0.8rem'
+  }
+  const textAreaStyles = {
+    border: "1px solid gray",
+    height: "300px",
+    width: "50%",
+    fontSize: '0.8rem'
+  }
+  
+  const resultPaneStyle = {
+    paddingLeft: '20px'
+  }
 
   return (
-    <div>
-      la reputa que te parió.
-      <textarea
-        value={text}
-        onChange={handleChange}
-        style={{ border: "1px solid gray" }}
-      ></textarea>
+    <div style={containerStyles}>
+      
+        <textarea
+          style={textAreaStyles}
+          value={text}
+          onChange={handleChange}
+        ></textarea>
+      
+      <div style={resultPaneStyle}>
+        {!!fields.length && <>{
+          fields.map(field => {
+          return <div key={field}>{field}: {transaction[field].toString()}</div>
+          })
+          
+        }
+          <button onClick={() => onCreate({body: formatTransaction(transaction)})}>Guardar</button>
+        </>}
+      </div>
     </div>
   );
 };
