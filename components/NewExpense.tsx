@@ -1,3 +1,4 @@
+import { Spinner } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 
 interface TransactionInfo {
@@ -26,7 +27,7 @@ const [day, month, year] = date.split('/');
   return dateObject
 }
 
-function parseTransactionInfo(text: string): TransactionInfo | null {
+function parseTransactionInfo(text: string): any | null {
   const fields = text.split("\n").map((line) => line.trim());
 
   const matchType = fields[0].match(/^Tipo de movimiento\s+(.+)/);
@@ -80,18 +81,18 @@ function parseTransactionInfo(text: string): TransactionInfo | null {
 
   return {
     type: type,
-    description: description,
-    amount: amount,
+    desc: description,
+    amount: Math.abs(amount),
     currency: currency,
-    date: date,
-    valueDate: valueDate,
+    Date: valueDate,
+    //valueDate: valueDate,
     account: account,
     accountHolder: accountHolder,
     notes: notes,
   };
 }
 
-const NewExpense = ({ onCreate = (params) => { } }) => {
+const NewExpense = ({ loading, onCreate = (params) => { } }) => {
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({})
   
@@ -104,13 +105,6 @@ const NewExpense = ({ onCreate = (params) => { } }) => {
     if (transaction) setTransaction(transaction)
   }, [text]);
   
-  const formatTransaction = (transaction: TransactionInfo = {}) => {
-    return {
-        desc: transaction.description,
-        amount: transaction.amount
-    }
-  }
-
   const fields = Object.keys(transaction)
   
   const containerStyles = {
@@ -122,14 +116,37 @@ const NewExpense = ({ onCreate = (params) => { } }) => {
   }
   const textAreaStyles = {
     border: "1px solid gray",
-    height: "300px",
+    height: "250px",
     width: "50%",
-    fontSize: '0.8rem'
+    fontSize: '0.8rem',
+    paddingLeft: '20px'
   }
   
   const resultPaneStyle = {
-    paddingLeft: '20px'
+    paddingLeft: '20px',
+    display: 'flex',
+    flexDirection: 'column'
   }
+
+  const fieldStyles = {
+    borderBottom: '1px solid gray',
+    marginBottom: '5px',
+    display: 'flex',
+    justifyContent: 'space-between'
+  }
+
+  const buttonStyles =
+    "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
+
+  const formStyles = "flex flex-col space-y-4 border p-5 rounded";
+  const inputContainerStyles = "flex flex-col space-y-2";
+  const labelStyles = "text-sm font-medium";
+  const inputStyles = "form-input rounded-md shadow-sm";
+  const selectStyles = "form-select rounded-md shadow-sm";
+  const textareaStyles = "form-textarea rounded-md shadow-sm";
+  //const containerStyles = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 b-1-gray";
+  const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
+  const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
   return (
     <div style={containerStyles}>
@@ -143,11 +160,12 @@ const NewExpense = ({ onCreate = (params) => { } }) => {
       <div style={resultPaneStyle}>
         {!!fields.length && <>{
           fields.map(field => {
-          return <div key={field}>{field}: {transaction[field].toString()}</div>
+            return <div style={fieldStyles} key={field}><span>{field}:</span><span>{transaction[field].toString()}</span> </div>
           })
           
         }
-          <button onClick={() => onCreate({body: formatTransaction(transaction)})}>Guardar</button>
+          <button className={buttonStyles} onClick={() => onCreate({ body: transaction })}>
+            Confirmar {loading && <Spinner /> }</button>
         </>}
       </div>
     </div>
