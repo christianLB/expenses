@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { Select } from '@chakra-ui/react'
+import { Select } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.ts";
 import useExpenseGroup from "../hooks/useExpenseGroup.ts";
-
+import { parseTransactionInfo, extractTransactions } from "../utils.ts";
 interface TransactionInfo {
   date?: Date;
   type?: string;
@@ -23,91 +23,15 @@ interface TransactionInfo {
   notes?: string;
 }
 
-const formatDate = (date: string) => {
-  //const dateString = '20/02/2023';
-  const [day, month, year] = date.split("/");
-  const dateObject = new Date(`${year}-${month}-${day}`);
-  return dateObject;
-};
-
-function parseTransactionInfo(text: string): any | null {
-  const fields = text.split("\n").map((line) => line.trim());
-
-  const matchType = fields[0].match(/^Tipo de movimiento\s+(.+)/);
-  const type = matchType ? matchType[1] : "";
-
-  const matchDescription =
-    (fields[1] && fields[1].match(/^Descripción\s+(.+)/)) || "";
-  const description = matchDescription ? matchDescription[1] : "";
-
-  const matchAmount =
-    (fields[2] &&
-      fields[2].match(/^Importe\s+(-?\d{1,3}(?:\.\d{3})*(?:,\d{1,2})?)/)) ||
-    "";
-  const amount = matchAmount
-    ? parseFloat(matchAmount[1].replace(".", "").replace(",", "."))
-    : NaN;
-
-  const matchCurrency = (fields[3] && fields[3].match(/^Divisa\s+(.+)/)) || "";
-  const currency = matchCurrency ? matchCurrency[1] : "";
-
-  const matchDate =
-    (fields[4] &&
-      fields[4].match(/^Fecha del movimiento\s+(\d{2}\/\d{2}\/\d{4})/)) ||
-    "";
-  const date = matchDate ? formatDate(matchDate[1]) : null;
-
-  const matchValueDate =
-    (fields[5] && fields[5].match(/^Fecha valor\s+(\d{2}\/\d{2}\/\d{4})/)) ||
-    "";
-  const valueDate = matchValueDate ? formatDate(matchValueDate[1]) : null;
-
-  const matchAccount =
-    (fields[6] && fields[6].match(/^Cuenta cargo\/abono\s+(.+)/)) || "";
-  const account = matchAccount ? matchAccount[1] : "";
-
-  const matchAccountHolder =
-    (fields[7] && fields[7].match(/^Titular de la cuenta\s+(.+)/)) || "";
-  const accountHolder = matchAccountHolder ? matchAccountHolder[1] : "";
-
-  const matchNotes =
-    (fields[8] && fields[8].match(/^Observaciones\s+(.+)/)) || "";
-  const notes = matchNotes ? matchNotes[1] : "";
-
-  if (
-    !type ||
-    !description ||
-    isNaN(amount) ||
-    !currency ||
-    !date ||
-    !valueDate ||
-    !account ||
-    !accountHolder ||
-    !notes
-  ) {
-    return null;
-  }
-
-  return {
-    type: type,
-    Name: description,
-    amount: Math.abs(amount),
-    currency: currency,
-    Date: valueDate,
-    //valueDate: valueDate,
-    account: account,
-    Account_holder: accountHolder,
-    notes: notes,
-  };
-}
-
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({});
-  const { expenseCategories, loading: loadingCategories } = useExpenseCategory();
+  const [extract, setExtract] = useState([]);
+  const { expenseCategories, loading: loadingCategories } =
+    useExpenseCategory();
   const { expenseGroups, loading: loadingGroups } = useExpenseGroup();
-  const [selectedCategory, setSelectedCategory] = useState()
-  const [selectedGroup, setSelectedGroup] = useState()
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedGroup, setSelectedGroup] = useState();
 
   const handleChange = (e: any) => {
     setText(e.target.value);
@@ -116,11 +40,19 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   useEffect(() => {
     const transaction = parseTransactionInfo(text);
     if (transaction) setTransaction(transaction);
+    const extract = extractTransactions(text);
+    if (extract) setExtract(extract);
   }, [text]);
 
   useEffect(() => {
-    if (selectedCategory) setTransaction(transaction => { return { ...transaction, expense_category: { id: selectedCategory } } });
-    if (selectedGroup) setTransaction(transaction => {return {...transaction, expense_group: {id: selectedGroup}}});
+    if (selectedCategory)
+      setTransaction((transaction) => {
+        return { ...transaction, expense_category: { id: selectedCategory } };
+      });
+    if (selectedGroup)
+      setTransaction((transaction) => {
+        return { ...transaction, expense_group: { id: selectedGroup } };
+      });
   }, [selectedCategory, selectedGroup]);
 
   const fields = Object.keys(transaction);
@@ -180,10 +112,18 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <div style={fieldStyles}>
               <span>Category:</span>
               <span>
-                <Select placeholder='Select option' size='xs' onChange={(e: any) => setSelectedCategory(e.target.value)}>
-                  {expenseCategories.map(category => {
-                    return <option key={category.id} value={category.id}>{category.name}</option>
-                  }) }
+                <Select
+                  placeholder="Select option"
+                  size="xs"
+                  onChange={(e: any) => setSelectedCategory(e.target.value)}
+                >
+                  {expenseCategories.map((category) => {
+                    return (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    );
+                  })}
                 </Select>
               </span>
             </div>
@@ -191,14 +131,22 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <div style={fieldStyles}>
               <span>Group:</span>
               <span>
-                <Select placeholder='Select option' size='xs' onChange={(e: any) => setSelectedGroup(e.target.value)}>
-                  {expenseGroups.map(group => {
-                    return <option key={group.id} value={group.id}>{group.name}</option>
-                  }) }
+                <Select
+                  placeholder="Select option"
+                  size="xs"
+                  onChange={(e: any) => setSelectedGroup(e.target.value)}
+                >
+                  {expenseGroups.map((group) => {
+                    return (
+                      <option key={group.id} value={group.id}>
+                        {group.name}
+                      </option>
+                    );
+                  })}
                 </Select>
               </span>
             </div>
-            
+
             {fields.map((field) => {
               return (
                 <div style={fieldStyles} key={field}>
@@ -216,6 +164,10 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
+
+      {extract?.map((transaction: any, i) => {
+        return <div key={i}>{transaction.transactionDate}</div>;
+      })}
     </div>
   );
 };
