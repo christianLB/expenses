@@ -1,12 +1,9 @@
-import { useRouter } from "next/router";
-import react, { useEffect, useState } from "react";
 import useApi from "./useApi.ts";
 
 const useExpenseCategory = () => {
-  const router = useRouter();
 
-  const { arrayData: expenseCategories } = useApi(
-    "http://192.168.1.22:1337/expense-categories",
+  const { arrayData: expenseCategories, loading } = useApi(
+    "http://10.0.0.4:1337/expense-categories",
     {
       fetchOnInit: true,
     }
@@ -14,6 +11,7 @@ const useExpenseCategory = () => {
 
   return {
     expenseCategories,
+    loading
   };
 };
 

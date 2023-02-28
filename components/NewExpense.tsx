@@ -1,5 +1,8 @@
-import { Spinner } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { Spinner } from "@chakra-ui/react";
+import { Select } from '@chakra-ui/react'
+import useExpenseCategory from "../hooks/useExpenseCategory.ts";
+import useExpenseGroup from "../hooks/useExpenseGroup.ts";
 
 interface TransactionInfo {
   date?: Date;
@@ -101,6 +104,10 @@ function parseTransactionInfo(text: string): any | null {
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({});
+  const { expenseCategories, loading: loadingCategories } = useExpenseCategory();
+  const { expenseGroups, loading: loadingGroups } = useExpenseGroup();
+  const [selectedCategory, setSelectedCategory] = useState()
+  const [selectedGroup, setSelectedGroup] = useState()
 
   const handleChange = (e: any) => {
     setText(e.target.value);
@@ -110,6 +117,11 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
     const transaction = parseTransactionInfo(text);
     if (transaction) setTransaction(transaction);
   }, [text]);
+
+  useEffect(() => {
+    if (selectedCategory) setTransaction(transaction => { return { ...transaction, expense_category: { id: selectedCategory } } });
+    if (selectedGroup) setTransaction(transaction => {return {...transaction, expense_group: {id: selectedGroup}}});
+  }, [selectedCategory, selectedGroup]);
 
   const fields = Object.keys(transaction);
 
@@ -165,6 +177,28 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
+            <div style={fieldStyles}>
+              <span>Category:</span>
+              <span>
+                <Select placeholder='Select option' size='xs' onChange={(e: any) => setSelectedCategory(e.target.value)}>
+                  {expenseCategories.map(category => {
+                    return <option key={category.id} value={category.id}>{category.name}</option>
+                  }) }
+                </Select>
+              </span>
+            </div>
+
+            <div style={fieldStyles}>
+              <span>Group:</span>
+              <span>
+                <Select placeholder='Select option' size='xs' onChange={(e: any) => setSelectedGroup(e.target.value)}>
+                  {expenseGroups.map(group => {
+                    return <option key={group.id} value={group.id}>{group.name}</option>
+                  }) }
+                </Select>
+              </span>
+            </div>
+            
             {fields.map((field) => {
               return (
                 <div style={fieldStyles} key={field}>

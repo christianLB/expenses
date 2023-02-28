@@ -7,8 +7,9 @@ import NewExpense from "../components/NewExpense.tsx";
 
 export default function Home() {
   const { expenses, categoryGroupExpenses, loading, createExpenseHandler, creatingExpense } = useExpense();
+  
   //const [selectedExpense, setSelected] = useState(null);
-  const categoryNames = Object.keys(categoryGroupExpenses);
+  //const categoryNames = Object.keys(categoryGroupExpenses);
     
   return (
     <div className={styles.container}>
