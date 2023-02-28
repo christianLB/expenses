@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { Select } from "@chakra-ui/react";
-import useExpenseCategory from "../hooks/useExpenseCategory.ts";
-import useExpenseGroup from "../hooks/useExpenseGroup.ts";
+import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
+import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
 import { parseTransactionInfo, extractTransactions } from "../utils.ts";
+import useSelect from "../hooks/useSelect.tsx";
 interface TransactionInfo {
   date?: Date;
   type?: string;
@@ -30,8 +31,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const { expenseCategories, loading: loadingCategories } =
     useExpenseCategory();
   const { expenseGroups, loading: loadingGroups } = useExpenseGroup();
-  const [selectedCategory, setSelectedCategory] = useState();
-  const [selectedGroup, setSelectedGroup] = useState();
+  const { selected: selectedCategory, SelectComponent: CategoriesSelect } = useSelect({ options: expenseCategories })
+  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({options: expenseCategories})
 
   const handleChange = (e: any) => {
     setText(e.target.value);
@@ -112,38 +113,14 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <div style={fieldStyles}>
               <span>Category:</span>
               <span>
-                <Select
-                  placeholder="Select option"
-                  size="xs"
-                  onChange={(e: any) => setSelectedCategory(e.target.value)}
-                >
-                  {expenseCategories.map((category) => {
-                    return (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    );
-                  })}
-                </Select>
+                {CategoriesSelect}
               </span>
             </div>
 
             <div style={fieldStyles}>
               <span>Group:</span>
               <span>
-                <Select
-                  placeholder="Select option"
-                  size="xs"
-                  onChange={(e: any) => setSelectedGroup(e.target.value)}
-                >
-                  {expenseGroups.map((group) => {
-                    return (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
-                    );
-                  })}
-                </Select>
+                {GroupsSelect}
               </span>
             </div>
 
@@ -164,12 +141,25 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
-
-      {extract?.map((transaction: any, i) => {
-        return <div key={i}>{transaction.transactionDate}</div>;
-      })}
+      <div className={'flex flex-column'}>
+        {extract?.map((transaction: any, i) => {
+          return <TransactionCard key={i} transaction={transaction.transactionDate} expenseCategories={expenseCategories} expenseGroups={expenseGroups} />;
+        })}
+      </div>
     </div>
   );
 };
+
+const TransactionCard = ({transaction, expenseCategories, expenseGroups}) => {
+  const { selected: selectedCategory, SelectComponent: CategorySelect } = useSelect({options: expenseCategories})
+  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({options: expenseGroups})
+  return <Card>
+    <CardBody>
+    {CategorySelect}
+    {GroupsSelect}
+
+    </CardBody>
+  </Card>
+}
 
 export default NewExpense;
