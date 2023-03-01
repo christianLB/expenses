@@ -162,7 +162,7 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
     options: expenseGroups,
   });
-  console.log(transaction, "transaction");
+
   return (
     <Card style={{ marginTop: "10px" }}>
       <CardBody>
