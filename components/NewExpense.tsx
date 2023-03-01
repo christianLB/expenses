@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
 import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
 import { parseTransactionInfo, extractTransactions } from "../utils.ts";
@@ -31,8 +31,11 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const { expenseCategories, loading: loadingCategories } =
     useExpenseCategory();
   const { expenseGroups, loading: loadingGroups } = useExpenseGroup();
-  const { selected: selectedCategory, SelectComponent: CategoriesSelect } = useSelect({ options: expenseCategories })
-  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({options: expenseCategories})
+  const { selected: selectedCategory, SelectComponent: CategoriesSelect } =
+    useSelect({ options: expenseCategories });
+  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
+    options: expenseCategories,
+  });
 
   const handleChange = (e: any) => {
     setText(e.target.value);
@@ -112,16 +115,12 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           <>
             <div style={fieldStyles}>
               <span>Category:</span>
-              <span>
-                {CategoriesSelect}
-              </span>
+              <span>{CategoriesSelect}</span>
             </div>
 
             <div style={fieldStyles}>
               <span>Group:</span>
-              <span>
-                {GroupsSelect}
-              </span>
+              <span>{GroupsSelect}</span>
             </div>
 
             {fields.map((field) => {
@@ -141,25 +140,41 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
-      <div className={'flex flex-column'}>
+      <div className={"flex flex-col"}>
         {extract?.map((transaction: any, i) => {
-          return <TransactionCard key={i} transaction={transaction.transactionDate} expenseCategories={expenseCategories} expenseGroups={expenseGroups} />;
+          return (
+            <TransactionCard
+              key={i}
+              transaction={transaction}
+              expenseCategories={expenseCategories}
+              expenseGroups={expenseGroups}
+            />
+          );
         })}
       </div>
     </div>
   );
 };
 
-const TransactionCard = ({transaction, expenseCategories, expenseGroups}) => {
-  const { selected: selectedCategory, SelectComponent: CategorySelect } = useSelect({options: expenseCategories})
-  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({options: expenseGroups})
-  return <Card>
-    <CardBody>
-    {CategorySelect}
-    {GroupsSelect}
-
-    </CardBody>
-  </Card>
-}
+const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
+  const { selected: selectedCategory, SelectComponent: CategorySelect } =
+    useSelect({ options: expenseCategories });
+  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
+    options: expenseGroups,
+  });
+  console.log(transaction, "transaction");
+  return (
+    <Card style={{ marginTop: "10px" }}>
+      <CardBody>
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr 1fr" }}>
+          <span>{transaction.description}</span>
+          <span>{transaction.amount}</span>
+          <span>{CategorySelect}</span>
+          <span>{GroupsSelect}</span>
+        </div>
+      </CardBody>
+    </Card>
+  );
+};
 
 export default NewExpense;
