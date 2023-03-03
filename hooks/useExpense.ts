@@ -12,8 +12,8 @@ interface IExpenseGroup {
   updated_at: string;
 }
 interface IExpense {
-  Date: string;
-  Name: string;
+  date: string;
+  name: string;
   amount: number;
   created_at: string;
   desc: string | null;
@@ -37,19 +37,22 @@ interface IExpense {
 
 const useExpense = () => {
   const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
+
   const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
+  //expenses
   const { arrayData: expenses, loading } = useApi(
-    "http://10.0.0.4:1337/expenses",
+    "http://10.0.0.4:3020/api/expenses?depth=1&limit=1000",
     {
       fetchOnInit: true,
+      //Entitykey: "docs",
     }
   );
 
   const { request: createExpenseHandler, loading: creatingExpense } = useApi(
     "http://10.0.0.4:1337/expenses",
     {
-      method: 'POST'
+      method: "POST",
     }
   );
 
@@ -93,10 +96,13 @@ const useExpense = () => {
     ];
     result["Income"] = { totals: _tocalIncomePerMonth };
     _.forEach(expenses, (expense) => {
+      console.log(expense);
       const month = monthNames.indexOf(
-        new Date(expense.Date).toLocaleString("en-us", { month: "short" })
+        new Date(expense.date).toLocaleString("en-us", { month: "short" })
       );
-      const category = expense.expense_category ? expense.expense_category.name : 'Uncategorized';
+      const category = expense.expense_category
+        ? expense.expense_category.name
+        : "Uncategorized";
       const group = expense.expense_group
         ? expense.expense_group.name
         : "no group";
@@ -140,7 +146,7 @@ const useExpense = () => {
   }
 
   useEffect(() => {
-    setCategoryGroupExpenses(getTotalsByCategoryAndGroup(expenses));
+    setCategoryGroupExpenses(getTotalsByCategoryAndGroup(expenses[0]));
   }, [expenses, incomes]);
 
   return {
@@ -148,7 +154,7 @@ const useExpense = () => {
     loading: loading || loadingIncomes,
     creatingExpense,
     categoryGroupExpenses,
-    createExpenseHandler
+    createExpenseHandler,
   };
 };
 
