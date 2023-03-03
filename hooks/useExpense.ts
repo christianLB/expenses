@@ -50,7 +50,7 @@ const useExpense = () => {
   );
 
   const { request: createExpenseHandler, loading: creatingExpense } = useApi(
-    "http://10.0.0.4:1337/expenses",
+    "http://10.0.0.4:3020/api/expenses",
     {
       method: "POST",
     }

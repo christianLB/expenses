@@ -34,7 +34,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const { selected: selectedCategory, SelectComponent: CategoriesSelect } =
     useSelect({ options: expenseCategories });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
-    options: expenseCategories,
+    options: expenseGroups,
   });
 
   const handleChange = (e: any) => {
@@ -51,11 +51,11 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   useEffect(() => {
     if (selectedCategory)
       setTransaction((transaction) => {
-        return { ...transaction, expense_category: { id: selectedCategory } };
+        return { ...transaction, category: selectedCategory };
       });
     if (selectedGroup)
       setTransaction((transaction) => {
-        return { ...transaction, expense_group: { id: selectedGroup } };
+        return { ...transaction, group: selectedGroup  };
       });
   }, [selectedCategory, selectedGroup]);
 
