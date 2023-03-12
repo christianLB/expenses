@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default async function handler(req, res) {
 
-  const api = require('qbittorrent-api-v2')
+  const api = require('../../utils/qbt.js')
 
   api.connect('http://10.0.0.4:9865', 'admin', '!Bt3,14159265@')
     .then(qbt => {
