@@ -17,7 +17,7 @@ const Torrents = () => {
   };
   const textAreaStyles = {
     border: "1px solid gray",
-    height: "50px",
+    height: "31px",
     width: "50%",
     fontSize: "0.8rem",
     paddingLeft: "20px",
@@ -31,16 +31,25 @@ const Torrents = () => {
   };
 
   const buttonStyles =
-    "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
+    "ml-2 bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
 
   const [torrents, setTorrents] = useState([])
   const [link, setLink] = useState('')
   const [linkmusica, setLinkmusica] = useState('')
+  const [linktvshows, setLinkTvShows] = useState('')
 
-  const addLink = async () => {
-    const savepath = !!link ? '/downloads' : !!linkmusica ? '/musica' : '';
+  const addLink = async (type) => {
+    const config = {
+      "movies": [link, '/downloads'],
+      "musica": [linkmusica, "/musica"],
+      "tvshows": [linktvshows, "/tvshows"]
+    }
+    
+    const urls = config[type][0]
+    const savepath = config[type][1];
+
     if (savepath) {
-      const resp = await axios.post('/api/addtorrent', {urls: !!link ? link : !!linkmusica ? linkmusica : '', savepath: savepath}, {
+      const resp = await axios.post('/api/addtorrent', {urls: urls, savepath: savepath}, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -49,6 +58,7 @@ const Torrents = () => {
         getList()
         setLink('')
         setLinkmusica('')
+        setLinkTvShows('')
        }   
     }
   }
@@ -68,24 +78,36 @@ const Torrents = () => {
 
   const movies = torrents.filter(torrent => torrent.save_path === '/downloads')
   const musica = torrents.filter(torrent => torrent.save_path === '/musica')
+  const tvshows = torrents.filter(torrent => torrent.save_path === '/tvshows')
 
 return (
-     <Card style={{ marginTop: "10px" }}>
-       <CardBody>
-        <input value={link} placeholder={'movie'} onChange={e => setLink(e.target.value) } name={'link'} style={textAreaStyles} />
-        <input  value={linkmusica} placeholder={'musica'} onChange={e => setLinkmusica(e.target.value) } name={'linkmusica'} style={textAreaStyles} />
-        <button className={`mt-5 ${buttonStyles}`} onClick={addLink}>add</button>
+     <Card style={{ marginTop: "10px" }} fontSize={'3xs'}>
+    <CardBody>
+      <div className={'flex-col'}>
+        <div><input value={link} placeholder={'movie'} onChange={e => setLink(e.target.value) } name={'link'} style={textAreaStyles} /><button className={`mt-5 ${buttonStyles}`} onClick={() => addLink('movies')}>add</button></div>
+        <div><input  value={linkmusica} placeholder={'musica'} onChange={e => setLinkmusica(e.target.value) } name={'linkmusica'} style={textAreaStyles} /><button className={`mt-5 ${buttonStyles}`} onClick={() => addLink('musica')}>add</button></div>
+        <div><input  value={linktvshows} placeholder={'tv shows'} onChange={e => setLinkTvShows(e.target.value) } name={'linktvshows'} style={textAreaStyles} /><button className={`mt-5 ${buttonStyles}`} onClick={() => addLink('tvshows')}>add</button></div>
+      </div>
       </CardBody>
-      <CardFooter>
-        <div className={'flex flex-col'}>
+      <CardFooter className={'justify-evenly'}>
+      <div className={'flex flex-col w-full'}>
+        <span style={{backgroundColor: '#d2d2d2'}}>Movies:</span>
         {movies.map(torrent => {
             return <div key={torrent.name} style={fieldStyles}>{torrent.name}</div>
           })}
         
       </div>
-      <div className={ 'flex flex-col'}>
+      <div className={ 'flex flex-col w-full'}>
+        <span style={{backgroundColor: '#d2d2d2'}}>Music:</span>
         {musica.map(torrent => {
-          return <div className={'pl-10'} key={torrent.name} style={fieldStyles}>{torrent.name}</div>
+          return <div key={torrent.name} style={fieldStyles}>{torrent.name}</div>
+          })}
+        
+      </div>
+      <div className={'flex flex-col w-full'}>
+        <span style={{backgroundColor: '#d2d2d2'}}>TV Shows:</span>
+        {tvshows.map(torrent => {
+          return <div key={torrent.name} style={fieldStyles}>{torrent.name}</div>
           })}
         
         </div>
