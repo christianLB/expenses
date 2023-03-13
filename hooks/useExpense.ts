@@ -40,9 +40,11 @@ const useExpense = () => {
 
   const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
+  const baseUrl = "https://cms.anaxi.net/api";
+  const localUrl = "http://10.0.0.4:3020/api";
   //expenses
   const { arrayData: expenses, loading } = useApi(
-    "http://10.0.0.4:3020/api/expenses?depth=1&limit=1000",
+    `${baseUrl}/expenses?depth=1&limit=1000"`,
     {
       fetchOnInit: true,
       //Entitykey: "docs",
@@ -50,7 +52,7 @@ const useExpense = () => {
   );
 
   const { request: createExpenseHandler, loading: creatingExpense } = useApi(
-    "http://10.0.0.4:3020/api/expenses",
+    `${baseUrl}/api/expenses`,
     {
       method: "POST",
     }
