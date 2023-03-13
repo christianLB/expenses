@@ -103,9 +103,9 @@ const Torrents = () => {
   );
 
   return (
-    <Card style={{ marginTop: "10px" }} fontSize={"2xs"}>
+    <Card style={{ marginTop: "10px" }} w="100%" fontSize={"2xs"}>
       <CardBody>
-        <div className={"flex-col"}>
+        <div className={"flex-col w-full pb-2"}>
           <div>
             <input
               value={link}
@@ -152,35 +152,37 @@ const Torrents = () => {
             </button>
           </div>
         </div>
-        <div className={"flex flex-col w-full"}>
-          <span style={{ backgroundColor: "#d2d2d2" }}>Movies:</span>
-          {movies.map((torrent) => {
-            return (
-              <div key={torrent.name} style={fieldStyles}>
-                {torrent.name}
-              </div>
-            );
-          })}
-        </div>
-        <div className={"flex flex-col w-full"}>
-          <span style={{ backgroundColor: "#d2d2d2" }}>Music:</span>
-          {musica.map((torrent) => {
-            return (
-              <div key={torrent.name} style={fieldStyles}>
-                {torrent.name}
-              </div>
-            );
-          })}
-        </div>
-        <div className={"flex flex-col w-full"}>
-          <span style={{ backgroundColor: "#d2d2d2" }}>TV Shows:</span>
-          {tvshows.map((torrent) => {
-            return (
-              <div key={torrent.name} style={fieldStyles}>
-                {torrent.name}
-              </div>
-            );
-          })}
+        <div className={"flex flex-row"}>
+          <div className={"flex flex-col w-full"}>
+            <span style={{ backgroundColor: "#d2d2d2" }}>Movies:</span>
+            {movies.map((torrent) => {
+              return (
+                <div key={torrent.name} style={fieldStyles}>
+                  {torrent.name}
+                </div>
+              );
+            })}
+          </div>
+          <div className={"flex flex-col w-full"}>
+            <span style={{ backgroundColor: "#d2d2d2" }}>Music:</span>
+            {musica.map((torrent) => {
+              return (
+                <div key={torrent.name} style={fieldStyles}>
+                  {torrent.name}
+                </div>
+              );
+            })}
+          </div>
+          <div className={"flex flex-col w-full"}>
+            <span style={{ backgroundColor: "#d2d2d2" }}>TV Shows:</span>
+            {tvshows.map((torrent) => {
+              return (
+                <div key={torrent.name} style={fieldStyles}>
+                  {torrent.name}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </CardBody>
       <CardFooter className={"justify-evenly"}></CardFooter>
