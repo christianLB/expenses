@@ -24,6 +24,49 @@ interface TransactionInfo {
   notes?: string;
 }
 
+
+  const containerStyles = {
+    display: "flex",
+    width: "100%",
+    justifyContent: "space-between",
+    flexDirection: 'column',
+    marginBottom: "20px",
+    fontSize: "0.8rem",
+  };
+  const textAreaStyles = {
+    border: "1px solid gray",
+    height: "130px",
+    width: "100%",
+    fontSize: "0.8rem",
+    paddingLeft: "20px",
+  };
+
+  const resultPaneStyle = {
+    paddingLeft: "20px",
+    display: "flex",
+    flexDirection: "column",
+  };
+
+  const fieldStyles = {
+    borderBottom: "1px solid gray",
+    marginBottom: "5px",
+    display: "flex",
+    justifyContent: "space-between",
+  };
+
+  const buttonStyles =
+    "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
+
+  const formStyles = "flex flex-col space-y-4 border p-5 rounded";
+  const inputContainerStyles = "flex flex-col space-y-2";
+  const labelStyles = "text-sm font-medium";
+  const inputStyles = "form-input rounded-md shadow-sm";
+  const selectStyles = "form-select rounded-md shadow-sm";
+  const textareaStyles = "form-textarea rounded-md shadow-sm";
+  //const containerStyles = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 b-1-gray";
+  const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
+  const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
+
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({});
@@ -61,46 +104,6 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
   const fields = Object.keys(transaction);
 
-  const containerStyles = {
-    display: "flex",
-    width: "100%",
-    justifyContent: "space-between",
-    marginBottom: "20px",
-    fontSize: "0.8rem",
-  };
-  const textAreaStyles = {
-    border: "1px solid gray",
-    height: "250px",
-    width: "50%",
-    fontSize: "0.8rem",
-    paddingLeft: "20px",
-  };
-
-  const resultPaneStyle = {
-    paddingLeft: "20px",
-    display: "flex",
-    flexDirection: "column",
-  };
-
-  const fieldStyles = {
-    borderBottom: "1px solid gray",
-    marginBottom: "5px",
-    display: "flex",
-    justifyContent: "space-between",
-  };
-
-  const buttonStyles =
-    "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
-
-  const formStyles = "flex flex-col space-y-4 border p-5 rounded";
-  const inputContainerStyles = "flex flex-col space-y-2";
-  const labelStyles = "text-sm font-medium";
-  const inputStyles = "form-input rounded-md shadow-sm";
-  const selectStyles = "form-select rounded-md shadow-sm";
-  const textareaStyles = "form-textarea rounded-md shadow-sm";
-  //const containerStyles = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 b-1-gray";
-  const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
-  const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
   return (
     <div style={containerStyles}>
@@ -140,7 +143,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
-      <div className={"flex flex-col"}>
+      <div className={"grid mt-5"} style={{gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '5px', gridAutoRows: '300px'}}>
         {extract?.map((transaction: any, i) => {
           return (
             <TransactionCard
@@ -158,19 +161,20 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
 const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
   const { selected: selectedCategory, SelectComponent: CategorySelect } =
-    useSelect({ options: expenseCategories });
+    useSelect({ options: expenseCategories, placeHolder: 'category' });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
-    options: expenseGroups,
+    options: expenseGroups, placeHolder: 'group'
   });
 
   return (
-    <Card style={{ marginTop: "10px" }}>
+    <Card style={{ marginTop: "5px" }}>
       <CardBody>
-        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr 1fr" }}>
+        <div className={'text-xs'} style={{ display: "grid", gridTemplateRows: "150px 20px 30px 30px 33px" }}>
           <span>{transaction.description}</span>
-          <span>{transaction.amount}</span>
+          <div className={'flex flex-row justify-between'}><span>{transaction.amount}</span><span>EUR</span></div>
           <span>{CategorySelect}</span>
           <span>{GroupsSelect}</span>
+          <button className={buttonStyles}>Add</button>
         </div>
       </CardBody>
     </Card>

@@ -1,5 +1,5 @@
 export function parseTransactionInfo(text: string): any | null {
-  const fields = text.split("\n").map((line) => line.trim());
+  const fields = text.split("||").map((line) => line.trim());
 
   const matchType = fields[0].match(/^Tipo de movimiento\s+(.+)/);
   const type = matchType ? matchType[1] : "";
