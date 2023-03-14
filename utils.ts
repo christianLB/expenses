@@ -69,6 +69,33 @@ export function parseTransactionInfo(text: string): any | null {
   };
 }
 
+export const parseTransactionList = (text: string) => {
+  const list = text.split("||");
+
+  return list.map((transaction) => {
+    const fields = transaction.trim().split(" ");
+    const currency = fields.pop();
+    const balance = fields.pop();
+    const amount = fields.pop();
+    const date = fields.shift();
+    const valueDate = fields.shift();
+    const name = fields.join(" ");
+
+    return {
+      //type: type,
+      name,
+      amount, //: Math.abs(Number(amount)),
+      currency,
+      date: date,
+      valueDate,
+      balance,
+      //account: account,
+      //Account_holder: accountHolder,
+      //notes: notes,
+    };
+  });
+};
+
 export const formatDate = (date: string) => {
   //const dateString = '20/02/2023';
   const [day, month, year] = date.split("/");

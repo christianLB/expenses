@@ -98,7 +98,7 @@ const useExpense = () => {
     ];
     result["Income"] = { totals: _tocalIncomePerMonth };
     _.forEach(expenses, (expense) => {
-      console.log(expense);
+      //console.log(expense);
       const month = monthNames.indexOf(
         new Date(expense.date).toLocaleString("en-us", { month: "short" })
       );
