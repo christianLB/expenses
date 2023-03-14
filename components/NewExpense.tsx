@@ -160,6 +160,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
               transaction={transaction}
               expenseCategories={expenseCategories}
               expenseGroups={expenseGroups}
+              index={i}
             />
           );
         })}
@@ -168,7 +169,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   );
 };
 
-const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
+const TransactionCard = ({ transaction, expenseCategories, expenseGroups, index }) => {
   const { selected: selectedCategory, SelectComponent: CategorySelect } =
     useSelect({ options: expenseCategories, placeHolder: "category" });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
@@ -180,6 +181,7 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
 
   return (
     <Card style={{ marginTop: "5px" }}>
+      <span className={'flex justify-end mr-2 text-gray-400'}>{index}</span>
       <CardBody>
         <div
           className={"text-xs"}
@@ -187,7 +189,8 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
             display: "grid",
             gridTemplateRows: "100px 20px 30px 30px 30px 33px",
           }}
-        >
+          >
+            
           <span>{transaction.name}</span>
           <div className={"flex flex-row justify-between border-b"}>
             <span>{transaction.amount}</span>
@@ -200,7 +203,7 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups }) => {
           <span>{CategorySelect}</span>
           <span>{GroupsSelect}</span>
           <button className={buttonStyles} onClick={add}>
-            Add
+            Add 
           </button>
         </div>
       </CardBody>
