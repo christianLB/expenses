@@ -76,6 +76,7 @@ const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const [text, setText] = useState("");
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [transaction, setTransaction] = useState<TransactionInfo>({});
   const [extract, setExtract] = useState([]);
   const { expenseCategories, loading: loadingCategories } =
@@ -118,7 +119,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         value={text}
         onChange={handleChange}
       ></textarea>
-
+      <input type='text' value={selectedYear} onChange={(e: any) => setSelectedYear(e.target.value) }/>
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
@@ -162,10 +163,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <TransactionCard
               key={i}
               parsedTransaction={transaction}
-              //expenseCategories={expenseCategories}
-              //expenseGroups={expenseGroups}
               index={i}
-              //onCreate={onCreate}
+              year={selectedYear}
             />
           );
         })}
@@ -176,10 +175,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
 const TransactionCard = ({
   parsedTransaction,
-  //expenseCategories,
-  //expenseGroups,
   index,
-  //onCreate,
+  year
 }) => {
   const {
     createExpenseHandler,
@@ -209,8 +206,8 @@ const TransactionCard = ({
     const { doc: newExpense } = await createExpenseHandler({
       body: {
         ...transaction,
-        date: formatDate(transaction.date),
-        valueDate: formatDate(transaction.valueDate),
+        date: formatDate(`${transaction.date}/${year}`),
+        valueDate: formatDate(`${transaction.valueDate}/${year}`),
         amount: Math.abs(
           parseFloat(transaction.amount.replace(".", "").replace(",", "."))
         ),

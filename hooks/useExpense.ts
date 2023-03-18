@@ -39,7 +39,6 @@ import getConfig from "next/config";
 
 const useExpense = ({ fetchOnInit = true } = {}) => {
   const { publicRuntimeConfig } = getConfig();
-  const { isLocalhost } = publicRuntimeConfig;
   const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
   const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
@@ -53,7 +52,7 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     request: fetchExpenses,
     arrayData: expenses,
     loading,
-  } = useApi(`${baseUrl}/expenses?depth=1&limit=1000"`, {
+  } = useApi(`${baseUrl}/expenses?depth=1&limit=0`, {
     fetchOnInit: fetchOnInit,
     //Entitykey: "docs",
   });
