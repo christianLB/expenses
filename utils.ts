@@ -71,29 +71,24 @@ export function parseTransactionInfo(text: string): any | null {
 
 export const parseTransactionList = (text: string) => {
   const list = text.split("||");
+  const parsedlist: any[] = [];
 
-  return list.map((transaction) => {
-    const fields = transaction.trim().split(" ");
-    const currency = fields.pop();
-    const balance = fields.pop();
-    const amount = fields.pop();
-    const date = fields.shift();
-    const valueDate = fields.shift();
-    const name = fields.join(" ");
+  list.forEach((transaction) => {
+    if (transaction) {
+      const fields = transaction.trim().split(" ");
+      const parsed = {
+        currency: fields.pop(),
+        balance: fields.pop(),
+        amount: fields.pop(),
+        date: fields.shift(),
+        valueDate: fields.shift(),
+        name: fields.join(" "),
+      };
 
-    return {
-      //type: type,
-      name,
-      amount, //: Math.abs(Number(amount)),
-      currency,
-      date: date,
-      valueDate,
-      balance,
-      //account: account,
-      //Account_holder: accountHolder,
-      //notes: notes,
-    };
+      parsedlist.push(parsed);
+    }
   });
+  return parsedlist;
 };
 
 export const formatDate = (date: string) => {

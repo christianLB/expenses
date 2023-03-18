@@ -83,6 +83,7 @@ function useApi(
     urlParams: IUrlParams | IUrlParams[] = [],
     requestBody = body
   ) => {
+    setLoading(true);
     setResponse(null);
     if (clearOnStart) {
       setError({});
@@ -101,15 +102,17 @@ function useApi(
 
       return fetch(_url, {
         method,
-        ...(method.toLocaleLowerCase() === 'post' ? {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(param.body || requestBody),
-        } : {}),
+        ...(method.toLocaleLowerCase() === "post"
+          ? {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(param.body || requestBody),
+            }
+          : {}),
       });
     });
-    await Promise.all(requests)
+    return await Promise.all(requests)
       .then(async (res) => {
         const result = [...res].length === 1 ? await res[0].json() : res;
 
@@ -119,6 +122,7 @@ function useApi(
           ...result,
         }));
         onSuccess(result);
+        return result;
       })
       .catch((error) => {
         setError((prevError) => ({ ...prevError, error }));

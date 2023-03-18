@@ -7,8 +7,11 @@ import {
   parseTransactionInfo,
   extractTransactions,
   parseTransactionList,
+  formatDate,
 } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
+import useExpense from "../hooks/useExpense.ts";
+
 interface TransactionInfo {
   date?: Date;
   type?: string;
@@ -157,10 +160,11 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           return (
             <TransactionCard
               key={i}
-              transaction={transaction}
+              parsedTransaction={transaction}
               expenseCategories={expenseCategories}
               expenseGroups={expenseGroups}
               index={i}
+              onCreate={onCreate}
             />
           );
         })}
@@ -169,7 +173,13 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   );
 };
 
-const TransactionCard = ({ transaction, expenseCategories, expenseGroups, index }) => {
+const TransactionCard = ({
+  parsedTransaction,
+  expenseCategories,
+  expenseGroups,
+  index,
+  onCreate,
+}) => {
   const { selected: selectedCategory, SelectComponent: CategorySelect } =
     useSelect({ options: expenseCategories, placeHolder: "category" });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
@@ -177,11 +187,67 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups, index 
     placeHolder: "group",
   });
 
-  const add = () => {};
+  const [transaction, setTransaction] = useState({ id: "" });
+  const transactionId = transaction.id;
+
+  useEffect(() => {
+    if (parsedTransaction) setTransaction(parsedTransaction);
+  }, [parsedTransaction]);
+
+  const {
+    createExpenseHandler,
+    creatingExpense,
+    deleteExpenseHandler,
+    deletingExpense,
+  } = useExpense({
+    fetchOnInit: false,
+  });
+
+  const addExpense = async () => {
+    const { doc: newExpense } = await createExpenseHandler({
+      body: {
+        ...transaction,
+        date: formatDate(transaction.date),
+        valueDate: formatDate(transaction.valueDate),
+        amount: Math.abs(
+          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+        ),
+        balance: parseFloat(
+          transaction.balance.replace(".", "").replace(",", ".")
+        ),
+        category: selectedCategory,
+        group: selectedGroup,
+      },
+    });
+
+    if (newExpense) {
+      setTransaction(newExpense);
+      onCreate();
+    }
+  };
+
+  const deleteExpense = async () => {
+    const deletedTransaction = await deleteExpenseHandler({
+      id: transactionId,
+    });
+    if (deletedTransaction?.id === transactionId) {
+      setTransaction(parsedTransaction); //back to original
+      onCreate();
+    }
+  };
+
+  const buttonAction = transactionId ? deleteExpense : addExpense;
 
   return (
     <Card style={{ marginTop: "5px" }}>
-      <span className={'flex justify-end mr-2 text-gray-400'}>{index}</span>
+      <span className={"flex justify-between mr-2 text-gray-400"}>
+        {
+          <span className={"ml-2"}>
+            {(creatingExpense || deletingExpense) && <Spinner />}
+          </span>
+        }
+        {transactionId ? transactionId : ++index}
+      </span>
       <CardBody>
         <div
           className={"text-xs"}
@@ -189,8 +255,7 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups, index 
             display: "grid",
             gridTemplateRows: "100px 20px 30px 30px 30px 33px",
           }}
-          >
-            
+        >
           <span>{transaction.name}</span>
           <div className={"flex flex-row justify-between border-b"}>
             <span>{transaction.amount}</span>
@@ -202,8 +267,14 @@ const TransactionCard = ({ transaction, expenseCategories, expenseGroups, index 
           </div>
           <span>{CategorySelect}</span>
           <span>{GroupsSelect}</span>
-          <button className={buttonStyles} onClick={add}>
-            Add 
+          <button
+            disabled={creatingExpense || deletingExpense}
+            className={`${buttonStyles} ${
+              transactionId ? "bg-red-200" : ""
+            }`.trim()}
+            onClick={buttonAction}
+          >
+            {transactionId ? "Delete" : "Add"}
           </button>
         </div>
       </CardBody>

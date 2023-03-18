@@ -14,6 +14,7 @@ export default function Expenses() {
     loading,
     createExpenseHandler,
     creatingExpense,
+    fetchExpenses,
   } = useExpense();
 
   return (
@@ -32,10 +33,7 @@ export default function Expenses() {
         )}
         {!loading && (
           <>
-            <NewExpense
-              onCreate={createExpenseHandler}
-              loading={creatingExpense}
-            />
+            <NewExpense onCreate={fetchExpenses} loading={creatingExpense} />
             <ExpenseTable expensesResult={categoryGroupExpenses} />
           </>
         )}

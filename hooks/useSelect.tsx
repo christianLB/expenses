@@ -1,19 +1,16 @@
 import { Select } from "@chakra-ui/react";
 import { useState } from "react";
 
-const useSelect = ({ 
-  options = [],
-  placeHolder = 'Select option'
-}) => {
+const useSelect = ({ options = [], placeHolder = "Select option" }) => {
   const [selected, setSelected] = useState();
-  
+  console.log(options);
   const SelectComponent = (
     <Select
       placeholder={placeHolder}
       size="xs"
       onChange={(e: any) => setSelected(e.target.value)}
     >
-      {options?.map(option => {
+      {options?.map((option) => {
         return (
           <option key={option.id} value={option.id}>
             {option.name}
@@ -22,7 +19,7 @@ const useSelect = ({
       })}
     </Select>
   );
-  
+
   return {
     selected,
     SelectComponent,

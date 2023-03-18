@@ -35,28 +35,47 @@ interface IExpense {
   updated_at: string;
 }
 
-const useExpense = () => {
-  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
+import getConfig from "next/config";
 
+const useExpense = ({ fetchOnInit = true } = {}) => {
+  const { publicRuntimeConfig } = getConfig();
+  const { isLocalhost } = publicRuntimeConfig;
+  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
   const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
-  const baseUrl = "https://cms.anaxi.net/api";
+  const prodUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://10.0.0.4:3020/api";
-  //expenses
-  const { arrayData: expenses, loading } = useApi(
-    `${baseUrl}/expenses?depth=1&limit=1000"`,
-    {
-      fetchOnInit: true,
-      //Entitykey: "docs",
-    }
-  );
 
-  const { request: createExpenseHandler, loading: creatingExpense } = useApi(
-    `${baseUrl}/api/expenses`,
-    {
-      method: "POST",
-    }
-  );
+  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
+
+  //expenses
+  const {
+    request: fetchExpenses,
+    arrayData: expenses,
+    loading,
+  } = useApi(`${baseUrl}/expenses?depth=1&limit=1000"`, {
+    fetchOnInit: fetchOnInit,
+    //Entitykey: "docs",
+  });
+  //create expense
+  const {
+    data: newExpense,
+    request: createExpenseHandler,
+    loading: creatingExpense,
+  } = useApi(`${baseUrl}/expenses`, {
+    method: "POST",
+    onFinish: fetchExpenses,
+  });
+
+  //delete expense
+  const {
+    data: deletedExpense,
+    request: deleteExpenseHandler,
+    loading: deletingExpense,
+  } = useApi(`${baseUrl}/expenses/:id`, {
+    method: "DELETE",
+    onFinish: fetchExpenses,
+  });
 
   function groupExpensesByCategory(expenses: IExpense[]): {
     [key: string]: IExpense[];
@@ -157,6 +176,10 @@ const useExpense = () => {
     creatingExpense,
     categoryGroupExpenses,
     createExpenseHandler,
+    deleteExpenseHandler,
+    deletingExpense,
+    deletedExpense,
+    newExpense: newExpense?.doc,
   };
 };
 

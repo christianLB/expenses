@@ -16,7 +16,6 @@ interface IIncome {
 }
 
 const useIncome = () => {
-
   function calculateTotalIncomePerMonth(invoices: IIncome[]): number[] {
     const totals = Array(12).fill(0); // Initialize an array of 12 zeroes
 
@@ -30,14 +29,13 @@ const useIncome = () => {
     return totals;
   }
 
-
   const { arrayData: incomes, loading } = useApi(
     "http://10.0.0.4:1337/incomes",
     {
-      fetchOnInit: true,
+      fetchOnInit: false,
     }
   );
-  
+
   return {
     incomes,
     totalIncomePerMonth: calculateTotalIncomePerMonth(incomes),
