@@ -4,9 +4,12 @@ const useExpenseGroup = () => {
   const baseUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://10.0.0.4:3020/api";
 
-  const { data: expenseGroups, loading } = useApi(`${baseUrl}/expense-group`, {
-    fetchOnInit: true,
-  });
+  const { data: expenseGroups, loading } = useApi(
+    `${baseUrl}/expense-group?limit=0`,
+    {
+      fetchOnInit: true,
+    }
+  );
 
   const { request: createExpenseHandler, loading: creatingExpense } = useApi(
     `${baseUrl}/expense-group`,

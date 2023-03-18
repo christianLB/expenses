@@ -11,6 +11,7 @@ import {
 } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
 import useExpense from "../hooks/useExpense.ts";
+import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
 interface TransactionInfo {
   date?: Date;
@@ -161,10 +162,10 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <TransactionCard
               key={i}
               parsedTransaction={transaction}
-              expenseCategories={expenseCategories}
-              expenseGroups={expenseGroups}
+              //expenseCategories={expenseCategories}
+              //expenseGroups={expenseGroups}
               index={i}
-              onCreate={onCreate}
+              //onCreate={onCreate}
             />
           );
         })}
@@ -175,11 +176,21 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
 const TransactionCard = ({
   parsedTransaction,
-  expenseCategories,
-  expenseGroups,
+  //expenseCategories,
+  //expenseGroups,
   index,
-  onCreate,
+  //onCreate,
 }) => {
+  const {
+    createExpenseHandler,
+    creatingExpense,
+    deleteExpenseHandler,
+    deletingExpense,
+    expenseCategories,
+    expenseGroups,
+    fetchExpenses,
+  } = useExpensesContext();
+
   const { selected: selectedCategory, SelectComponent: CategorySelect } =
     useSelect({ options: expenseCategories, placeHolder: "category" });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
@@ -193,15 +204,6 @@ const TransactionCard = ({
   useEffect(() => {
     if (parsedTransaction) setTransaction(parsedTransaction);
   }, [parsedTransaction]);
-
-  const {
-    createExpenseHandler,
-    creatingExpense,
-    deleteExpenseHandler,
-    deletingExpense,
-  } = useExpense({
-    fetchOnInit: false,
-  });
 
   const addExpense = async () => {
     const { doc: newExpense } = await createExpenseHandler({
@@ -222,7 +224,7 @@ const TransactionCard = ({
 
     if (newExpense) {
       setTransaction(newExpense);
-      onCreate();
+      fetchExpenses();
     }
   };
 
@@ -232,7 +234,7 @@ const TransactionCard = ({
     });
     if (deletedTransaction?.id === transactionId) {
       setTransaction(parsedTransaction); //back to original
-      onCreate();
+      fetchExpenses();
     }
   };
 
@@ -257,6 +259,10 @@ const TransactionCard = ({
           }}
         >
           <span>{transaction.name}</span>
+          <div className={"flex flex-row justify-between border-b"}>
+            <span>{transaction.date}</span>
+            <span>{transaction.valueDate}</span>
+          </div>
           <div className={"flex flex-row justify-between border-b"}>
             <span>{transaction.amount}</span>
             <span>{transaction.currency}</span>

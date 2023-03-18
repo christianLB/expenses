@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Table, IconButton, Box, Collapse } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import * as _ from "lodash";
+import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
 const monthNames = [
   "Jan",
@@ -40,7 +41,8 @@ const colors = [
   "#E6F1F1",
 ];
 
-const ExpenseTable = ({ expensesResult }) => {
+const ExpenseTable = () => {
+  const { categoryGroupExpenses: expensesResult = {} } = useExpensesContext();
   const [collapsed, setCollapsed] = useState({});
   const _INCOME = "Income";
   const _BALANCE = "Balance";

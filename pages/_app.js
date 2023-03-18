@@ -1,11 +1,14 @@
 import "../styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import { ExpensesProvider } from "../hooks/expensesContext.tsx";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ChakraProvider>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <ExpensesProvider>
+      <ChakraProvider>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </ExpensesProvider>
   );
 }
 

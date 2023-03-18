@@ -5,7 +5,7 @@ const useExpenseCategory = () => {
   const localUrl = "http://10.0.0.4:3020/api";
 
   const { data: expenseCategories, loading } = useApi(
-    `${baseUrl}/expense-category`,
+    `${baseUrl}/expense-category?limit=0`,
     {
       fetchOnInit: true,
     }

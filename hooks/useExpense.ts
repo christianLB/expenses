@@ -17,7 +17,7 @@ interface IExpense {
   amount: number;
   created_at: string;
   desc: string | null;
-  expense_category: {
+  category: {
     additional_info: string | null;
     client_number: string | null;
     contract_number: string | null;
@@ -29,7 +29,7 @@ interface IExpense {
     published_at: string;
     updated_at: string;
   };
-  expense_group?: IExpenseGroup;
+  group?: IExpenseGroup;
   id: number;
   published_at: string;
   updated_at: string;
@@ -77,20 +77,6 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     onFinish: fetchExpenses,
   });
 
-  function groupExpensesByCategory(expenses: IExpense[]): {
-    [key: string]: IExpense[];
-  } {
-    const groupedExpenses = {};
-    expenses.forEach((expense) => {
-      const category = expense.expense_category.name;
-      if (!groupedExpenses[category]) {
-        groupedExpenses[category] = [];
-      }
-      groupedExpenses[category].push(expense);
-    });
-    return groupedExpenses;
-  }
-
   function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
     const result = {};
     const monthNames = [
@@ -121,12 +107,10 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
       const month = monthNames.indexOf(
         new Date(expense.date).toLocaleString("en-us", { month: "short" })
       );
-      const category = expense.expense_category
-        ? expense.expense_category.name
+      const category = expense.category
+        ? expense.category.name
         : "Uncategorized";
-      const group = expense.expense_group
-        ? expense.expense_group.name
-        : "no group";
+      const group = expense.group ? expense.group.name : "no group";
 
       if (!result[category]) {
         result[category] = {};
@@ -180,6 +164,7 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     deletingExpense,
     deletedExpense,
     newExpense: newExpense?.doc,
+    fetchExpenses,
   };
 };
 

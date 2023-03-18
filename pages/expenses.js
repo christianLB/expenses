@@ -1,22 +1,10 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import useExpense from "../hooks/useExpense.ts";
-import Torrents from "../components/Torrents.tsx";
 import Footer from "../components/Footer.tsx";
-import { Spinner } from "@chakra-ui/react";
 import NewExpense from "../components/NewExpense.tsx";
 import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
 
 export default function Expenses() {
-  const {
-    expenses,
-    categoryGroupExpenses,
-    loading,
-    createExpenseHandler,
-    creatingExpense,
-    fetchExpenses,
-  } = useExpense();
-
   return (
     <div className={styles.container}>
       <Head>
@@ -26,19 +14,9 @@ export default function Expenses() {
       </Head>
 
       <main className={styles.main}>
-        {loading && (
-          <>
-            <Spinner /> Cargando... Espere!
-          </>
-        )}
-        {!loading && (
-          <>
-            <NewExpense onCreate={fetchExpenses} loading={creatingExpense} />
-            <ExpenseTable expensesResult={categoryGroupExpenses} />
-          </>
-        )}
+        <NewExpense />
+        <ExpenseTable />
       </main>
-
       <Footer />
     </div>
   );

@@ -3,7 +3,6 @@ import { useState } from "react";
 
 const useSelect = ({ options = [], placeHolder = "Select option" }) => {
   const [selected, setSelected] = useState();
-  console.log(options);
   const SelectComponent = (
     <Select
       placeholder={placeHolder}
