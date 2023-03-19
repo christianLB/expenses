@@ -35,11 +35,8 @@ interface IExpense {
   updated_at: string;
 }
 
-import getConfig from "next/config";
-
 const useExpense = ({ fetchOnInit = true } = {}) => {
-  const { publicRuntimeConfig } = getConfig();
-  const { incomes, loading: loadingIncomes, totalIncomePerMonth } = useIncome();
+  const { incomes, loading: loadingIncomes, totalIncomePerMonth = [] } = useIncome({fetchOnInit: true});
   const [categoryGroupExpenses, setCategoryGroupExpenses] = useState({});
 
   const prodUrl = "https://cms.anaxi.net/api";
@@ -63,7 +60,7 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     loading: creatingExpense,
   } = useApi(`${baseUrl}/expenses`, {
     method: "POST",
-    onFinish: fetchExpenses,
+    //onFinish: fetchExpenses,
   });
 
   //delete expense
@@ -73,7 +70,7 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     loading: deletingExpense,
   } = useApi(`${baseUrl}/expenses/:id`, {
     method: "DELETE",
-    onFinish: fetchExpenses,
+    //onFinish: fetchExpenses,
   });
 
   function getTotalsByCategoryAndGroup(expenses: IExpense[]) {
@@ -96,11 +93,16 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     // Initialize the sum of all categories
     let allCategoriesSum = Array(13).fill(0);
 
-    const _tocalIncomePerMonth = [
-      ...totalIncomePerMonth,
-      totalIncomePerMonth.reduce((total, item) => total + item),
-    ];
-    result["Income"] = { totals: _tocalIncomePerMonth };
+    if (totalIncomePerMonth.length) {
+      const _tocalIncomePerMonth = [
+        ...totalIncomePerMonth,
+        totalIncomePerMonth.reduce((total, item) => total + item),
+      ];
+      result["Income"] = { totals: _tocalIncomePerMonth };
+    }
+    else {
+      result["Income"] = { totals: 0 };
+    }
     _.forEach(expenses, (expense) => {
       //console.log(expense);
       const month = monthNames.indexOf(

@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
-import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
 import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
 import {
   parseTransactionInfo,
-  extractTransactions,
   parseTransactionList,
-  formatDate,
+  formatDate
 } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
-import useExpense from "../hooks/useExpense.ts";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import TransactionCard from "../components/TransactionCard.tsx"
 
 interface TransactionInfo {
   date?: Date;
@@ -112,6 +109,9 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
   const fields = Object.keys(transaction);
 
+  const incomes = extract.filter(transaction => parseFloat(transaction.amount) > 0)
+  const expenses = extract.filter(transaction => parseFloat(transaction.amount) < 0)
+
   return (
     <div style={containerStyles}>
       <textarea
@@ -119,7 +119,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         value={text}
         onChange={handleChange}
       ></textarea>
-      <input type='text' value={selectedYear} onChange={(e: any) => setSelectedYear(e.target.value) }/>
+      <input type='text' value={selectedYear} onChange={(e: any) => setSelectedYear(e.target.value)} />
+      
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
@@ -150,6 +151,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
+      
+      {incomes.length && <span>Ingresos: {incomes.length}</span>}
       <div
         className={"grid mt-5"}
         style={{
@@ -158,131 +161,41 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           gridAutoRows: "330px",
         }}
       >
-        {extract?.map((transaction: any, i) => {
+        {incomes?.map((transaction: any, i) => {
           return (
             <TransactionCard
               key={i}
               parsedTransaction={transaction}
               index={i}
               year={selectedYear}
-            />
-          );
-        })}
+              />
+              );
+            })}
+      </div>
+      {expenses.length && <span>Gastos: {expenses.length}</span>}
+      <div
+        className={"grid mt-5"}
+        style={{
+          gridTemplateColumns: "1fr 1fr 1fr 1fr",
+          gap: "5px",
+          gridAutoRows: "330px",
+        }}
+      >
+        {expenses?.map((transaction: any, i) => {
+          return (
+            <TransactionCard
+              key={i}
+              parsedTransaction={transaction}
+              index={i}
+              year={selectedYear}
+              />
+              );
+            })}
       </div>
     </div>
   );
 };
 
-const TransactionCard = ({
-  parsedTransaction,
-  index,
-  year
-}) => {
-  const {
-    createExpenseHandler,
-    creatingExpense,
-    deleteExpenseHandler,
-    deletingExpense,
-    expenseCategories,
-    expenseGroups,
-    fetchExpenses,
-  } = useExpensesContext();
 
-  const { selected: selectedCategory, SelectComponent: CategorySelect } =
-    useSelect({ options: expenseCategories, placeHolder: "category" });
-  const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
-    options: expenseGroups,
-    placeHolder: "group",
-  });
-
-  const [transaction, setTransaction] = useState({ id: "" });
-  const transactionId = transaction.id;
-
-  useEffect(() => {
-    if (parsedTransaction) setTransaction(parsedTransaction);
-  }, [parsedTransaction]);
-
-  const addExpense = async () => {
-    const { doc: newExpense } = await createExpenseHandler({
-      body: {
-        ...transaction,
-        date: formatDate(`${transaction.date}/${year}`),
-        valueDate: formatDate(`${transaction.valueDate}/${year}`),
-        amount: Math.abs(
-          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
-        ),
-        balance: parseFloat(
-          transaction.balance.replace(".", "").replace(",", ".")
-        ),
-        category: selectedCategory,
-        group: selectedGroup,
-      },
-    });
-
-    if (newExpense) {
-      setTransaction(newExpense);
-      fetchExpenses();
-    }
-  };
-
-  const deleteExpense = async () => {
-    const deletedTransaction = await deleteExpenseHandler({
-      id: transactionId,
-    });
-    if (deletedTransaction?.id === transactionId) {
-      setTransaction(parsedTransaction); //back to original
-      fetchExpenses();
-    }
-  };
-
-  const buttonAction = transactionId ? deleteExpense : addExpense;
-
-  return (
-    <Card style={{ marginTop: "5px" }}>
-      <span className={"flex justify-between mr-2 text-gray-400"}>
-        {
-          <span className={"ml-2"}>
-            {(creatingExpense || deletingExpense) && <Spinner />}
-          </span>
-        }
-        {transactionId ? transactionId : ++index}
-      </span>
-      <CardBody>
-        <div
-          className={"text-xs"}
-          style={{
-            display: "grid",
-            gridTemplateRows: "100px 20px 30px 30px 30px 33px",
-          }}
-        >
-          <span>{transaction.name}</span>
-          <div className={"flex flex-row justify-between border-b"}>
-            <span>{transaction.date}</span>
-            <span>{transaction.valueDate}</span>
-          </div>
-          <div className={"flex flex-row justify-between border-b"}>
-            <span>{transaction.amount}</span>
-            <span>{transaction.currency}</span>
-          </div>
-          <div className={"flex flex-row justify-between"}>
-            <span>{transaction.balance}</span>
-            <span>{transaction.currency}</span>
-          </div>
-          <span>{CategorySelect}</span>
-          <span>{GroupsSelect}</span>
-          <button
-            disabled={creatingExpense || deletingExpense}
-            className={`${buttonStyles} ${
-              transactionId ? "bg-red-200" : ""
-            }`.trim()}
-            onClick={buttonAction}
-          >
-            {transactionId ? "Delete" : "Add"}
-          </button>
-        </div>
-      </CardBody>
-    </Card>
-  );
-};
 
 export default NewExpense;
