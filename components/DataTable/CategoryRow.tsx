@@ -44,7 +44,9 @@ const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
         </td>
         <td className={styles.cell}>{category.name}</td>
         {category.totals.map((total, index) => (
-          <td key={index}>{total.toFixed(2)}</td>
+          <td className={styles.cell} key={index}>
+            {total.toFixed(2)}
+          </td>
         ))}
       </tr>
       {!collapsedCategory &&

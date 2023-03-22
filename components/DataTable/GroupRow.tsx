@@ -20,10 +20,14 @@ const GroupRow: React.FC<GroupRowProps> = ({ group, onToggle }) => {
       style={{ cursor: "pointer" }}
       className={styles.groupRow}
     >
-      <td></td>
-      <td style={{ paddingLeft: "1.5em" }}>{group.groupName}</td>
+      <td className={styles.groupCell}></td>
+      <td className={styles.groupCell} style={{ paddingLeft: "1.5em" }}>
+        {group.groupName}
+      </td>
       {group.totals.map((total, index) => (
-        <td key={index}>{total.toFixed(2)}</td>
+        <td className={styles.groupCell} key={index}>
+          {total.toFixed(2)}
+        </td>
       ))}
     </tr>
   );

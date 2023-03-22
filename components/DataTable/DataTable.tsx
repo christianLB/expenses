@@ -4,38 +4,57 @@ import { useExpensesContext } from "../../hooks/expensesContext.tsx";
 import TableHeader from "./TableHeader.tsx";
 import CategoryRow from "./CategoryRow.tsx";
 import tableStyles from "./tableStyles.js";
+interface DataTableProps {
+  data?: {
+    categories: Array<any>;
+    summary: Array<number>;
+    balance: Array<number>;
+  };
+}
 
-interface TableProps {}
+const DataTable: React.FC<DataTableProps> = () => {
+  const { categoryGroupExpenses: data } = useExpensesContext();
 
-const Table: React.FC<TableProps> = () => {
-  const { categoryGroupExpenses: tableData } = useExpensesContext();
-
-  if (!tableData) {
-    return <p>Loading...</p>; // Display a loading message while waiting for data
+  if (!Object.keys(data).length) {
+    return <div className="text-center py-4">No rows found</div>;
   }
 
-  const hasCategories = tableData.categories && tableData.categories.length > 0;
-
-  const { table } = tableStyles;
+  const { categories, summary, balance } = data;
 
   return (
-    <table className={table}>
+    <table className={`${tableStyles.table} w-full`}>
       <TableHeader />
       <tbody>
-        {hasCategories ? (
-          tableData.categories.map((category, index) => (
-            <CategoryRow key={index} category={category} />
-          ))
-        ) : (
-          <tr>
-            <td colSpan={14} style={{ textAlign: "center" }}>
-              No rows found
+        {categories?.map((category, index) => (
+          <CategoryRow key={index} category={category} />
+        ))}
+        <tr className={tableStyles.summaryRow}>
+          <td className={tableStyles.cell} />
+          <td className={tableStyles.cell}>Summary</td>
+          {summary.map((total, index) => (
+            <td className={tableStyles.cell} key={index}>
+              {total.toFixed(2)}
             </td>
-          </tr>
-        )}
+          ))}
+        </tr>
+        <tr className={tableStyles.balanceRow}>
+          <td className={tableStyles.cell} />
+          <td className={tableStyles.cell}>Balance</td>
+          {balance.map((total, index) => (
+            <td
+              className={[
+                tableStyles.cell,
+                total > 0 ? tableStyles.positive : tableStyles.negative,
+              ].join(" ")}
+              key={index}
+            >
+              {total.toFixed(2)}
+            </td>
+          ))}
+        </tr>
       </tbody>
     </table>
   );
 };
 
-export default Table;
+export default DataTable;

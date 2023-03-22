@@ -24,10 +24,12 @@ const TableHeader: React.FC<TableHeaderProps> = () => {
   return (
     <thead className={styles.tableHeader}>
       <tr>
-        <th></th>
+        <th className={styles.columnHeader}></th>
         <th className={styles.columnHeader}>Category/Group</th>
         {months.map((month, index) => (
-          <th key={index}>{month}</th>
+          <th className={styles.columnHeader} key={index}>
+            {month}
+          </th>
         ))}
       </tr>
     </thead>

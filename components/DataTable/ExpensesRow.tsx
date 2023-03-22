@@ -16,9 +16,9 @@ interface ExpensesRowProps {
 const ExpensesRow: React.FC<ExpensesRowProps> = ({ expense }) => {
   return (
     <tr className={styles.expensesRow}>
-      <td></td>
-      <td></td>
-      <td style={{ paddingLeft: "3em" }}>{expense.name}</td>
+      <td className={`${styles.cell}`}></td>
+      <td className={`${styles.cell}`}></td>
+      <td className={`${styles.cell} ${styles.paddingLeft}`}>{expense.name}</td>
       <td colSpan={11}></td>
       <td>{expense.amount.toFixed(2)}</td>
     </tr>
