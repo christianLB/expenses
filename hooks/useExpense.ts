@@ -42,7 +42,7 @@ const useExpense = ({ fetchOnInit = true } = {}) => {
     request: fetchExpenses,
     arrayData: expenses,
     loading,
-  } = useApi(`${baseUrl}/expenses?depth=1&limit=5`, {
+  } = useApi(`${baseUrl}/expenses?depth=1&limit=0`, {
     fetchOnInit: fetchOnInit,
     //Entitykey: "docs",
   });
