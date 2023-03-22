@@ -1,3 +1,7 @@
+import _ from "lodash";
+import { IExpense } from "./hooks/useExpense";
+import { IIncome } from "./hooks/useIncome";
+
 export function parseTransactionInfo(text: string): any | null {
   const fields = text.split("||").map((line) => line.trim());
 
@@ -123,3 +127,315 @@ export function extractTransactions(feed: string): Transaction[] {
   }
   return transactions;
 }
+
+export const getTotalsByCategoryAndGroup = (
+  expenses: IExpense[],
+  totalIncomePerMonth
+) => {
+  const result = {};
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  // Initialize the sum of all categories
+  let allCategoriesSum = Array(13).fill(0);
+
+  if (totalIncomePerMonth.length) {
+    const _tocalIncomePerMonth = [
+      ...totalIncomePerMonth,
+      totalIncomePerMonth.reduce((total, item) => total + item),
+    ];
+    result["Income"] = { totals: _tocalIncomePerMonth };
+  } else {
+    result["Income"] = { totals: 0 };
+  }
+  _.forEach(expenses, (expense) => {
+    //console.log(expense);
+    const month = monthNames.indexOf(
+      new Date(expense.date).toLocaleString("en-us", { month: "short" })
+    );
+    const category = expense.category ? expense.category.name : "Uncategorized";
+    const group = expense.group ? expense.group.name : "no group";
+
+    if (!result[category]) {
+      result[category] = {};
+      result[category]["totals"] = Array(13).fill(0);
+    }
+
+    if (!result[category][group]) {
+      result[category][group] = Array(13).fill(0);
+    }
+
+    result[category][group][month] += expense.amount;
+    result[category][group][12] += expense.amount;
+    result[category]["totals"][month] += expense.amount;
+    result[category]["totals"][12] += expense.amount;
+
+    allCategoriesSum[month] += expense.amount;
+    allCategoriesSum[12] += expense.amount;
+  });
+
+  // Add the total sum of all categories to the result
+  result["All Categories"] = {};
+  result["All Categories"]["totals"] = allCategoriesSum;
+
+  const balance = monthNames.map((month, i) => {
+    const totalIncome = result["Income"]["totals"][i] ?? 0;
+    const totalExpense = result["All Categories"]["totals"][i] ?? 0;
+    return totalIncome - totalExpense;
+  });
+  result["Balance"] = {};
+  result["Balance"].totals = balance;
+  //aggregate total balance
+  result["Balance"]["totals"] = [
+    ...result["Balance"]["totals"],
+    result["Balance"]["totals"].reduce((total, item) => total + item),
+  ];
+
+  return result;
+};
+
+export const calculateTotalIncomePerMonth = (incomes: IIncome[]): number[] => {
+  const totals = Array(12).fill(0); // Initialize an array of 12 zeroes
+
+  if (!incomes.length) return [];
+  for (const income of incomes) {
+    const date = new Date(income.date);
+    const month = date.getMonth();
+
+    totals[month] += income.amount;
+  }
+
+  return totals;
+};
+
+export const processJSON = (data, incomes) => {
+  if (!data || data.length === 0) {
+    return {};
+  }
+  const result = {
+    summary: Array(13).fill(0),
+    categories: {},
+  };
+
+  data.forEach((doc) => {
+    const month = new Date(doc.date).getMonth();
+    const categoryId = doc.category.id;
+    const categoryName = doc.category.name;
+    const groupId = doc.group ? doc.group.id : null;
+    const groupName = doc.group ? doc.group.name : null;
+
+    if (!result.categories[categoryId]) {
+      result.categories[categoryId] = {
+        name: categoryName,
+        groups: {},
+        totals: Array(13).fill(0),
+      };
+    }
+
+    if (groupId && !result.categories[categoryId].groups[groupId]) {
+      result.categories[categoryId].groups[groupId] = {
+        name: groupName,
+        totals: Array(13).fill(0),
+      };
+    }
+
+    result.summary[month] += doc.amount;
+    result.summary[12] += doc.amount;
+    result.categories[categoryId].totals[month] += doc.amount;
+    result.categories[categoryId].totals[12] += doc.amount;
+
+    if (groupId) {
+      result.categories[categoryId].groups[groupId].totals[month] += doc.amount;
+      result.categories[categoryId].groups[groupId].totals[12] += doc.amount;
+    }
+  });
+
+  let incomeAmounts;
+  if (incomes && incomes.length > 0) {
+    incomeAmounts = calculateTotalIncomePerMonth(incomes);
+    if (result["Income"]) {
+      result["Income"].totals = incomeAmounts;
+    } else {
+      result["Income"] = { totals: incomeAmounts };
+    }
+  }
+
+  // Add balance row to the result
+  if (incomeAmounts) {
+    const balanceAmounts = Object.entries(result).reduce(
+      (acc, [_, groupData]: any) => {
+        if (groupData.totals) {
+          groupData.totals.forEach((total, index) => {
+            if (total) {
+              acc[index] -= total;
+            }
+          });
+        }
+        return acc;
+      },
+      [...incomeAmounts]
+    );
+
+    result["Balance"] = { totals: balanceAmounts };
+  }
+
+  return result;
+};
+
+export const calculateExpensesTotals = (expenses: any[] = []) => {
+  if (expenses.length === 0) return {};
+  const categoryGroups = _.groupBy(expenses, (expense) =>
+    expense.group
+      ? expense.category.id
+      : expense.category.id + "-" + expense.group.id
+  );
+  const categoryTotals = _.mapValues(categoryGroups, (groupedExpenses) => {
+    const monthlyTotals = _.chain(groupedExpenses)
+      .groupBy((expense) => {
+        const date = new Date(expense.date);
+        return date.getMonth();
+      })
+      .mapValues((groupedExpenses) => {
+        const categoryGroups = _.groupBy(groupedExpenses, (expense) =>
+          expense.group ? expense.group.id : expense.category.id
+        );
+        const totalsByGroup = _.mapValues(
+          categoryGroups,
+          (expensesInCategory) => {
+            return _.sumBy(expensesInCategory, "amount");
+          }
+        );
+        const total = _.sum(_.values(totalsByGroup));
+        return { totals: _.values(totalsByGroup), total };
+      })
+      .value();
+
+    const summary = _.mergeWith(
+      {},
+      ..._.values(monthlyTotals),
+      (objValue, srcValue) =>
+        _.isArray(objValue)
+          ? objValue.map((value, index) => value + srcValue[index])
+          : undefined
+    );
+    summary.month = "summary";
+    const yearlyTotal = _.sum(
+      _.mapValues(summary, (value, key) => (key !== "month" ? value : 0))
+    );
+
+    const totalsWithYearly = _.mapValues(monthlyTotals, (totals) => {
+      return {
+        ...totals,
+        totals: [...totals.totals, totals.total, yearlyTotal],
+      };
+    });
+    totalsWithYearly.summary = {
+      ...summary,
+      totals: [...summary.totals, yearlyTotal],
+    };
+
+    return {
+      name: groupedExpenses[0].category.name,
+      groups: Object.keys(totalsWithYearly)
+        .filter((key) => key !== "summary")
+        .map((group) => {
+          return {
+            groupName:
+              totalsWithYearly[group].totals.length > 13
+                ? groupedExpenses.find((expense) => expense.group.id === group)
+                    .group.name
+                : null,
+            totals: totalsWithYearly[group].totals,
+          };
+        }),
+      totals: totalsWithYearly.summary.totals,
+    };
+  });
+
+  const result = {
+    categories: _.sortBy(Object.values(categoryTotals), "name"),
+    summary: _.fill(Array(13), 0),
+  };
+  result.categories.forEach((category) => {
+    category.totals.forEach((monthTotals, index) => {
+      result.summary[index] += monthTotals[monthTotals.length - 1];
+    });
+  });
+
+  return result;
+};
+
+export const getMonthNames = (format = "short", includeYearlyTotals = true) => {
+  const shortNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const longNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const names = format === "short" ? shortNames : longNames;
+
+  if (includeYearlyTotals) {
+    return [...names, "Yearly Total"];
+  } else {
+    return names;
+  }
+};
+
+export const colors = [
+  "#F1F1F1",
+  "#E6F1E6",
+  "#F1E6E6",
+  "#E6E6F1",
+  "#FFFFCC",
+  "#D9EDF7",
+  "#CCE5FF",
+  "#F1CCD9",
+  "#B6A1CF",
+  "#F1D9CC",
+  "#CCF1E6",
+  "#D9CCF1",
+  "#CCD9F1",
+  "#F1CCE6",
+  "#E6CCF1",
+  "#CCE6F1",
+  "#CCF1D9",
+  "#F1CCF1",
+  "#E6E6E6",
+  "#E6F1F1",
+];

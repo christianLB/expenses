@@ -2,7 +2,9 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Footer from "../components/Footer.tsx";
 import NewExpense from "../components/NewExpense.tsx";
-import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
+//import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
+//import Table from "../components/table/Table.tsx";
+import Table from "../components/DataTable/DataTable.tsx";
 
 export default function Expenses() {
   return (
@@ -15,7 +17,9 @@ export default function Expenses() {
 
       <main className={styles.main}>
         <NewExpense />
-        <ExpenseTable />
+        <Table />
+        {/* <Table /> */}
+        {/* <ExpenseTable /> */}
       </main>
       <Footer />
     </div>

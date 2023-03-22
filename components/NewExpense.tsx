@@ -2,13 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
 import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
-import {
-  parseTransactionInfo,
-  parseTransactionList,
-  formatDate
-} from "../utils.ts";
+import { parseTransactionInfo, parseTransactionList } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
-import TransactionCard from "../components/TransactionCard.tsx"
+import TransactionCard from "../components/TransactionCard.tsx";
 
 interface TransactionInfo {
   date?: Date;
@@ -73,12 +69,11 @@ const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const [text, setText] = useState("");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [transaction, setTransaction] = useState<TransactionInfo>({});
   const [extract, setExtract] = useState([]);
-  const { expenseCategories, loading: loadingCategories } =
-    useExpenseCategory();
-  const { expenseGroups, loading: loadingGroups } = useExpenseGroup();
+  const { expenseCategories } = useExpenseCategory();
+  const { expenseGroups } = useExpenseGroup();
   const { selected: selectedCategory, SelectComponent: CategoriesSelect } =
     useSelect({ options: expenseCategories });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
@@ -109,8 +104,12 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
   const fields = Object.keys(transaction);
 
-  const incomes = extract.filter(transaction => parseFloat(transaction.amount) > 0)
-  const expenses = extract.filter(transaction => parseFloat(transaction.amount) < 0)
+  const incomes = extract.filter(
+    (transaction) => parseFloat(transaction.amount) > 0
+  );
+  const expenses = extract.filter(
+    (transaction) => parseFloat(transaction.amount) < 0
+  );
 
   return (
     <div style={containerStyles}>
@@ -119,8 +118,12 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         value={text}
         onChange={handleChange}
       ></textarea>
-      <input type='text' value={selectedYear} onChange={(e: any) => setSelectedYear(e.target.value)} />
-      
+      <input
+        type="text"
+        value={selectedYear}
+        onChange={(e: any) => setSelectedYear(e.target.value)}
+      />
+
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
@@ -151,8 +154,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
-      
-      {incomes.length && <span>Ingresos: {incomes.length}</span>}
+
+      {!!incomes.length && <span>Ingresos: {incomes.length}</span>}
       <div
         className={"grid mt-5"}
         style={{
@@ -168,11 +171,11 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
               parsedTransaction={transaction}
               index={i}
               year={selectedYear}
-              />
-              );
-            })}
+            />
+          );
+        })}
       </div>
-      {expenses.length && <span>Gastos: {expenses.length}</span>}
+      {!!expenses.length && <span>Gastos: {expenses.length}</span>}
       <div
         className={"grid mt-5"}
         style={{
@@ -188,14 +191,12 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
               parsedTransaction={transaction}
               index={i}
               year={selectedYear}
-              />
-              );
-            })}
+            />
+          );
+        })}
       </div>
     </div>
   );
 };
-
-
 
 export default NewExpense;

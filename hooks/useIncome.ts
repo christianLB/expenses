@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import useApi from "./useApi.ts";
 
-interface IIncome {
+export interface IIncome {
   id: number;
   name: string;
   amount: number;
@@ -13,33 +13,20 @@ interface IIncome {
   updated_at: string;
 }
 
-const useIncome = ({ fetchOnInit = false} = {}) => {
+const useIncome = () => {
   const prodUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://10.0.0.4:3020/api";
 
   const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
-  
-  function calculateTotalIncomePerMonth(invoices: IIncome[]): number[] {
-    const totals = Array(12).fill(0); // Initialize an array of 12 zeroes
-
-    if (!incomes.length) return []
-    for (const income of incomes) {
-      const date = new Date(income.date);
-      const month = date.getMonth();
-
-      totals[month] += income.amount;
-    }
-
-    return totals;
-  }
 
   //fetch incomes
-  const { request: fetchIncomes, arrayData: incomes, loading } = useApi(
-    `${baseUrl}/incomes`,
-    {
-      fetchOnInit: fetchOnInit,
-    }
-  );
+  const {
+    request: fetchIncomes,
+    arrayData: incomes,
+    loading,
+  } = useApi(`${baseUrl}/incomes`, {
+    fetchOnInit: true,
+  });
   //create incomes
   const {
     data: newIncome,
@@ -51,11 +38,10 @@ const useIncome = ({ fetchOnInit = false} = {}) => {
   });
 
   return {
-    incomes,
+    incomes: incomes?.length ? incomes[0] : [],
     newIncome,
     createIncomeHandler,
     creatingIncome,
-    totalIncomePerMonth: calculateTotalIncomePerMonth(incomes),
     loading,
   };
 };

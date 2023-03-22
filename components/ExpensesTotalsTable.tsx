@@ -54,7 +54,7 @@ const ExpenseTable = () => {
     );
     setCollapsed(collapsedDefault);
   }, [expensesResult]);
-
+  console.log(expensesResult);
   return (
     <Table style={{ fontSize: "0.8rem" }}>
       <thead>
