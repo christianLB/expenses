@@ -5,7 +5,7 @@ function getMonth(dateString) {
 
 function initializeCategory(categoryData) {
   return {
-    name: categoryData.name,
+    name: categoryData ? categoryData.name : "Uncategorized",
     groups: [],
     totals: Array(13).fill(0), // Initialize an array of 13 zeros (12 months + sum of all months)
   };
@@ -50,9 +50,16 @@ function processExpenses(expenses) {
 
   expenses.forEach((expense) => {
     const monthIndex = getMonth(expense.date);
-    const category = findOrCreateCategory(data.categories, expense.category);
-
+    let category;
     let group;
+
+    if (expense.category) {
+      category = findOrCreateCategory(data.categories, expense.category);
+    } else {
+      category = findOrCreateCategory(data.categories, {
+        name: "Uncategorized",
+      });
+    }
 
     if (expense.group) {
       group = findOrCreateGroup(category, expense.group);

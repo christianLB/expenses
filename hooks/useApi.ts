@@ -143,7 +143,7 @@ function useApi(
   useEffect(() => {
     //fetch on init and changes in url.
     !!fetchOnInit && request();
-  }, [fetchOnInit]);
+  }, [fetchOnInit, endpoint]);
 
   const request = useCallback(
     //callback for triggering fetch from components.

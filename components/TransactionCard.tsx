@@ -1,17 +1,13 @@
 import { Card, Spinner, CardBody } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { formatDate } from "../utils.ts";
-import { useExpensesContext } from '../hooks/expensesContext.tsx'
-import useSelect from '../hooks/useSelect.tsx'
+import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import useSelect from "../hooks/useSelect.tsx";
 
 const buttonStyles =
   "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
 
-const TransactionCard = ({
-  parsedTransaction,
-  index,
-  year
-}) => {
+const TransactionCard = ({ parsedTransaction, index, year }) => {
   const {
     createExpenseHandler,
     createIncomeHandler,
@@ -21,10 +17,14 @@ const TransactionCard = ({
     expenseCategories,
     expenseGroups,
     fetchExpenses,
+    clients,
   } = useExpensesContext();
 
   const { selected: selectedCategory, SelectComponent: CategorySelect } =
     useSelect({ options: expenseCategories, placeHolder: "category" });
+  const { selected: selectedClient, SelectComponent: ClientSelect } = useSelect(
+    { options: clients, placeHolder: "client" }
+  );
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
     options: expenseGroups,
     placeHolder: "group",
@@ -72,16 +72,14 @@ const TransactionCard = ({
         balance: parseFloat(
           transaction.balance.replace(".", "").replace(",", ".")
         ),
-        category: selectedCategory,
-        group: selectedGroup,
+        client: selectedClient,
       },
     });
 
-    if (newIncome) {
-      setTransaction(newIncome);
-      fetchExpenses();
-    }
-  }
+    if (newIncome) setTransaction(newIncome);
+
+    fetchExpenses();
+  };
 
   const deleteExpense = async () => {
     const deletedTransaction = await deleteExpenseHandler({
@@ -93,8 +91,12 @@ const TransactionCard = ({
     }
   };
 
-  const isIncome = parseFloat(transaction.amount) > 0
-  const buttonAction = transactionId ? deleteExpense : isIncome ? addIncome : addExpense;
+  const isIncome = parseFloat(transaction.amount) > 0;
+  const buttonAction = transactionId
+    ? deleteExpense
+    : isIncome
+    ? addIncome
+    : addExpense;
 
   return (
     <Card style={{ marginTop: "5px" }}>
@@ -127,8 +129,13 @@ const TransactionCard = ({
             <span>{transaction.balance}</span>
             <span>{transaction.currency}</span>
           </div>
-          <span>{CategorySelect}</span>
-          <span>{GroupsSelect}</span>
+          {!isIncome && (
+            <>
+              <span>{CategorySelect}</span>
+              <span>{GroupsSelect}</span>
+            </>
+          )}
+          {isIncome && <span>{ClientSelect}</span>}
           <button
             disabled={creatingExpense || deletingExpense}
             className={`${buttonStyles} ${

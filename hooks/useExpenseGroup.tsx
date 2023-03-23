@@ -11,13 +11,6 @@ const useExpenseGroup = () => {
     }
   );
 
-  const { request: createExpenseHandler, loading: creatingExpense } = useApi(
-    `${baseUrl}/expense-group`,
-    {
-      method: "POST",
-    }
-  );
-
   return {
     expenseGroups: expenseGroups?.docs,
     loading,

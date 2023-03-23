@@ -5,8 +5,17 @@ import NewExpense from "../components/NewExpense.tsx";
 //import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
 //import Table from "../components/table/Table.tsx";
 import Table from "../components/DataTable/DataTable.tsx";
+import {
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from "@chakra-ui/react";
+import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
 export default function Expenses() {
+  const { currentYear, setCurrentYear } = useExpensesContext();
   return (
     <div className={styles.container}>
       <Head>
@@ -16,10 +25,18 @@ export default function Expenses() {
       </Head>
 
       <main className={styles.main}>
+        <NumberInput
+          defaultValue={currentYear}
+          onChange={(valueString) => setCurrentYear(valueString)}
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
         <NewExpense />
         <Table />
-        {/* <Table /> */}
-        {/* <ExpenseTable /> */}
       </main>
       <Footer />
     </div>

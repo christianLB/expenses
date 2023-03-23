@@ -5,6 +5,7 @@ import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
 import { parseTransactionInfo, parseTransactionList } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
 import TransactionCard from "../components/TransactionCard.tsx";
+import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
 interface TransactionInfo {
   date?: Date;
@@ -68,8 +69,9 @@ const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
 const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
+  const { currentYear } = useExpensesContext();
+
   const [text, setText] = useState("");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [transaction, setTransaction] = useState<TransactionInfo>({});
   const [extract, setExtract] = useState([]);
   const { expenseCategories } = useExpenseCategory();
@@ -118,12 +120,6 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         value={text}
         onChange={handleChange}
       ></textarea>
-      <input
-        type="text"
-        value={selectedYear}
-        onChange={(e: any) => setSelectedYear(e.target.value)}
-      />
-
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
@@ -170,7 +166,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
               key={i}
               parsedTransaction={transaction}
               index={i}
-              year={selectedYear}
+              year={currentYear}
             />
           );
         })}
@@ -190,7 +186,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
               key={i}
               parsedTransaction={transaction}
               index={i}
-              year={selectedYear}
+              year={currentYear}
             />
           );
         })}
