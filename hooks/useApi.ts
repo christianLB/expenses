@@ -3,7 +3,7 @@ import { map } from "lodash";
 
 export type IUseApiHandler = (requestParams?: IRequestParams) => Promise<void>;
 
-interface IRequestParams {
+export interface IRequestParams {
   [key: string]: any;
 }
 export interface IUrlParams {

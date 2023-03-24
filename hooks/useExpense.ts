@@ -64,7 +64,7 @@ const useExpense = ({
     where: query, // ensure that `qs` adds the `where` property, too!
   });
 
-  //expenses
+  //expenses list
   const {
     request: fetchExpenses,
     arrayData: expenses,

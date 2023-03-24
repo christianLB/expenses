@@ -27,7 +27,7 @@ export default function Expenses() {
       <main className={styles.main}>
         <NumberInput
           defaultValue={currentYear}
-          onChange={(valueString) => setCurrentYear(valueString)}
+          onChange={(valueString) => setCurrentYear(parseInt(valueString))}
         >
           <NumberInputField />
           <NumberInputStepper>
