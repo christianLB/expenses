@@ -1,5 +1,7 @@
 // GroupRow.tsx
-import React from "react";
+import React, { useContext } from "react";
+import { TableContext, TableContextProps } from "./DataTable.tsx";
+import ExpensesRow from "./ExpensesRow.tsx";
 import styles from "./tableStyles.js";
 
 interface GroupData {
@@ -10,26 +12,52 @@ interface GroupData {
 
 interface GroupRowProps {
   group: GroupData;
-  onToggle: () => void;
+  groupIndex: number;
 }
 
-const GroupRow: React.FC<GroupRowProps> = ({ group, onToggle }) => {
+const GroupRow: React.FC<GroupRowProps> = ({ group, groupIndex }) => {
+  const { expandedMonth, setExpandedMonth } =
+    useContext<TableContextProps>(TableContext);
+
+  const handleMonthClick = (monthIndex: number) => {
+    if (
+      expandedMonth?.groupIndex === groupIndex &&
+      expandedMonth?.monthIndex === monthIndex
+    ) {
+      setExpandedMonth(null);
+    } else {
+      setExpandedMonth({ groupIndex, monthIndex });
+    }
+  };
+
   return (
-    <tr
-      onClick={onToggle}
-      style={{ cursor: "pointer" }}
-      className={styles.groupRow}
-    >
-      <td className={styles.groupCell}></td>
-      <td className={styles.groupCell} style={{ paddingLeft: "1.5em" }}>
-        {group.groupName}
-      </td>
-      {group.totals.map((total, index) => (
-        <td className={styles.groupCell} key={index}>
-          {total.toFixed(2)}
+    <>
+      <tr className={styles.groupRow}>
+        <td className={styles.groupCell}></td>
+        <td className={styles.groupCell} style={{ paddingLeft: "1.5em" }}>
+          {group.groupName}
         </td>
-      ))}
-    </tr>
+        {group.totals.map((total, monthIndex) => (
+          <td
+            key={monthIndex}
+            onClick={() => handleMonthClick(monthIndex)}
+            className={[
+              styles.groupCell,
+              expandedMonth?.groupIndex === groupIndex &&
+              expandedMonth?.monthIndex === monthIndex
+                ? styles.highlighted
+                : "",
+            ].join(" ")}
+          >
+            {total.toFixed(2)}
+          </td>
+        ))}
+      </tr>
+      {expandedMonth?.groupIndex === groupIndex &&
+        group.expenses.map((expense, expenseIndex) => (
+          <ExpensesRow key={expenseIndex} expense={expense} />
+        ))}
+    </>
   );
 };
 

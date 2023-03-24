@@ -13,6 +13,7 @@ const tableStyles = {
   balanceRow: "bg-yellow-50 font-semibold",
   positive: "text-green-600",
   negative: "text-red-600",
+  expandedMonth: "bg-blue-300",
 };
 
 export default tableStyles;

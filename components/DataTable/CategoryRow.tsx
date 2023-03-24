@@ -1,7 +1,7 @@
 // CategoryRow.tsx
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import { TableContext, TableContextProps } from "./DataTable.tsx";
 import GroupRow from "./GroupRow.tsx";
-import ExpensesRow from "./ExpensesRow.tsx";
 import styles from "./tableStyles.js";
 
 interface CategoryData {
@@ -21,27 +21,12 @@ interface CategoryRowProps {
 }
 
 const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
-  const [collapsedCategory, setCollapsedCategory] = useState(true);
-  const [collapsedGroup, setCollapsedGroup] = useState(true);
-
-  const toggleCategoryCollapse = () => {
-    setCollapsedCategory(!collapsedCategory);
-  };
-
-  const toggleGroupCollapse = () => {
-    setCollapsedGroup(!collapsedGroup);
-  };
+  const { expandedMonth } = useContext<TableContextProps>(TableContext);
 
   return (
     <>
       <tr className={styles.categoryRow}>
-        <td
-          onClick={toggleCategoryCollapse}
-          style={{ cursor: "pointer" }}
-          className={styles.cell}
-        >
-          {collapsedCategory ? "+" : "-"}
-        </td>
+        <td className={styles.cell}></td>
         <td className={styles.cell}>{category.name}</td>
         {category.totals.map((total, index) => (
           <td className={styles.cell} key={index}>
@@ -49,16 +34,9 @@ const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
           </td>
         ))}
       </tr>
-      {!collapsedCategory &&
-        category.groups.map((group, index) => (
-          <React.Fragment key={index}>
-            <GroupRow group={group} onToggle={toggleGroupCollapse} />
-            {!collapsedGroup &&
-              group.expenses.map((expense, idx) => (
-                <ExpensesRow key={idx} expense={expense} />
-              ))}
-          </React.Fragment>
-        ))}
+      {category.groups.map((group, groupIndex) => (
+        <GroupRow key={groupIndex} group={group} groupIndex={groupIndex} />
+      ))}
     </>
   );
 };
