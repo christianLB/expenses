@@ -1,9 +1,8 @@
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Expenses.module.css";
 import Footer from "../components/Footer.tsx";
 import NewExpense from "../components/NewExpense.tsx";
-//import ExpenseTable from "../components/ExpensesTotalsTable.tsx";
-//import Table from "../components/table/Table.tsx";
+import ExpensesDashboard from "../components/ExpensesDashboard.tsx";
 import Table from "../components/DataTable/DataTable.tsx";
 import {
   NumberInput,
@@ -11,6 +10,12 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  Box,
+  Text,
 } from "@chakra-ui/react";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
@@ -25,18 +30,37 @@ export default function Expenses() {
       </Head>
 
       <main className={styles.main}>
-        <NumberInput
-          defaultValue={currentYear}
-          onChange={(valueString) => setCurrentYear(parseInt(valueString))}
-        >
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-        <NewExpense />
-        <Table />
+        <div className={styles.content}>
+          <Box display="flex" alignItems="center" marginBottom="1rem">
+            <Text marginRight="0.5rem">Year:</Text>
+            <NumberInput
+              defaultValue={currentYear}
+              onChange={(valueString) => setCurrentYear(parseInt(valueString))}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </Box>
+          <Box w="100%" marginBottom="2rem">
+            <Accordion allowToggle>
+              <AccordionItem>
+                <h2>
+                  <AccordionButton>Add new expense</AccordionButton>
+                </h2>
+                <AccordionPanel>
+                  <NewExpense />
+                </AccordionPanel>
+              </AccordionItem>
+            </Accordion>
+          </Box>
+
+          <Table />
+
+          <ExpensesDashboard />
+        </div>
       </main>
       <Footer />
     </div>

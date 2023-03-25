@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { formatDate } from "../utils.ts";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 import useSelect from "../hooks/useSelect.tsx";
-
+import styles from "../styles/TransactionCard.module.css";
 const buttonStyles =
   "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
 
@@ -99,54 +99,46 @@ const TransactionCard = ({ parsedTransaction, index, year }) => {
     : addExpense;
 
   return (
-    <Card style={{ marginTop: "5px" }}>
-      <span className={"flex justify-between mr-2 text-gray-400"}>
-        {
-          <span className={"ml-2"}>
-            {(creatingExpense || deletingExpense) && <Spinner />}
-          </span>
-        }
+    <Card className={styles.card}>
+      <span className={styles.transactionId}>
+        {(creatingExpense || deletingExpense) && <Spinner />}
         {transactionId ? transactionId : ++index}
       </span>
-      <CardBody>
-        <div
-          className={"text-xs"}
-          style={{
-            display: "grid",
-            gridTemplateRows: "100px 20px 30px 30px 30px 33px",
-          }}
-        >
+      <div className={styles.transactionInfo}>
+        <div className={styles.transactionRow}>
           <span>{transaction.name}</span>
-          <div className={"flex flex-row justify-between border-b"}>
-            <span>{transaction.date}</span>
-            <span>{transaction.valueDate}</span>
-          </div>
-          <div className={"flex flex-row justify-between border-b"}>
-            <span>{transaction.amount}</span>
-            <span>{transaction.currency}</span>
-          </div>
-          <div className={"flex flex-row justify-between"}>
-            <span>{transaction.balance}</span>
-            <span>{transaction.currency}</span>
-          </div>
-          {!isIncome && (
-            <>
-              <span>{CategorySelect}</span>
-              <span>{GroupsSelect}</span>
-            </>
-          )}
-          {isIncome && <span>{ClientSelect}</span>}
-          <button
-            disabled={creatingExpense || deletingExpense}
-            className={`${buttonStyles} ${
-              transactionId ? "bg-red-200" : ""
-            }`.trim()}
-            onClick={buttonAction}
-          >
-            {transactionId ? "Delete" : "Add"}
-          </button>
         </div>
-      </CardBody>
+        <div className={styles.transactionRow}>
+          <span>{transaction.date}</span>
+          <span>{transaction.valueDate}</span>
+        </div>
+        <div className={styles.transactionRow}>
+          <span>{transaction.amount}</span>
+          <span>{transaction.currency}</span>
+        </div>
+        <div className={styles.transactionRow}>
+          <span>{transaction.balance}</span>
+          <span>{transaction.currency}</span>
+        </div>
+      </div>
+      {!isIncome && (
+        <>
+          <span className={styles.selectComponent}>{CategorySelect}</span>
+          <span className={styles.selectComponent}>{GroupsSelect}</span>
+        </>
+      )}
+      {isIncome && (
+        <span className={styles.selectComponent}>{ClientSelect}</span>
+      )}
+      <button
+        disabled={creatingExpense || deletingExpense}
+        className={`${styles.addButton} ${
+          transactionId ? styles.deleteButton : ""
+        }`.trim()}
+        onClick={buttonAction}
+      >
+        {transactionId ? "Delete" : "Add"}
+      </button>
     </Card>
   );
 };

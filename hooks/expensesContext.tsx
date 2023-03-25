@@ -25,11 +25,25 @@ export const ExpensesProvider = ({ children }) => {
     // This query could be much more complex
     // and QS would handle it beautifully
   };
-  const {arrayData: expenses} = usePayloadCollection({ collection: 'expenses', fetchOnInit: true, query });
-  const groups = usePayloadCollection({ collection: 'expense-group', fetchOnInit: true });
-  const categories = usePayloadCollection({ collection: 'expense-category', fetchOnInit: true });
-  const { arrayData: clients } = usePayloadCollection({ collection: 'clients', fetchOnInit: true});
-  const { arrayData: incomes, create: createIncomeHandler } = usePayloadCollection({ collection: 'incomes', fetchOnInit: true, query });
+  const { arrayData: expenses } = usePayloadCollection({
+    collection: "expenses",
+    fetchOnInit: true,
+    query,
+  });
+  const { arrayData: groups } = usePayloadCollection({
+    collection: "expense-group",
+    fetchOnInit: true,
+  });
+  const { arrayData: categories } = usePayloadCollection({
+    collection: "expense-category",
+    fetchOnInit: true,
+  });
+  const { arrayData: clients } = usePayloadCollection({
+    collection: "clients",
+    fetchOnInit: true,
+  });
+  const { arrayData: incomes, create: createIncomeHandler } =
+    usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
 
   const value = {
     setCurrentYear,
@@ -37,8 +51,8 @@ export const ExpensesProvider = ({ children }) => {
     currentYear,
     expenses,
     incomes,
-    ...groups,
-    ...categories,
+    groups,
+    categories,
     clients,
     categoryGroupExpenses: expenses
       ? generateSummaryData(expenses, incomes)

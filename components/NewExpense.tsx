@@ -157,7 +157,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         style={{
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
           gap: "5px",
-          gridAutoRows: "330px",
+          gridAutoRows: "400px",
         }}
       >
         {incomes?.map((transaction: any, i) => {

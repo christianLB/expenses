@@ -1,3 +1,4 @@
+// ExpensesRow.tsx
 import React from "react";
 import styles from "./tableStyles.js";
 
@@ -10,15 +11,9 @@ interface ExpenseData {
 
 interface ExpensesRowProps {
   expense: ExpenseData;
-  monthIndex: number;
 }
 
-const ExpensesRow: React.FC<ExpensesRowProps> = ({ expense, monthIndex }) => {
-  const expenseDate = new Date(expense.date);
-  const expenseMonthIndex = expenseDate.getMonth();
-
-  if (monthIndex !== expenseMonthIndex) return null;
-
+const ExpensesRow: React.FC<ExpensesRowProps> = ({ expense }) => {
   return (
     <tr className={styles.expensesRow}>
       <td className={`${styles.cell}`}></td>

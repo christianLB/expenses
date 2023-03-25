@@ -1,19 +1,71 @@
 const tableStyles = {
-  table: "w-full text-sm border-collapse",
-  tableHeader: "bg-gray-100 text-left font-semibold px-2",
-  columnHeader: "px-4 py-2 border border-gray-300",
-  categoryRow: "bg-blue-100 cursor-pointer font-semibold",
-  groupRow: "bg-blue-200 cursor-pointer",
-  expensesRow: "bg-white",
-  cell: "px-4 py-2 border border-gray-300",
-  groupCell: "px-4 border border-gray-200",
-  paddingLeft: "pl-4",
-  paddingRight: "pr-4",
-  summaryRow: "bg-green-50 font-semibold",
-  balanceRow: "bg-yellow-50 font-semibold",
-  positive: "text-green-600",
-  negative: "text-red-600",
-  expandedMonth: "bg-blue-300",
+  table: `
+    w-full
+    text-xs
+    bg-white
+    shadow-md
+    rounded-lg
+    overflow-hidden
+    border-collapse
+    mt-10
+  `,
+  cell: `
+    border-b
+    border-gray-300
+    px-4
+    py-2
+    text-left
+    font-semibold
+  `,
+  paddingLeft: `
+    pl-8
+  `,
+  categoryRow: `
+    bg-gradient-to-r
+    from-indigo-600
+    to-indigo-500
+    text-white
+  `,
+  groupRow: `
+    bg-indigo-200
+    cursor-pointer
+    hover:bg-indigo-300
+  `,
+  groupCell: `
+    border-b
+    border-gray-300
+    px-4
+    py-2
+    text-left
+    font-semibold
+  `,
+  expensesRow: `
+    bg-white
+    hover:bg-indigo-100
+  `,
+  summaryRow: `
+    bg-gradient-to-r
+    from-indigo-700
+    to-indigo-600
+    text-white
+  `,
+  balanceRow: `
+    bg-gradient-to-r
+    from-indigo-800
+    to-indigo-700
+    text-white
+  `,
+  positive: `
+    text-green-600
+    font-bold
+  `,
+  negative: `
+    text-red-600
+    font-bold
+  `,
+  highlighted: `
+    bg-indigo-400
+  `,
 };
 
 export default tableStyles;

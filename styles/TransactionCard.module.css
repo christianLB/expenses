@@ -1,0 +1,68 @@
+/* TransactionCard.module.css */
+.card {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  margin: 0.5rem;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transactionId {
+  color: #a0aec0;
+}
+
+.transactionInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.7rem;
+}
+
+.transactionRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.addButton {
+  background-color: #3182ce;
+  color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.addButton:hover {
+  background-color: #2b6cb0;
+}
+
+.deleteButton {
+  background-color: #f56565;
+  transition: all 0.15s ease-in-out;
+}
+
+.deleteButton:hover {
+  background-color: #c53030;
+}
+
+.selectComponent {
+  width: 100%;
+  background-color: #edf2f7;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.selectComponent:hover {
+  background-color: #e2e8f0;
+}
