@@ -1,14 +1,12 @@
 // Table.tsx
 import React, {
   createContext,
-  Dispatch,
-  SetStateAction,
-  useState,
 } from "react";
 import { useExpensesContext } from "../../hooks/expensesContext.tsx";
 import TableHeader from "./TableHeader.tsx";
 import CategoryRow from "./CategoryRow.tsx";
 import tableStyles from "./tableStyles.js";
+import useCollapsedState from "../../hooks/useCollapsedState.tsx";
 interface DataTableProps {
   data?: {
     categories: Array<any>;
@@ -18,10 +16,7 @@ interface DataTableProps {
 }
 
 export interface TableContextProps {
-  expandedMonth: { groupIndex: number; monthIndex: number } | null;
-  setExpandedMonth: Dispatch<
-    SetStateAction<{ groupIndex: number; monthIndex: number } | null>
-  >;
+ 
 }
 
 export const TableContext = createContext<TableContextProps | undefined>(
@@ -29,25 +24,34 @@ export const TableContext = createContext<TableContextProps | undefined>(
 );
 //main component
 const DataTable: React.FC<DataTableProps> = () => {
+  const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
   const { categoryGroupExpenses: data } = useExpensesContext();
-  const [expandedMonth, setExpandedMonth] = useState<{
-    groupIndex: number;
-    monthIndex: number;
-  } | null>(null);
 
   if (!Object.keys(data).length) {
     return <div className="text-center py-4">No rows found</div>;
   }
 
   const { categories, summary, balance } = data;
+  const colors = [
+  "#1E88E5", // Blue
+  "#43A047", // Green
+  "#FB8C00", // Orange
+  "#F4511E", // Deep Orange
+  "#6D4C41", // Brown
+  "#3949AB", // Indigo
+  "#00897B", // Teal
+  "#7B1FA2", // Purple
+  "#D81B60", // Pink
+  "#546E7A", // Blue Grey
+];
 
   return (
-    <TableContext.Provider value={{ expandedMonth, setExpandedMonth }}>
+    <TableContext.Provider value={{ collapsedKeys, toggleItemCollapse, colors }}>
       <table className={`${tableStyles.table} w-full`}>
         <TableHeader />
         <tbody>
           {categories?.map((category, index) => (
-            <CategoryRow key={index} category={category} />
+            <CategoryRow key={index} category={category} index={index} color={colors[index]}/>
           ))}
           <tr className={tableStyles.summaryRow}>
             <td className={tableStyles.cell} />

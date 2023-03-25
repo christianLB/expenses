@@ -19,6 +19,25 @@ function initializeGroup(groupData) {
   };
 }
 
+export const generateYearlyQuery = (year) => {
+  const startDate = `${year}-01-01T00:00:00.000Z`;
+  const endDate = `${year + 1}-01-01T00:00:00.000Z`;
+
+  return {
+    date: {
+      greater_than_equal: startDate,
+    },
+    and: [
+      {
+        date: {
+          less_than_equal: endDate,
+        },
+      },
+    ],
+  };
+};
+
+
 function findOrCreateCategory(categories, categoryData) {
   let category = categories.find((cat) => cat.name === categoryData.name);
 

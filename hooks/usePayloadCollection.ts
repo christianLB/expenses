@@ -22,12 +22,14 @@ function usePayloadCollection({
   const prodUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://10.0.0.4:3020/api";
   const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;  
-  
-  const stringifiedQuery = query ? qs.stringify({
-    where: query, // ensure that `qs` adds the `where` property, too!
-  }) : null
 
-  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${stringifiedQuery ? `&${stringifiedQuery}` : ''}`;
+  const buildQueryString = useCallback((query) => {
+    if (!query) return '';
+    const queryString = qs.stringify({ where: query });
+    return `&${queryString}`;
+  }, []);
+
+  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${buildQueryString(query)}`;
   
   const {
     data,

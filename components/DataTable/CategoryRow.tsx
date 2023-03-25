@@ -18,21 +18,33 @@ interface GroupData {
 
 interface CategoryRowProps {
   category: CategoryData;
+  index: number;
+  color: string;
 }
 
-const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
-  const { expandedMonth } = useContext<TableContextProps>(TableContext);
+const CategoryRow: React.FC<CategoryRowProps> = ({ category, color }) => {
+   const { collapsedKeys, toggleItemCollapse } =
+    useContext<TableContextProps>(TableContext);
+
+  const categoryKey = `category-${category.name}`;
+
+  const isCollapsed = !collapsedKeys.has(categoryKey);
+
+  const handleCategoryClick = () => {
+    toggleItemCollapse(categoryKey);
+  };
 
   return (
     <>
-      {category.groups.map((group, groupIndex) => (
-        <GroupRow key={groupIndex} group={group} groupIndex={groupIndex} />
-      ))}
-      <tr className={styles.categoryRow}>
-        <td className={styles.cell}></td>
-        <td className={styles.cell}>{category.name}</td>
+      {!isCollapsed &&
+        category.groups.map((group, groupIndex) => (
+          <GroupRow key={groupIndex} group={group} groupName={group.groupName} color={color}/>
+        ))}
+      <tr className={styles.categoryRow} onClick={handleCategoryClick}>
+         <td className={styles.cell} style={{backgroundColor:color}}></td>
+        <td className={styles.cell} style={{backgroundColor:color}}>{category.name}</td>
         {category.totals.map((total, index) => (
-          <td className={styles.cell} key={index}>
+          <td className={styles.cell} key={index} style={{backgroundColor:color}}>
             {total.toFixed(2)}
           </td>
         ))}
