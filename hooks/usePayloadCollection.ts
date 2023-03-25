@@ -6,6 +6,7 @@ interface IUsePayloadCollectionProps {
   collection: string;
   fetchOnInit?: boolean;
   perPageLimit?: number;
+  clearOnStart?: boolean;
   depth?: number;
   expand?: any;
   query?: any;
@@ -16,6 +17,7 @@ function usePayloadCollection({
   fetchOnInit = true,
   perPageLimit = 0,
   depth = 1,
+  clearOnStart,
   expand,
   query
 }: IUsePayloadCollectionProps) {
@@ -42,6 +44,7 @@ function usePayloadCollection({
     method: 'GET',
     fetchOnInit,
     perPageLimit,
+    clearOnStart,
     expand,
   });
 
@@ -59,7 +62,7 @@ function usePayloadCollection({
     response: deleteResponse,
     loading: deleteLoading,
     error: deleteError,
-  } = useApi(`${apiUrl}/:id`, {
+  } = useApi(`${baseUrl}/${collection}/:id`, {
     method: 'DELETE',
   });
 
