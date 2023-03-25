@@ -25,6 +25,9 @@ const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
 
   return (
     <>
+      {category.groups.map((group, groupIndex) => (
+        <GroupRow key={groupIndex} group={group} groupIndex={groupIndex} />
+      ))}
       <tr className={styles.categoryRow}>
         <td className={styles.cell}></td>
         <td className={styles.cell}>{category.name}</td>
@@ -34,9 +37,6 @@ const CategoryRow: React.FC<CategoryRowProps> = ({ category }) => {
           </td>
         ))}
       </tr>
-      {category.groups.map((group, groupIndex) => (
-        <GroupRow key={groupIndex} group={group} groupIndex={groupIndex} />
-      ))}
     </>
   );
 };

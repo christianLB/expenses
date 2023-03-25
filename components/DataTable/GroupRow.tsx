@@ -34,7 +34,10 @@ const GroupRow: React.FC<GroupRowProps> = ({ group, groupIndex }) => {
     <>
       <tr className={styles.groupRow}>
         <td className={styles.groupCell}></td>
-        <td className={styles.groupCell} style={{ paddingLeft: "1.5em" }}>
+        <td
+          className={styles.groupCell}
+          style={{ paddingLeft: "2.5em", fontSize: "0.7rem" }}
+        >
           {group.groupName}
         </td>
         {group.totals.map((total, monthIndex) => (
