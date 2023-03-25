@@ -1,4 +1,3 @@
-// components/ExpensesDashboard.tsx
 import React, { useEffect, useState } from "react";
 import { Pie, Bar } from "react-chartjs-2";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
@@ -14,7 +13,7 @@ import {
 Chart.register(ArcElement, BarElement, CategoryScale, LinearScale);
 
 const ExpenseDashboard = () => {
-  const { expenses, categories, groups } = useExpensesContext();
+  const { expenses, categories, groups, colors } = useExpensesContext();
   const [categoryData, setCategoryData] = useState({
     labels: [],
     datasets: [{ data: [], backgroundColor: [] }],
@@ -51,14 +50,7 @@ const ExpenseDashboard = () => {
       datasets: [
         {
           data: categories.map((category) => categoryTotals[category.id]),
-          backgroundColor: [
-            "#ff6384",
-            "#36a2eb",
-            "#ffce56",
-            "#4bc0c0",
-            "#9966ff",
-            "#ff9f40",
-          ],
+          backgroundColor: colors,
         },
       ],
     });
@@ -69,18 +61,42 @@ const ExpenseDashboard = () => {
         {
           label: "Expense Amount",
           data: groups.map((group) => groupTotals[group.id]),
-          backgroundColor: [
-            "#ff6384",
-            "#36a2eb",
-            "#ffce56",
-            "#4bc0c0",
-            "#9966ff",
-            "#ff9f40",
-          ],
+          backgroundColor: colors,
         },
       ],
     });
   }, [expenses, categories, groups]);
+  
+  const handlePieSliceHover = (event, element) => {
+    if (element[0]) {
+      const index = element[0].index;
+      const category = categories[index];
+      const filteredExpenses = expenses.filter(
+        (expense) => expense.category.id === category.id
+      );
+      const groupTotals = groups.reduce((acc, group) => {
+        acc[group.id] = 0;
+        return acc;
+      }, {});
+
+      filteredExpenses.forEach((expense) => {
+        if (expense.group) {
+          groupTotals[expense.group.id] += expense.amount;
+        }
+      });
+
+      setGroupData({
+        labels: groups.map((group) => group.name),
+        datasets: [
+          {
+            label: "Expense Amount",
+            data: groups.map((group) => groupTotals[group.id]),
+            backgroundColor: colors,
+          },
+        ],
+      });
+    }
+  };
 
   return (
     <div
@@ -97,7 +113,20 @@ const ExpenseDashboard = () => {
           options={{
             interaction: { mode: "nearest", intersect: false, axis: "x" },
             aspectRatio: 1,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const index = context.dataIndex;
+                    const category = categories[index];
+                    const total = categoryData.datasets[0].data[index];
+                    return `${category.name}: ${total.toFixed(2)}`;
+                  },
+                },
+              },
+            },
           }}
+          getelementatEvent={handlePieSliceHover}
         />
       </div>
       <div style={{ width: "65%" }}>
@@ -107,6 +136,18 @@ const ExpenseDashboard = () => {
           options={{
             interaction: { mode: "nearest", intersect: false, axis: "x" },
             aspectRatio: 1.5,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const index = context.dataIndex;
+                    const group = groups[index];
+                    const total = groupData.datasets[0].data[index];
+                    return `${group.name}: ${total.toFixed(2)}`;
+                  },
+                },
+              },
+            },
           }}
         />
       </div>

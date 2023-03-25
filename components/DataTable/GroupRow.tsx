@@ -34,7 +34,7 @@ const GroupRow: React.FC<GroupRowProps> = ({ group, groupName, color }) => {
      <>
       {!isCollapsed &&
         group.expenses.map((expense, expenseIndex) => (
-          <ExpensesRow key={expenseIndex} expense={expense} />
+          <ExpensesRow key={expenseIndex} expense={expense} color={color} />
         ))}
       <tr className={styles.groupRow} onClick={handleGroupClick}>
         <td className={styles.groupCell} style={colorStyle}></td>

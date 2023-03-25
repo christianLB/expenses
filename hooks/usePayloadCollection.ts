@@ -50,7 +50,7 @@ function usePayloadCollection({
     response: createResponse,
     loading: createLoading,
     error: createError,
-  } = useApi(apiUrl, {
+  } = useApi(`${baseUrl}/${collection}`, {
     method: 'POST',
   });
 

@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
 import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
-import { parseTransactionInfo, parseTransactionList } from "../utils.ts";
+import { parseTransactionInfo, parseTransactionList, formatDate } from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
 import TransactionCard from "../components/TransactionCard.tsx";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import styles from "../styles/TransactionCard.module.css";
+
 
 interface TransactionInfo {
   date?: Date;
@@ -69,7 +71,7 @@ const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
 const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
-  const { currentYear } = useExpensesContext();
+  const { currentYear, createExpenseHandler, creatingExpense, createIncomeHandler, fetchExpenses, fetchIncomes } = useExpensesContext();
 
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({});
@@ -106,12 +108,56 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
   const fields = Object.keys(transaction);
 
-  const incomes = extract.filter(
+  const getIncomes = () => extract.filter(
     (transaction) => parseFloat(transaction.amount) > 0
   );
-  const expenses = extract.filter(
+  const getExpenses = () => extract.filter(
     (transaction) => parseFloat(transaction.amount) < 0
   );
+  const incomes = getIncomes()
+  const expenses = getExpenses()
+
+  const addExpenses = async () => {
+    const payload = getExpenses().map(transaction => {
+      return {
+      body: {
+        ...transaction,
+        date: formatDate(`${transaction.date}/${currentYear}`),
+        valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
+        amount: Math.abs(
+          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+        ),
+        balance: parseFloat(
+          transaction.balance.replace(".", "").replace(",", ".")
+        ),
+        category: selectedCategory,
+        group: selectedGroup,
+      }
+      }
+    })
+    const r = await createExpenseHandler(payload)
+    fetchExpenses()
+  };
+
+  const addIncomes = async () => {
+    const payload = getIncomes().map(transaction => {
+      return {
+         body: {
+        ...transaction,
+        date: formatDate(`${transaction.date}/${currentYear}`),
+        valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
+        amount: Math.abs(
+          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+        ),
+        balance: parseFloat(
+          transaction.balance.replace(".", "").replace(",", ".")
+        ),
+      }
+       }
+     })
+    const { doc: newIncome } = await createIncomeHandler(payload);
+    fetchIncomes()
+  };
 
   return (
     <div style={containerStyles}>
@@ -150,29 +196,43 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
           </>
         )}
       </div>
-
-      {!!incomes.length && <span>Ingresos: {incomes.length}</span>}
-      <div
-        className={"grid mt-5"}
-        style={{
-          gridTemplateColumns: "1fr 1fr 1fr 1fr",
-          gap: "5px",
-          gridAutoRows: "400px",
-        }}
-      >
-        {incomes?.map((transaction: any, i) => {
-          return (
-            <TransactionCard
-              key={i}
-              parsedTransaction={transaction}
-              index={i}
-              year={currentYear}
-            />
-          );
-        })}
+      <div className={'w-full flex flex-col items-center justify-around p-2'}>
+        {!!incomes.length && <span><button
+          //disabled={creatingExpense || deletingExpense}
+          className={`${styles.addButton} mb-2 w-full`}
+          onClick={addIncomes}
+        >
+          Add {incomes.length} Ingresos 
+        </button></span>}
+        {/* <div
+          className={"grid mt-5"}
+          style={{
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: "5px",
+            gridAutoRows: "400px",
+          }}
+        >
+          {incomes?.map((transaction: any, i) => {
+            return (
+              <TransactionCard
+                key={i}
+                parsedTransaction={transaction}
+                index={i}
+                year={currentYear}
+              />
+            );
+          })}
+        </div> */}
+        {!!expenses.length && <span><button
+          //disabled={creatingExpense || deletingExpense}
+          className={`${styles.addButton} mt-2 w-full`}
+          onClick={addExpenses}
+        >
+          Add {expenses.length} Gastos
+        </button></span>}
       </div>
-      {!!expenses.length && <span>Gastos: {expenses.length}</span>}
-      <div
+
+      {/* <div
         className={"grid mt-5"}
         style={{
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
@@ -190,7 +250,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             />
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 };

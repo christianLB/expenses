@@ -25,25 +25,13 @@ export const TableContext = createContext<TableContextProps | undefined>(
 //main component
 const DataTable: React.FC<DataTableProps> = () => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
-  const { categoryGroupExpenses: data } = useExpensesContext();
+  const { categoryGroupExpenses: data, colors } = useExpensesContext();
 
   if (!Object.keys(data).length) {
     return <div className="text-center py-4">No rows found</div>;
   }
 
   const { categories, summary, balance } = data;
-  const colors = [
-  "#1E88E5", // Blue
-  "#43A047", // Green
-  "#FB8C00", // Orange
-  "#F4511E", // Deep Orange
-  "#6D4C41", // Brown
-  "#3949AB", // Indigo
-  "#00897B", // Teal
-  "#7B1FA2", // Purple
-  "#D81B60", // Pink
-  "#546E7A", // Blue Grey
-];
 
   return (
     <TableContext.Provider value={{ collapsedKeys, toggleItemCollapse, colors }}>
