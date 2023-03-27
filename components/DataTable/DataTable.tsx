@@ -30,6 +30,10 @@ const DataTable: React.FC<DataTableProps> = () => {
     categoryGroupExpenses: data,
     colors,
     updateExpenseHandler,
+    categories: originalCategories,
+    groups,
+    expenses,
+    fetchExpenses,
   } = useExpensesContext();
 
   const { categories, summary, balance } = data;
@@ -38,13 +42,55 @@ const DataTable: React.FC<DataTableProps> = () => {
     return <div className="text-center py-4">No rows found</div>;
   }
 
-  const handleDrop = (
+  const handleDrop = async (
     expenseId: string,
     targetId: string,
     targetType: string
   ) => {
-    // Implement the logic to recategorize and regroup expenses here
-    console.log({ expenseId, targetId, targetType });
+    const expense = expenses.find((exp) => exp.id === expenseId);
+
+    if (!expense) return;
+
+    const originalCategory = originalCategories.find(
+      (cat) => cat.id === expense.category.id
+    );
+    const originalGroup = groups.find((grp) => grp._id === expense.group);
+
+    let updatedCategory = originalCategory;
+    let updatedGroup = originalGroup;
+
+    if (targetType === "category") {
+      const targetCategory = originalCategories.find(
+        (cat) => cat.id === targetId
+      );
+
+      if (targetCategory && targetCategory.id !== originalCategory.id) {
+        updatedCategory = targetCategory;
+        updatedGroup = null;
+      }
+    } else if (targetType === "group") {
+      const targetGroup = groups.find((grp) => grp.id === targetId);
+      if (
+        targetGroup &&
+        (!originalGroup || targetGroup.id !== originalGroup.id)
+      ) {
+        updatedGroup = targetGroup;
+      }
+    }
+
+    if (
+      (updatedCategory && updatedCategory.id !== originalCategory.id) ||
+      (updatedGroup && (!originalGroup || updatedGroup.id !== originalGroup.id))
+    ) {
+      await updateExpenseHandler({
+        id: expense.id,
+        body: {
+          ...(updatedCategory ? { category: updatedCategory.id } : {}),
+          ...(updatedGroup ? { group: updatedGroup.id } : {}),
+        },
+      });
+      fetchExpenses();
+    }
   };
 
   return (

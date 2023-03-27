@@ -17,6 +17,14 @@ const tableStyles = {
     text-left
     font-semibold
   `,
+  expcell: `
+    border-b
+    border-gray-300
+    py-1
+    text-left
+    font-semibold
+    text-gray-100
+  `,
   paddingLeft: `
     pl-8
   `,

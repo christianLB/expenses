@@ -102,7 +102,8 @@ function useApi(
 
       return fetch(_url, {
         method,
-        ...(method.toLocaleLowerCase() === "post"
+        ...(method.toLocaleLowerCase() === "post" ||
+        method.toLocaleLowerCase() === "put"
           ? {
               headers: {
                 "Content-Type": "application/json",
