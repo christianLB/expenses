@@ -1,16 +1,20 @@
 // CategoryRow.tsx
-import React, { useContext } from "react";
+import React, { useContext, forwardRef } from "react";
+import { useDrop } from "react-dnd";
 import { TableContext, TableContextProps } from "./DataTable.tsx";
 import GroupRow from "./GroupRow.tsx";
 import styles from "./tableStyles.js";
+import withDroppable from './withDroppable.tsx'
 
 interface CategoryData {
+  id: string;
   name: string;
   groups: Array<GroupData>;
   totals: Array<number>;
 }
 
 interface GroupData {
+  id: string;
   groupName: string;
   totals: Array<number>;
   expenses: Array<any>; // Define a more specific interface for expenses if needed
@@ -21,26 +25,26 @@ interface CategoryRowProps {
   index: number;
   color: string;
 }
+const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(({ category, color }, ref) => {
+  const { collapsedKeys, toggleItemCollapse, handleDrop } = useContext<TableContextProps>(TableContext);
+  const isCollapsed = !collapsedKeys.has(category.id);
 
-const CategoryRow: React.FC<CategoryRowProps> = ({ category, color }) => {
-   const { collapsedKeys, toggleItemCollapse } =
-    useContext<TableContextProps>(TableContext);
+  const [, drop] = useDrop({
+    accept: "EXPENSE",
+    drop: (item: any) => handleDrop(item.id, category.id, 'category'),
+  });
 
-  const categoryKey = `category-${category.name}`;
-
-  const isCollapsed = !collapsedKeys.has(categoryKey);
-
-  const handleCategoryClick = () => {
-    toggleItemCollapse(categoryKey);
+  const dragDropRef = (instance) => {
+    drop(instance);
   };
 
   return (
     <>
       {!isCollapsed &&
         category.groups.map((group, groupIndex) => (
-          <GroupRow key={groupIndex} group={group} groupName={group.groupName} color={color}/>
+          <GroupRow key={groupIndex} group={group} color={color}/>
         ))}
-      <tr className={styles.categoryRow} onClick={handleCategoryClick}>
+      <tr ref={dragDropRef} className={styles.categoryRow} onClick={() => toggleItemCollapse(category.id)}>
          <td className={styles.cell} style={{backgroundColor:color}}></td>
         <td className={styles.cell} style={{backgroundColor:color}}>{category.name}</td>
         {category.totals.map((total, index) => (
@@ -51,6 +55,8 @@ const CategoryRow: React.FC<CategoryRowProps> = ({ category, color }) => {
       </tr>
     </>
   );
-};
+});
 
-export default CategoryRow;
+const DroppableExpensesRow = withDroppable(CategoryRow);
+
+export default DroppableExpensesRow;

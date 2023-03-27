@@ -45,7 +45,7 @@ export const ExpensesProvider = ({ children }) => {
   });
   const { arrayData: incomes, create: createIncomeHandler, fetchAll: fetchIncomes } =
     usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
-
+  
   const value = {
     colors,
     setCurrentYear,

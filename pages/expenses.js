@@ -59,7 +59,7 @@ export default function Expenses() {
 
           <Table />
 
-          <ExpensesDashboard />
+          {/* <ExpensesDashboard /> */}
         </div>
       </main>
       <Footer />

@@ -5,6 +5,7 @@ function getMonth(dateString) {
 
 function initializeCategory(categoryData) {
   return {
+    id: categoryData ? categoryData.id : "uncategorized",
     name: categoryData ? categoryData.name : "Uncategorized",
     groups: [],
     totals: Array(13).fill(0), // Initialize an array of 13 zeros (12 months + sum of all months)
@@ -13,6 +14,7 @@ function initializeCategory(categoryData) {
 
 function initializeGroup(groupData) {
   return {
+    id: groupData.id,
     groupName: groupData.name,
     totals: Array(13).fill(0),
     expenses: [],
@@ -76,6 +78,7 @@ function processExpenses(expenses) {
       category = findOrCreateCategory(data.categories, expense.category);
     } else {
       category = findOrCreateCategory(data.categories, {
+        id: 'uncategorized',
         name: "Uncategorized",
       });
     }
@@ -84,7 +87,7 @@ function processExpenses(expenses) {
       group = findOrCreateGroup(category, expense.group);
     } else {
       // Create a special "No Group" group for expenses without a group
-      group = findOrCreateGroup(category, { name: "No Group" });
+      group = findOrCreateGroup(category, { id:'no-group', name: "No Group" });
     }
 
     group.totals[monthIndex] += expense.amount;

@@ -1,10 +1,13 @@
 // GroupRow.tsx
-import React, { useContext } from "react";
+import React, { forwardRef, useContext } from "react";
+import { useDrop } from "react-dnd";
 import { TableContext, TableContextProps } from "./DataTable.tsx";
-import ExpensesRow from "./ExpensesRow.tsx";
+import ExpensesRow from "./ExpensesRow.tsx"; 
 import styles from "./tableStyles.js";
+import withDroppable from './withDroppable.tsx'
 
 interface GroupData {
+  id: string;
   groupName: string;
   totals: Array<number>;
   expenses: Array<any>; // Define a more specific interface for expenses if needed
@@ -16,27 +19,35 @@ interface GroupRowProps {
   color: string;
 }
 
-const GroupRow: React.FC<GroupRowProps> = ({ group, groupName, color }) => {
-   const { collapsedKeys, toggleItemCollapse } =
-    useContext<TableContextProps>(TableContext);
+const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(({ group, color }, ref) => {
 
-  const groupKey = `group-${groupName}`;
-  const isCollapsed = !collapsedKeys.has(groupKey);
-
-  const handleGroupClick = () => {
-    toggleItemCollapse(groupKey);
-  };
-
+  const { collapsedKeys, toggleItemCollapse, handleDrop } = useContext<TableContextProps>(TableContext);
+  const isCollapsed = !collapsedKeys.has(group.id);
   const colorStyle = { backgroundColor: color, filter: 'brightness(90%)' }
-  const padding = {paddingLeft: "2.5em", fontSize: "0.7rem"}
+  const padding = { paddingLeft: "2.5em", fontSize: "0.7rem" }
+  
+  const [, drop] = useDrop({
+    accept: "EXPENSE",
+    drop: (item: any) => handleDrop(item?.id, group?.id, 'group'),
+  });
+
+  const dragDropRef = (instance) => {
+    drop(instance);
+  };
   
   return (
      <>
       {!isCollapsed &&
         group.expenses.map((expense, expenseIndex) => (
-          <ExpensesRow key={expenseIndex} expense={expense} color={color} />
+          <ExpensesRow
+            key={expense.id}
+            expense={expense}
+            color={color}
+            categoryId={expense.category?.id}
+            groupId={expense.group?.id}
+          />
         ))}
-      <tr className={styles.groupRow} onClick={handleGroupClick}>
+      <tr ref={dragDropRef} className={styles.groupRow} onClick={() => toggleItemCollapse(group.id)}>
         <td className={styles.groupCell} style={colorStyle}></td>
         <td
           style={{ ...colorStyle, ...padding }}
@@ -55,6 +66,8 @@ const GroupRow: React.FC<GroupRowProps> = ({ group, groupName, color }) => {
       </tr>
     </>
   );
-};
+});
 
-export default GroupRow;
+const DroppableGroupRow = withDroppable(GroupRow);
+
+export default DroppableGroupRow;
