@@ -23,7 +23,7 @@ function usePayloadCollection({
 }: IUsePayloadCollectionProps) {
   const prodUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://10.0.0.4:3020/api";
-  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;  
+  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
 
   const buildQueryString = useCallback((query) => {
     if (!query) return '';
@@ -32,7 +32,7 @@ function usePayloadCollection({
   }, []);
 
   const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${buildQueryString(query)}`;
-  
+
   const {
     data,
     request: fetchAll,
@@ -55,6 +55,15 @@ function usePayloadCollection({
     error: createError,
   } = useApi(`${baseUrl}/${collection}`, {
     method: 'POST',
+  });
+
+  const {
+    request: update,
+    response: updateResponse,
+    loading: updating,
+    error: updateError,
+  } = useApi(`${baseUrl}/${collection}/:id`, {
+    method: 'PUT',
   });
 
   const {
@@ -98,15 +107,10 @@ function usePayloadCollection({
 
   return {
     data,
-    fetchAll,
-    fetchAllLoading,
-    fetchAllError,
-    create,
-    createLoading,
-    createError,
-    deleteItem,
-    deleteLoading,
-    deleteError,
+    fetchAll, fetchAllLoading, fetchAllError,
+    create, createLoading, createError,
+    update, updating, updateError,
+    deleteItem, deleteLoading, deleteError,
     fetchSingle,
     response,
     arrayData: arrayData[0] || [],

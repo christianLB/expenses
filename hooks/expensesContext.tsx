@@ -25,7 +25,13 @@ export const ExpensesProvider = ({ children }) => {
 
   const query = generateYearlyQuery(currentYear);
 
-  const { arrayData: expenses, create: createExpenseHandler, fetchAll: fetchExpenses,deleteItem: deleteExpenseHandler } = usePayloadCollection({
+  const {
+    arrayData: expenses,
+    create: createExpenseHandler,
+    fetchAll: fetchExpenses,
+    deleteItem: deleteExpenseHandler,
+    update: updateExpenseHandler,
+  } = usePayloadCollection({
     collection: "expenses",
     fetchOnInit: true,
     clearOnStart: false,
@@ -43,15 +49,19 @@ export const ExpensesProvider = ({ children }) => {
     collection: "clients",
     fetchOnInit: true,
   });
-  const { arrayData: incomes, create: createIncomeHandler, fetchAll: fetchIncomes } =
-    usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
-  
+  const {
+    arrayData: incomes,
+    create: createIncomeHandler,
+    fetchAll: fetchIncomes,
+  } = usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
+
   const value = {
     colors,
     setCurrentYear,
     createIncomeHandler,
     createExpenseHandler,
     deleteExpenseHandler,
+    updateExpenseHandler,
     fetchExpenses,
     fetchIncomes,
     currentYear,

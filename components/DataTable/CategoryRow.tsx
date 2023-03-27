@@ -42,7 +42,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(({ categor
     <>
       {!isCollapsed &&
         category.groups.map((group, groupIndex) => (
-          <GroupRow key={groupIndex} group={group} color={color}/>
+          <GroupRow key={groupIndex} group={group} category={category} color={color}/>
         ))}
       <tr ref={dragDropRef} className={styles.categoryRow} onClick={() => toggleItemCollapse(category.id)}>
          <td className={styles.cell} style={{backgroundColor:color}}></td>
