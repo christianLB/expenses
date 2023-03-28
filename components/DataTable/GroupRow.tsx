@@ -1,10 +1,11 @@
 // GroupRow.tsx
-import React, { forwardRef, useContext } from "react";
+import React, { forwardRef, useContext, useState } from "react";
 import { useDrop } from "react-dnd";
+import { filterByMonth } from "../../parseUtils.ts";
 import { TableContext, TableContextProps } from "./DataTable.tsx";
-import ExpensesRow from "./ExpensesRow.tsx"; 
+import ExpensesRow from "./ExpensesRow.tsx";
 import styles from "./tableStyles.js";
-import withDroppable from './withDroppable.tsx'
+import withDroppable from "./withDroppable.tsx";
 
 interface GroupData {
   id: string;
@@ -19,54 +20,70 @@ interface GroupRowProps {
   color: string;
 }
 
-const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(({ group, color }, ref) => {
+const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
+  ({ group, color }, ref) => {
+    const { collapsedKeys, toggleItemCollapse, handleDrop } =
+      useContext<TableContextProps>(TableContext);
+    const isCollapsed = !collapsedKeys.has(group.id);
+    const colorStyle = { backgroundColor: color, filter: "brightness(90%)" };
+    const padding = { paddingLeft: "2.5em", fontSize: "0.7rem" };
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
-  const { collapsedKeys, toggleItemCollapse, handleDrop } = useContext<TableContextProps>(TableContext);
-  const isCollapsed = !collapsedKeys.has(group.id);
-  const colorStyle = { backgroundColor: color, filter: 'brightness(90%)' }
-  const padding = { paddingLeft: "2.5em", fontSize: "0.7rem" }
-  
-  const [, drop] = useDrop({
-    accept: "EXPENSE",
-    drop: (item: any) => handleDrop(item?.id, group?.id, 'group'),
-  });
+    const [, drop] = useDrop({
+      accept: "EXPENSE",
+      drop: (item: any) => handleDrop(item?.id, group?.id, "group"),
+    });
 
-  const dragDropRef = (instance) => {
-    drop(instance);
-  };
-  
-  return (
-     <>
-      {!isCollapsed &&
-        group.expenses.map((expense, expenseIndex) => (
-          <ExpensesRow
-            key={expense.id}
-            expense={expense}
-            color={color}
-            categoryId={expense.category?.id}
-            groupId={expense.group?.id}
-          />
-        ))}
-      <tr ref={dragDropRef} className={styles.groupRow} onClick={() => toggleItemCollapse(group.id)}>
-        <td className={styles.groupCell} style={colorStyle}></td>
-        <td
-          style={{ ...colorStyle, ...padding }}
-          className={styles.groupCell}
+    const dragDropRef = (instance) => {
+      drop(instance);
+    };
+    const handleMonthClick = (e, monthIndex) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setSelectedMonth(monthIndex);
+    };
+
+    const filtered = filterByMonth(group.expenses, selectedMonth);
+    console.log(filtered);
+
+    return (
+      <>
+        {!isCollapsed &&
+          filtered.map((expense, expenseIndex) => (
+            <ExpensesRow
+              key={expense.id}
+              expense={expense}
+              color={color}
+              categoryId={expense.category?.id}
+              groupId={expense.group?.id}
+            />
+          ))}
+        <tr
+          ref={dragDropRef}
+          className={styles.groupRow}
+          onClick={() => toggleItemCollapse(group.id)}
         >
-          {group.groupName}
-        </td>
-        {group.totals.map((total, monthIndex) => (
+          <td className={styles.groupCell} style={colorStyle}></td>
           <td
-            key={monthIndex} 
-            style={{...colorStyle, ...padding}}
+            style={{ ...colorStyle, ...padding }}
+            className={styles.groupCell}
           >
-            {total.toFixed(2)}
+            {group.groupName}
           </td>
-        ))}
-      </tr>
-    </>
-  );
-});
+          {group.totals.map((total, monthIndex) => (
+            <td
+              key={monthIndex}
+              style={{ ...colorStyle, ...padding }}
+              onClick={(e) => handleMonthClick(e, monthIndex)}
+            >
+              {total.toFixed(2)}
+            </td>
+          ))}
+        </tr>
+      </>
+    );
+  }
+);
 
 const DroppableGroupRow = withDroppable(GroupRow);
 

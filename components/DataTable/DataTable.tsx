@@ -38,10 +38,6 @@ const DataTable: React.FC<DataTableProps> = () => {
 
   const { categories, summary, balance } = data;
 
-  if (!Object.keys(data).length) {
-    return <div className="text-center py-4">No rows found</div>;
-  }
-
   const handleDrop = async (
     expenseId: string,
     targetId: string,

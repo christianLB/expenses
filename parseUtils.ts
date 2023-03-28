@@ -21,6 +21,14 @@ function initializeGroup(groupData) {
   };
 }
 
+export const filterByMonth = (transactions: any, month: number): any[] => {
+  return transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.date);
+    console.log({ transactionDate, transaction, month })
+    return transactionDate//.getMonth() === month;
+  });
+};
+
 export const generateYearlyQuery = (year) => {
   const startDate = `${year}-01-01T00:00:00.000Z`;
   const endDate = `${year + 1}-01-01T00:00:00.000Z`;
@@ -87,7 +95,7 @@ function processExpenses(expenses) {
       group = findOrCreateGroup(category, expense.group);
     } else {
       // Create a special "No Group" group for expenses without a group
-      group = findOrCreateGroup(category, { id:'no-group', name: "No Group" });
+      group = findOrCreateGroup(category, { id: 'no-group', name: "No Group" });
     }
 
     group.totals[monthIndex] += expense.amount;
