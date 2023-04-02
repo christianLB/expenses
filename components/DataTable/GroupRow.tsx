@@ -44,7 +44,6 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
     };
 
     const filtered = filterByMonth(group.expenses, selectedMonth);
-    console.log(filtered);
 
     return (
       <>
@@ -74,7 +73,10 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
             <td
               key={monthIndex}
               style={{ ...colorStyle, ...padding }}
-              onClick={(e) => handleMonthClick(e, monthIndex)}
+              className={`${monthIndex === selectedMonth ? "border" : ""}`}
+              onClick={(e) => {
+                total > 0 && handleMonthClick(e, monthIndex);
+              }}
             >
               {total.toFixed(2)}
             </td>

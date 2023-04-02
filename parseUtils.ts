@@ -22,10 +22,9 @@ function initializeGroup(groupData) {
 }
 
 export const filterByMonth = (transactions: any, month: number): any[] => {
-  return transactions.filter(transaction => {
+  return transactions.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
-    console.log({ transactionDate, transaction, month })
-    return transactionDate//.getMonth() === month;
+    return transactionDate.getMonth() === month;
   });
 };
 
@@ -46,7 +45,6 @@ export const generateYearlyQuery = (year) => {
     ],
   };
 };
-
 
 function findOrCreateCategory(categories, categoryData) {
   let category = categories.find((cat) => cat.name === categoryData.name);
@@ -86,7 +84,7 @@ function processExpenses(expenses) {
       category = findOrCreateCategory(data.categories, expense.category);
     } else {
       category = findOrCreateCategory(data.categories, {
-        id: 'uncategorized',
+        id: "uncategorized",
         name: "Uncategorized",
       });
     }
@@ -95,7 +93,7 @@ function processExpenses(expenses) {
       group = findOrCreateGroup(category, expense.group);
     } else {
       // Create a special "No Group" group for expenses without a group
-      group = findOrCreateGroup(category, { id: 'no-group', name: "No Group" });
+      group = findOrCreateGroup(category, { id: "no-group", name: "No Group" });
     }
 
     group.totals[monthIndex] += expense.amount;
@@ -134,6 +132,31 @@ function processIncomes(incomes, data) {
 
   data.categories.unshift(incomeCategory); // Add the income category to the beginning of the categories array
 }
+
+export const parseSingleTransaction = (feed) => {
+  const lines = feed.split("\n");
+  const result: any = {};
+
+  lines.forEach((line) => {
+    if (line.startsWith("Descripción")) {
+      result.name = line.substring("Descripción".length).trim();
+    } else if (line.startsWith("Observaciones")) {
+      result.name += " " + line.substring("Observaciones".length).trim();
+    } else if (line.startsWith("Fecha del movimiento")) {
+      result.date = line.substring("Fecha del movimiento".length).trim();
+    } else if (line.startsWith("Fecha valor")) {
+      result.valueDate = line.substring("Fecha valor".length).trim();
+    } else if (line.startsWith("Importe")) {
+      result.amount = parseFloat(
+        line.substring("Importe".length).trim().replace(",", ".")
+      );
+    } else if (line.startsWith("Divisa")) {
+      result.currency = line.substring("Divisa".length).trim();
+    }
+  });
+
+  return result;
+};
 
 export function generateSummaryData(expenses, incomes) {
   const data = processExpenses(expenses);

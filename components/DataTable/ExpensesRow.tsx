@@ -3,11 +3,12 @@ import React, { forwardRef, useContext } from "react";
 import styles from "./tableStyles.js";
 import useSelect from "../../hooks/useSelect.tsx";
 import { useExpensesContext } from "../../hooks/expensesContext.tsx";
-import { DeleteIcon } from "@chakra-ui/icons";
+//import { DeleteIcon, Icon } from "@chakra-ui/icons";
 import { useDrag, useDrop } from "react-dnd";
 import withDraggable from "./withDraggable.tsx";
-import withDroppable from "./withDroppable.tsx";
+//import withDroppable from "./withDroppable.tsx";
 import { TableContextProps, TableContext } from "./DataTable.tsx";
+import useIcon from "../../hooks/useIcon.tsx";
 
 interface ExpenseData {
   id: string;
@@ -51,19 +52,23 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
       item: { id: props.expense.id },
     });
 
-    const [, drop] = useDrop({
-      accept: "EXPENSE",
-      drop: (item: any) => handleDrop(item.id, props.categoryId, props.groupId),
-    });
+    // const [, drop] = useDrop({
+    //   accept: "EXPENSE",
+    //   drop: (item: any) => handleDrop(item.id, props.categoryId, props.groupId),
+    // });
 
     const dragDropRef = (instance) => {
-      drag(drop(instance));
+      //drag(drop(instance));
+      drag(instance);
     };
 
     const handleDelete = async () => {
       await deleteExpenseHandler({ id: expense.id });
       fetchExpenses();
     };
+
+    //const DeleteIcon = useIcon("FaTrash");
+
     return (
       <tr ref={dragDropRef} className={styles.expensesRow}>
         <td
@@ -77,7 +82,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
         <td
           className={`${styles.expcell} py-1 border-none`}
           style={colorStyle}
-        >{`${expenseDate.getDate() + 1}/${expenseDate.getMonth() + 1}`}</td>
+        >{`${expenseDate.getDate()}/${expenseDate.getMonth() + 1}`}</td>
         <td className={`${styles.expcell} border-none`} style={colorStyle}>
           {expense.amount.toFixed(2)}
         </td>
@@ -93,7 +98,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
           style={colorStyle}
           onClick={handleDelete}
         >
-          <DeleteIcon />
+          {/* <DeleteIcon /> */}
         </td>
       </tr>
     );
@@ -101,6 +106,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
 );
 
 const DraggableExpensesRow = withDraggable(ExpensesRow);
-const DroppableExpensesRow = withDroppable(DraggableExpensesRow);
+//const DroppableExpensesRow = withDroppable(DraggableExpensesRow);
+//const DroppableExpensesRow = withDroppable(ExpensesRow);
 
-export default DroppableExpensesRow;
+export default DraggableExpensesRow;

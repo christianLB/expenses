@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
 import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
 import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
-import { parseTransactionInfo, parseTransactionList, formatDate } from "../utils.ts";
+import {
+  parseTransactionInfo,
+  parseTransactionList,
+  formatDate,
+} from "../utils.ts";
 import useSelect from "../hooks/useSelect.tsx";
 import TransactionCard from "../components/TransactionCard.tsx";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 import styles from "../styles/TransactionCard.module.css";
-
+import { parseSingleTransaction } from "../parseUtils.ts";
 
 interface TransactionInfo {
   date?: Date;
@@ -46,6 +50,8 @@ const textAreaStyles = {
 
 const resultPaneStyle = {
   paddingLeft: "20px",
+  paddingRight: "20px",
+  marginTop: "20px",
   display: "flex",
   flexDirection: "column",
 };
@@ -71,7 +77,14 @@ const headerStyles = "bg-white shadow-xs py-4 px-4 sm:px-6";
 const footerStyles = "bg-gray-100 py-4 px-4 sm:px-6";
 
 const NewExpense = ({ loading, onCreate = (params) => {} }) => {
-  const { currentYear, createExpenseHandler, creatingExpense, createIncomeHandler, fetchExpenses, fetchIncomes } = useExpensesContext();
+  const {
+    currentYear,
+    createExpenseHandler,
+    creatingExpense,
+    createIncomeHandler,
+    fetchExpenses,
+    fetchIncomes,
+  } = useExpensesContext();
 
   const [text, setText] = useState("");
   const [transaction, setTransaction] = useState<TransactionInfo>({});
@@ -89,7 +102,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   };
 
   useEffect(() => {
-    const transaction = parseTransactionInfo(text);
+    const transaction = parseSingleTransaction(text);
     if (transaction) setTransaction(transaction);
     const extract = parseTransactionList(text);
     if (extract) setExtract(extract);
@@ -108,55 +121,68 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
 
   const fields = Object.keys(transaction);
 
-  const getIncomes = () => extract.filter(
-    (transaction) => parseFloat(transaction.amount) > 0
-  );
-  const getExpenses = () => extract.filter(
-    (transaction) => parseFloat(transaction.amount) < 0
-  );
-  const incomes = getIncomes()
-  const expenses = getExpenses()
+  const getIncomes = () =>
+    extract.filter((transaction) => parseFloat(transaction.amount) > 0);
+  const getExpenses = () =>
+    extract.filter((transaction) => parseFloat(transaction.amount) < 0);
+  const incomes = getIncomes();
+  const expenses = getExpenses();
 
   const addExpenses = async () => {
-    const payload = getExpenses().map(transaction => {
+    const payload = getExpenses().map((transaction) => {
       return {
+        body: {
+          ...transaction,
+          date: formatDate(`${transaction.date}/${currentYear}`),
+          valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
+          amount: Math.abs(
+            parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+          ),
+          balance: parseFloat(
+            transaction.balance.replace(".", "").replace(",", ".")
+          ),
+          category: selectedCategory,
+          group: selectedGroup,
+        },
+      };
+    });
+    const r = await createExpenseHandler(payload);
+    fetchExpenses();
+  };
+
+  const addIncomes = async () => {
+    const payload = getIncomes().map((transaction) => {
+      return {
+        body: {
+          ...transaction,
+          date: formatDate(`${transaction.date}/${currentYear}`),
+          valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
+          amount: Math.abs(
+            parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+          ),
+          balance: parseFloat(
+            transaction.balance.replace(".", "").replace(",", ".")
+          ),
+        },
+      };
+    });
+    const { doc: newIncome } = await createIncomeHandler(payload);
+    fetchIncomes();
+  };
+
+  const getTransactionBody = (transaction) => {
+    console.log(transaction);
+    return {
       body: {
         ...transaction,
         date: formatDate(`${transaction.date}/${currentYear}`),
         valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
-        amount: Math.abs(
-          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
-        ),
-        balance: parseFloat(
-          transaction.balance.replace(".", "").replace(",", ".")
-        ),
-        category: selectedCategory,
-        group: selectedGroup,
-      }
-      }
-    })
-    const r = await createExpenseHandler(payload)
-    fetchExpenses()
-  };
-
-  const addIncomes = async () => {
-    const payload = getIncomes().map(transaction => {
-      return {
-         body: {
-        ...transaction,
-        date: formatDate(`${transaction.date}/${currentYear}`),
-        valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
-        amount: Math.abs(
-          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
-        ),
-        balance: parseFloat(
-          transaction.balance.replace(".", "").replace(",", ".")
-        ),
-      }
-       }
-     })
-    const { doc: newIncome } = await createIncomeHandler(payload);
-    fetchIncomes()
+        amount: Math.abs(parseFloat(transaction.amount)),
+        // balance: parseFloat(
+        //   transaction.balance.replace(".", "").replace(",", ".")
+        // ),
+      },
+    };
   };
 
   return (
@@ -169,7 +195,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>
-            <div style={fieldStyles}>
+            {/* <div style={fieldStyles}>
               <span>Category:</span>
               <span>{CategoriesSelect}</span>
             </div>
@@ -177,7 +203,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <div style={fieldStyles}>
               <span>Group:</span>
               <span>{GroupsSelect}</span>
-            </div>
+            </div> */}
 
             {fields.map((field) => {
               return (
@@ -189,21 +215,30 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             })}
             <button
               className={buttonStyles}
-              onClick={() => onCreate({ body: transaction })}
+              onClick={async () => {
+                await createExpenseHandler({
+                  ...getTransactionBody(transaction),
+                });
+                fetchExpenses();
+              }}
             >
               Confirmar {loading && <Spinner />}
             </button>
           </>
         )}
       </div>
-      <div className={'w-full flex flex-col items-center justify-around p-2'}>
-        {!!incomes.length && <span><button
-          //disabled={creatingExpense || deletingExpense}
-          className={`${styles.addButton} mb-2 w-full`}
-          onClick={addIncomes}
-        >
-          Add {incomes.length} Ingresos 
-        </button></span>}
+      <div className={"w-full flex flex-col items-center justify-around p-2"}>
+        {!!incomes.length && (
+          <span>
+            <button
+              //disabled={creatingExpense || deletingExpense}
+              className={`${styles.addButton} mb-2 w-full`}
+              onClick={addIncomes}
+            >
+              Add {incomes.length} Ingresos
+            </button>
+          </span>
+        )}
         {/* <div
           className={"grid mt-5"}
           style={{
@@ -223,13 +258,17 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             );
           })}
         </div> */}
-        {!!expenses.length && <span><button
-          //disabled={creatingExpense || deletingExpense}
-          className={`${styles.addButton} mt-2 w-full`}
-          onClick={addExpenses}
-        >
-          Add {expenses.length} Gastos
-        </button></span>}
+        {!!expenses.length && (
+          <span>
+            <button
+              //disabled={creatingExpense || deletingExpense}
+              className={`${styles.addButton} mt-2 w-full`}
+              onClick={addExpenses}
+            >
+              Add {expenses.length} Gastos
+            </button>
+          </span>
+        )}
       </div>
 
       {/* <div
