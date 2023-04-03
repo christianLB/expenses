@@ -71,7 +71,7 @@ export const ExpensesProvider = ({ children }) => {
     categories,
     clients,
     categoryGroupExpenses: expenses
-      ? generateSummaryData(expenses, incomes)
+      ? generateSummaryData(expenses, categories, groups, incomes)
       : {},
   };
 

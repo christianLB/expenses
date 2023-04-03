@@ -47,10 +47,12 @@ const DataTable: React.FC<DataTableProps> = () => {
 
     if (!expense) return;
 
-    const originalCategory = originalCategories.find(
-      (cat) => cat.id === expense.category.id
-    );
-    const originalGroup = groups.find((grp) => grp._id === expense.group);
+    const originalCategory = expense.category
+      ? originalCategories.find((cat) => cat.id === expense.category.id)
+      : { id: 0 };
+    const originalGroup = expense.group
+      ? groups.find((grp) => grp._id === expense.group)
+      : { id: 0 };
 
     let updatedCategory = originalCategory;
     let updatedGroup = originalGroup;
@@ -60,11 +62,13 @@ const DataTable: React.FC<DataTableProps> = () => {
         (cat) => cat.id === targetId
       );
 
-      if (targetCategory && targetCategory.id !== originalCategory.id) {
+      if (targetCategory && targetCategory.id !== originalCategory?.id) {
         updatedCategory = targetCategory;
         updatedGroup = null;
       }
-    } else if (targetType === "group") {
+    }
+
+    if (targetType === "group") {
       const targetGroup = groups.find((grp) => grp.id === targetId);
       if (
         targetGroup &&

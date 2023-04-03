@@ -68,13 +68,22 @@ function findOrCreateGroup(category, groupData) {
   return group;
 }
 
-function processExpenses(expenses) {
+function processExpenses(expenses, categories = [], groups = []) {
   const data = {
     categories: [],
+    groups: [],
     summary: Array(13).fill(0),
     balance: Array(13).fill(0), // Initialize the Balance category directly within the data structure
   };
+  // Initialize categories with zeros
+  categories.forEach((category: any) => {
+    findOrCreateCategory(data.categories, category);
+  });
 
+  groups.forEach((group: any) => {
+    findOrCreateCategory(data.groups, group);
+  });
+  console.log(groups);
   expenses.forEach((expense) => {
     const monthIndex = getMonth(expense.date);
     let category;
@@ -158,8 +167,8 @@ export const parseSingleTransaction = (feed) => {
   return result;
 };
 
-export function generateSummaryData(expenses, incomes) {
-  const data = processExpenses(expenses);
+export function generateSummaryData(expenses, categories, groups, incomes) {
+  const data = processExpenses(expenses, categories, groups);
   processIncomes(incomes, data);
   return data;
 }
