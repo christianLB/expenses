@@ -67,7 +67,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
             style={{ ...colorStyle, ...padding }}
             className={styles.groupCell}
           >
-            {group.groupName}
+            {group.name}
           </td>
           {group.totals.map((total, monthIndex) => (
             <td

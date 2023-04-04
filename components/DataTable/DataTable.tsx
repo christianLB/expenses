@@ -27,7 +27,8 @@ export const TableContext = createContext<TableContextProps | undefined>(
 const DataTable: React.FC<DataTableProps> = () => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
   const {
-    categoryGroupExpenses: data,
+    //categoryGroupExpenses: data,
+    groupedExpensesByCategory: categories,
     colors,
     updateExpenseHandler,
     categories: originalCategories,
@@ -36,7 +37,7 @@ const DataTable: React.FC<DataTableProps> = () => {
     fetchExpenses,
   } = useExpensesContext();
 
-  const { categories, summary, balance } = data;
+  //const [ categories, summary, balance }] = data;
 
   const handleDrop = async (
     expenseId: string,
@@ -109,7 +110,7 @@ const DataTable: React.FC<DataTableProps> = () => {
                 color={colors[index]}
               />
             ))}
-            <tr className={tableStyles.summaryRow}>
+            {/* <tr className={tableStyles.summaryRow}>
               <td className={tableStyles.cell} />
               <td className={tableStyles.cell}>Summary</td>
               {summary.map((total, index) => (
@@ -132,7 +133,7 @@ const DataTable: React.FC<DataTableProps> = () => {
                   {total.toFixed(2)}
                 </td>
               ))}
-            </tr>
+            </tr> */}
           </tbody>
         </table>
       </TableContext.Provider>

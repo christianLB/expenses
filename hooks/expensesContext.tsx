@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { generateYearlyQuery } from "../parseUtils.ts";
 import { generateSummaryData } from "../parseUtils.ts";
+import useExpensesTable from "./useExpensesTable.tsx";
 import usePayloadCollection from "./usePayloadCollection.ts";
 
 const ExpensesContext = createContext({});
@@ -22,7 +23,6 @@ const colors = [
 
 export const ExpensesProvider = ({ children }) => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
   const query = generateYearlyQuery(currentYear);
 
   const {
@@ -55,6 +55,12 @@ export const ExpensesProvider = ({ children }) => {
     fetchAll: fetchIncomes,
   } = usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
 
+  const { groupedExpensesByCategory } = useExpensesTable(
+    expenses,
+    categories,
+    groups
+  );
+
   const value = {
     colors,
     setCurrentYear,
@@ -70,9 +76,11 @@ export const ExpensesProvider = ({ children }) => {
     groups,
     categories,
     clients,
-    categoryGroupExpenses: expenses
-      ? generateSummaryData(expenses, categories, groups, incomes)
-      : {},
+    groupedExpensesByCategory,
+    // categoryGroupExpenses:
+    //   expenses && categories && groups && incomes
+    //     ? generateSummaryData(expenses, categories, groups, incomes)
+    //     : {},
   };
 
   return (

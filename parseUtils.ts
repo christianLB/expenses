@@ -57,18 +57,19 @@ function findOrCreateCategory(categories, categoryData) {
   return category;
 }
 
-function findOrCreateGroup(category, groupData) {
-  let group = category.groups.find((grp) => grp.groupName === groupData.name);
+function findOrCreateGroup(groups, groupData) {
+  let group = groups.find((grp) => grp.groupName === groupData.name);
 
   if (!group) {
     group = initializeGroup(groupData);
-    category.groups.push(group);
+    groups.push(group);
   }
 
   return group;
 }
 
-function processExpenses(expenses, categories = [], groups = []) {
+function processExpenses(expenses, categories, groups) {
+  //console.log({ categories, groups });
   const data = {
     categories: [],
     groups: [],
@@ -79,11 +80,10 @@ function processExpenses(expenses, categories = [], groups = []) {
   categories.forEach((category: any) => {
     findOrCreateCategory(data.categories, category);
   });
-
   groups.forEach((group: any) => {
-    findOrCreateCategory(data.groups, group);
+    findOrCreateGroup(data.groups, group);
   });
-  console.log(groups);
+
   expenses.forEach((expense) => {
     const monthIndex = getMonth(expense.date);
     let category;
@@ -93,16 +93,19 @@ function processExpenses(expenses, categories = [], groups = []) {
       category = findOrCreateCategory(data.categories, expense.category);
     } else {
       category = findOrCreateCategory(data.categories, {
-        id: "uncategorized",
+        id: 0,
         name: "Uncategorized",
       });
     }
 
     if (expense.group) {
-      group = findOrCreateGroup(category, expense.group);
+      group = findOrCreateGroup(data.groups, expense.group);
     } else {
       // Create a special "No Group" group for expenses without a group
-      group = findOrCreateGroup(category, { id: "no-group", name: "No Group" });
+      group = findOrCreateGroup(data.groups, {
+        id: 0,
+        name: "No Group",
+      });
     }
 
     group.totals[monthIndex] += expense.amount;
