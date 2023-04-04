@@ -88,5 +88,6 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
 );
 
 const DroppableGroupRow = withDroppable(GroupRow);
+GroupRow.displayName = "GroupRow";
 
 export default DroppableGroupRow;

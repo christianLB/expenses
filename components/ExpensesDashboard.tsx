@@ -65,8 +65,8 @@ const ExpenseDashboard = () => {
         },
       ],
     });
-  }, [expenses, categories, groups]);
-  
+  }, [expenses, categories, groups, colors]);
+
   const handlePieSliceHover = (event, element) => {
     if (element[0]) {
       const index = element[0].index;

@@ -18,17 +18,17 @@ const withDraggable = (WrappedComponent) => {
     });
 
     return (
-  <WrappedComponent
-    ref={instance => drag(drop(instance))}
-    {...props}
-    style={{
-      ...props.style,
-      opacity: isDragging ? 0.5 : 1,
-    }}
-  />
-);
-
+      <WrappedComponent
+        ref={(instance) => drag(drop(instance))}
+        {...props}
+        style={{
+          ...props.style,
+          opacity: isDragging ? 0.5 : 1,
+        }}
+      />
+    );
   });
 };
+withDraggable.displayName = "withDraggable";
 
 export default withDraggable;

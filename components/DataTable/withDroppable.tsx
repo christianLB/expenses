@@ -6,13 +6,13 @@ const withDroppable = (WrappedComponent) => {
   return forwardRef((props, ref) => {
     const [, drop] = useDrop({
       accept: "EXPENSE",
-      drop: (item) => props.handleDrop(item.id, props.categoryId, props.groupId),
+      drop: (item) =>
+        props.handleDrop(item.id, props.categoryId, props.groupId),
     });
 
-    return (
-      <WrappedComponent ref={drop} {...props} />
-    );
+    return <WrappedComponent ref={drop} {...props} />;
   });
 };
+withDroppable.displayName = "withDroppable";
 
 export default withDroppable;

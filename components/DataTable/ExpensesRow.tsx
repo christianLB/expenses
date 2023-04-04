@@ -108,5 +108,6 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
 const DraggableExpensesRow = withDraggable(ExpensesRow);
 //const DroppableExpensesRow = withDroppable(DraggableExpensesRow);
 //const DroppableExpensesRow = withDroppable(ExpensesRow);
+ExpensesRow.displayName = "ExpensesRow";
 
 export default DraggableExpensesRow;

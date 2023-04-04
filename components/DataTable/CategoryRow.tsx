@@ -4,7 +4,7 @@ import { useDrop } from "react-dnd";
 import { TableContext, TableContextProps } from "./DataTable.tsx";
 import GroupRow from "./GroupRow.tsx";
 import styles from "./tableStyles.js";
-import withDroppable from './withDroppable.tsx'
+import withDroppable from "./withDroppable.tsx";
 
 interface CategoryData {
   id: string;
@@ -25,38 +25,57 @@ interface CategoryRowProps {
   index: number;
   color: string;
 }
-const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(({ category, color }, ref) => {
-  const { collapsedKeys, toggleItemCollapse, handleDrop } = useContext<TableContextProps>(TableContext);
-  const isCollapsed = !collapsedKeys.has(category.id);
+const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
+  ({ category, color }, ref) => {
+    const { collapsedKeys, toggleItemCollapse, handleDrop } =
+      useContext<TableContextProps>(TableContext);
+    const isCollapsed = !collapsedKeys.has(category.id);
 
-  const [, drop] = useDrop({
-    accept: "EXPENSE",
-    drop: (item: any) => handleDrop(item.id, category.id, 'category'),
-  });
+    const [, drop] = useDrop({
+      accept: "EXPENSE",
+      drop: (item: any) => handleDrop(item.id, category.id, "category"),
+    });
 
-  const dragDropRef = (instance) => {
-    drop(instance);
-  };
+    const dragDropRef = (instance) => {
+      drop(instance);
+    };
 
-  return (
-    <>
-      {!isCollapsed &&
-        category.groups.map((group, groupIndex) => (
-          <GroupRow key={groupIndex} group={group} category={category} color={color}/>
-        ))}
-      <tr ref={dragDropRef} className={styles.categoryRow} onClick={() => toggleItemCollapse(category.id)}>
-         <td className={styles.cell} style={{backgroundColor:color}}></td>
-        <td className={styles.cell} style={{backgroundColor:color}}>{category.name}</td>
-        {category.totals.map((total, index) => (
-          <td className={styles.cell} key={index} style={{backgroundColor:color}}>
-            {total.toFixed(2)}
+    return (
+      <>
+        {!isCollapsed &&
+          category.groups.map((group, groupIndex) => (
+            <GroupRow
+              key={groupIndex}
+              group={group}
+              category={category}
+              color={color}
+            />
+          ))}
+        <tr
+          ref={dragDropRef}
+          className={styles.categoryRow}
+          onClick={() => toggleItemCollapse(category.id)}
+        >
+          <td className={styles.cell} style={{ backgroundColor: color }}></td>
+          <td className={styles.cell} style={{ backgroundColor: color }}>
+            {category.name}
           </td>
-        ))}
-      </tr>
-    </>
-  );
-});
+          {category.totals.map((total, index) => (
+            <td
+              className={styles.cell}
+              key={index}
+              style={{ backgroundColor: color }}
+            >
+              {total.toFixed(2)}
+            </td>
+          ))}
+        </tr>
+      </>
+    );
+  }
+);
 
 const DroppableExpensesRow = withDroppable(CategoryRow);
 
+CategoryRow.displayName = "CategoryRow";
 export default DroppableExpensesRow;
