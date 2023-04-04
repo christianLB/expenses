@@ -61,6 +61,17 @@ const useExpensesTable = (expenses, categories, groups) => {
       };
     });
 
+    // Add summary category
+    const summaryTotals = getTotals(expenses);
+    const summaryCategory = {
+      id: "summary",
+      name: "Summary",
+      groups: [],
+      expenses: [],
+      totals: summaryTotals,
+    };
+    groupedExpenses.push(summaryCategory);
+
     return {
       categories: groupedExpenses,
     };
