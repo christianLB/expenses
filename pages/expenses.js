@@ -15,6 +15,9 @@ import {
   AccordionPanel,
   Box,
   Text,
+  VStack,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
@@ -30,41 +33,67 @@ export default function Expenses() {
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-5xl mx-auto">
-          <Box
-            display="flex"
-            alignItems="center"
-            marginBottom="1rem"
-            flexWrap="wrap"
-          >
-            <Text marginRight="0.5rem">Year:</Text>
-            <NumberInput
-              defaultValue={currentYear}
-              onChange={(valueString) => setCurrentYear(parseInt(valueString))}
-              className="mb-2 md:mb-0"
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
-          <Box w="100%" marginBottom="2rem">
-            <Accordion allowToggle>
-              <AccordionItem>
-                <h2>
-                  <AccordionButton>Add new expense</AccordionButton>
-                </h2>
-                <AccordionPanel>
-                  <NewExpense />
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
-          </Box>
+          <VStack spacing={6} w="100%">
+            <Box>
+              <Grid
+                templateColumns="repeat(auto-fit, minmax(240px, 1fr))"
+                gap={4}
+              >
+                <GridItem>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    flexWrap="wrap"
+                    p={4}
+                    borderWidth={1}
+                    borderRadius="lg"
+                  >
+                    <Text marginRight="0.5rem">Year:</Text>
+                    <NumberInput
+                      defaultValue={currentYear}
+                      onChange={(valueString) =>
+                        setCurrentYear(parseInt(valueString))
+                      }
+                      className="mb-2 md:mb-0"
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </Box>
+                </GridItem>
+                <GridItem>
+                  <Box
+                    p={4}
+                    borderWidth={1}
+                    borderRadius="lg"
+                    overflow="hidden"
+                  >
+                    <Accordion allowToggle>
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton>Add new expense</AccordionButton>
+                        </h2>
+                        <AccordionPanel>
+                          <NewExpense />
+                        </AccordionPanel>
+                      </AccordionItem>
+                    </Accordion>
+                  </Box>
+                </GridItem>
+              </Grid>
+            </Box>
 
-          <Table />
+            <Box borderWidth={1} borderRadius="lg" overflow="hidden">
+              <Table />
+            </Box>
 
-          <ExpensesDashboard />
+            <Box borderWidth={1} borderRadius="lg" overflow="hidden">
+              <ExpensesDashboard />
+            </Box>
+          </VStack>
         </div>
       </main>
       <Footer />

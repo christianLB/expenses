@@ -78,7 +78,9 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
             <td
               key={monthIndex}
               style={{ ...colorStyle, ...padding }}
-              className={`${monthIndex === selectedMonth ? "border" : ""}`}
+              className={`${
+                monthIndex === selectedMonth ? styles.highlightedMonth : ""
+              }`}
               onClick={(e) => {
                 total > 0 && handleMonthClick(e, monthIndex);
               }}
