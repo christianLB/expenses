@@ -58,7 +58,8 @@ export const ExpensesProvider = ({ children }) => {
   const { groupedExpensesByCategory } = useExpensesTable(
     expenses,
     categories,
-    groups
+    groups,
+    incomes
   );
 
   const value = {

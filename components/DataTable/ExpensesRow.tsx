@@ -68,6 +68,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
     };
 
     //const DeleteIcon = useIcon("FaTrash");
+    const isEmpty = expense.amount <= 0;
 
     return (
       <tr ref={dragDropRef} className={styles.expensesRow}>
@@ -84,7 +85,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
           style={colorStyle}
         >{`${expenseDate.getDate()}/${expenseDate.getMonth() + 1}`}</td>
         <td className={`${styles.expcell} border-none`} style={colorStyle}>
-          {expense.amount.toFixed(2)}
+          {isEmpty ? "-" : expense.amount.toFixed(2)}
         </td>
         <td
           colSpan={10}
@@ -98,7 +99,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
           style={colorStyle}
           onClick={handleDelete}
         >
-          {/* <DeleteIcon /> */}
+          X{/* <DeleteIcon /> */}
         </td>
       </tr>
     );
@@ -108,6 +109,5 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
 const DraggableExpensesRow = withDraggable(ExpensesRow);
 //const DroppableExpensesRow = withDroppable(DraggableExpensesRow);
 //const DroppableExpensesRow = withDroppable(ExpensesRow);
-ExpensesRow.displayName = "ExpensesRow";
 
 export default DraggableExpensesRow;

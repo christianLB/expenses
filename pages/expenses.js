@@ -30,7 +30,12 @@ export default function Expenses() {
 
       <main className="flex-1 p-4 md:p-8">
         <div className="max-w-5xl mx-auto">
-          <Box display="flex" alignItems="center" marginBottom="1rem" flexWrap="wrap">
+          <Box
+            display="flex"
+            alignItems="center"
+            marginBottom="1rem"
+            flexWrap="wrap"
+          >
             <Text marginRight="0.5rem">Year:</Text>
             <NumberInput
               defaultValue={currentYear}
@@ -59,7 +64,7 @@ export default function Expenses() {
 
           <Table />
 
-          {/* <ExpensesDashboard /> */}
+          <ExpensesDashboard />
         </div>
       </main>
       <Footer />

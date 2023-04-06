@@ -62,11 +62,11 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
           </td>
           {category.totals.map((total, index) => (
             <td
-              className={styles.cell}
+              className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""}`}
               key={index}
               style={{ backgroundColor: color }}
             >
-              {total.toFixed(2)}
+              {total > 0 ? total.toFixed(2) : "-"}
             </td>
           ))}
         </tr>

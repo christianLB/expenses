@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
-import useApi, { IRequestParams } from './useApi.ts';
-import qs from 'qs'
+import { useCallback, useMemo } from "react";
+import useApi, { IRequestParams } from "./useApi.ts";
+import qs from "qs";
 
 interface IUsePayloadCollectionProps {
   collection: string;
@@ -19,19 +19,21 @@ function usePayloadCollection({
   depth = 1,
   clearOnStart,
   expand,
-  query
+  query,
 }: IUsePayloadCollectionProps) {
   const prodUrl = "https://cms.anaxi.net/api";
-  const localUrl = "http://10.0.0.4:3020/api";
+  const localUrl = "http://192.168.1.11:3020/api";
   const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
 
   const buildQueryString = useCallback((query) => {
-    if (!query) return '';
+    if (!query) return "";
     const queryString = qs.stringify({ where: query });
     return `&${queryString}`;
   }, []);
 
-  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${buildQueryString(query)}`;
+  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${buildQueryString(
+    query
+  )}`;
 
   const {
     data,
@@ -41,7 +43,7 @@ function usePayloadCollection({
     error: fetchAllError,
     arrayData,
   } = useApi(apiUrl, {
-    method: 'GET',
+    method: "GET",
     fetchOnInit,
     perPageLimit,
     clearOnStart,
@@ -54,7 +56,7 @@ function usePayloadCollection({
     loading: createLoading,
     error: createError,
   } = useApi(`${baseUrl}/${collection}`, {
-    method: 'POST',
+    method: "POST",
   });
 
   const {
@@ -63,7 +65,7 @@ function usePayloadCollection({
     loading: updating,
     error: updateError,
   } = useApi(`${baseUrl}/${collection}/:id`, {
-    method: 'PUT',
+    method: "PUT",
   });
 
   const {
@@ -72,7 +74,7 @@ function usePayloadCollection({
     loading: deleteLoading,
     error: deleteError,
   } = useApi(`${baseUrl}/${collection}/:id`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   const fetchSingle = useCallback(
@@ -84,7 +86,7 @@ function usePayloadCollection({
         loading: fetchSingleLoading,
         error: fetchSingleError,
       } = useApi(`${apiUrl}/${itemId}`, {
-        method: 'GET',
+        method: "GET",
       });
 
       await fetchSingleApi();
@@ -107,10 +109,18 @@ function usePayloadCollection({
 
   return {
     data,
-    fetchAll, fetchAllLoading, fetchAllError,
-    create, createLoading, createError,
-    update, updating, updateError,
-    deleteItem, deleteLoading, deleteError,
+    fetchAll,
+    fetchAllLoading,
+    fetchAllError,
+    create,
+    createLoading,
+    createError,
+    update,
+    updating,
+    updateError,
+    deleteItem,
+    deleteLoading,
+    deleteError,
     fetchSingle,
     response,
     arrayData: arrayData[0] || [],

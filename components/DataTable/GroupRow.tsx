@@ -45,6 +45,11 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
 
     const filtered = filterByMonth(group.expenses, selectedMonth);
 
+    // If the group is empty, don't render the component
+    if (filtered.length === 0) {
+      return null;
+    }
+
     return (
       <>
         {!isCollapsed &&
@@ -78,7 +83,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
                 total > 0 && handleMonthClick(e, monthIndex);
               }}
             >
-              {total.toFixed(2)}
+              {total > 0 ? total.toFixed(2) : "-"}
             </td>
           ))}
         </tr>

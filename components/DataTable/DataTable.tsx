@@ -7,6 +7,7 @@ import tableStyles from "./tableStyles.js";
 import useCollapsedState from "../../hooks/useCollapsedState.tsx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import BalanceRow from "./BalanceRow.tsx";
 
 interface DataTableProps {
   data?: {
@@ -36,8 +37,6 @@ const DataTable: React.FC<DataTableProps> = () => {
     expenses,
     fetchExpenses,
   } = useExpensesContext();
-
-  //const [ categories, summary, balance }] = data;
 
   const handleDrop = async (
     expenseId: string,
@@ -94,6 +93,21 @@ const DataTable: React.FC<DataTableProps> = () => {
     }
   };
 
+  const balanceCategory = categories.find(
+    (category) => category.id === "balance"
+  );
+  const uncategorized = categories.find((category) => category.id === "0");
+
+  const displayCategories = categories.filter((category) => {
+    // Filter out the balance category as it will be rendered separately
+    if (category.id === "balance") return false;
+
+    // Filter out the uncategorized category if it's empty
+    if (category.id === "0" && category.totals[12] <= 0) return false;
+
+    return true;
+  });
+
   return (
     <DndProvider backend={HTML5Backend}>
       <TableContext.Provider
@@ -102,7 +116,7 @@ const DataTable: React.FC<DataTableProps> = () => {
         <table className={`${tableStyles.table} w-full`}>
           <TableHeader />
           <tbody>
-            {categories?.map((category, index) => (
+            {displayCategories?.map((category, index) => (
               <CategoryRow
                 key={index}
                 category={category}
@@ -110,30 +124,12 @@ const DataTable: React.FC<DataTableProps> = () => {
                 color={colors[index]}
               />
             ))}
-            {/* <tr className={tableStyles.summaryRow}>
-              <td className={tableStyles.cell} />
-              <td className={tableStyles.cell}>Summary</td>
-              {summary.map((total, index) => (
-                <td className={tableStyles.cell} key={index}>
-                  {total.toFixed(2)}
-                </td>
-              ))}
-            </tr>
-            <tr className={tableStyles.balanceRow}>
-              <td className={tableStyles.cell} />
-              <td className={tableStyles.cell}>Balance</td>
-              {balance.map((total, index) => (
-                <td
-                  className={[
-                    tableStyles.cell,
-                    total > 0 ? tableStyles.positive : tableStyles.negative,
-                  ].join(" ")}
-                  key={index}
-                >
-                  {total.toFixed(2)}
-                </td>
-              ))}
-            </tr> */}
+            {balanceCategory?.totals && (
+              <BalanceRow
+                category={balanceCategory}
+                color={colors[colors.length - 1]}
+              />
+            )}
           </tbody>
         </table>
       </TableContext.Provider>
