@@ -37,24 +37,35 @@ const drawKey = (
 };
 
 const PianoRoll: React.FC<PianoRollProps> = ({ midiEvents }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const whiteKeysCanvasRef = useRef<HTMLCanvasElement>(null);
+  const blackKeysCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const drawPiano = (ctx: CanvasRenderingContext2D) => {
+  const drawPiano = () => {
+    const whiteKeysCanvas = whiteKeysCanvasRef.current;
+    const blackKeysCanvas = blackKeysCanvasRef.current;
+
+    if (!whiteKeysCanvas || !blackKeysCanvas) return;
+
+    const whiteKeysCtx = whiteKeysCanvas.getContext("2d");
+    const blackKeysCtx = blackKeysCanvas.getContext("2d");
+
+    if (!whiteKeysCtx || !blackKeysCtx) return;
+
     let whiteKeyIndex = 0;
 
-    // Draw white keys first
+    // Draw white keys
     for (let i = 21; i <= 108; i++) {
       const keyIndex = i % 12;
       const keyIsBlack = isBlackKey(keyIndex);
       const keyX = whiteKeyIndex * WHITE_KEY_WIDTH;
 
       if (!keyIsBlack) {
-        drawKey(ctx, keyX, WHITE_KEY_WIDTH, false, false);
+        drawKey(whiteKeysCtx, keyX, WHITE_KEY_WIDTH, false, false);
         whiteKeyIndex++;
       }
     }
 
-    // Draw black keys on top of white keys
+    // Draw black keys
     whiteKeyIndex = 0;
     for (let i = 21; i <= 108; i++) {
       const keyIndex = i % 12;
@@ -65,19 +76,23 @@ const PianoRoll: React.FC<PianoRollProps> = ({ midiEvents }) => {
       } else {
         const keyX =
           (whiteKeyIndex - 1) * WHITE_KEY_WIDTH + WHITE_KEY_WIDTH * 0.5;
-        drawKey(ctx, keyX, BLACK_KEY_WIDTH, true, false);
+        drawKey(blackKeysCtx, keyX, BLACK_KEY_WIDTH, true, false);
       }
     }
   };
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    drawPiano();
 
-    ctx.clearRect(0, 0, PIANO_ROLL_WIDTH, PIANO_ROLL_HEIGHT);
-    drawPiano(ctx);
+    const blackKeysCanvas = blackKeysCanvasRef.current;
+    if (!blackKeysCanvas) return;
+    const blackKeysCtx = blackKeysCanvas.getContext("2d");
+    if (!blackKeysCtx) return;
+
+    const whiteKeysCanvas = whiteKeysCanvasRef.current;
+    if (!whiteKeysCanvas) return;
+    const whiteKeysCtx = whiteKeysCanvas.getContext("2d");
+    if (!whiteKeysCtx) return;
 
     midiEvents.forEach((event) => {
       const note = event.note - 21;
@@ -98,6 +113,7 @@ const PianoRoll: React.FC<PianoRollProps> = ({ midiEvents }) => {
       const x = (whiteKeyIndex - 1) * WHITE_KEY_WIDTH + blackKeyOffset;
       const keyWidth = keyIsBlack ? BLACK_KEY_WIDTH : WHITE_KEY_WIDTH;
 
+      const ctx = keyIsBlack ? blackKeysCtx : whiteKeysCtx;
       drawKey(
         ctx,
         x,
@@ -109,22 +125,25 @@ const PianoRoll: React.FC<PianoRollProps> = ({ midiEvents }) => {
 
       if (event.type === "note-off") {
         drawKey(ctx, x, keyWidth, keyIsBlack, false);
-
-        // Redraw the entire keyboard if the key is white
-        if (!keyIsBlack) {
-          drawPiano(ctx);
-        }
       }
     });
   }, [midiEvents]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="piano-roll"
-      width={PIANO_ROLL_WIDTH}
-      height={PIANO_ROLL_HEIGHT}
-    ></canvas>
+    <div className={styles.pianoRollWrapper}>
+      <canvas
+        ref={whiteKeysCanvasRef}
+        className={styles.whiteKeysCanvas}
+        width={PIANO_ROLL_WIDTH}
+        height={PIANO_ROLL_HEIGHT}
+      ></canvas>
+      <canvas
+        ref={blackKeysCanvasRef}
+        className={styles.blackKeysCanvas}
+        width={PIANO_ROLL_WIDTH}
+        height={PIANO_ROLL_HEIGHT}
+      ></canvas>
+    </div>
   );
 };
 
