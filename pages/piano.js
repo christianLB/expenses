@@ -1,33 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
+import { useRef, useEffect } from "react";
 import Head from "next/head";
 import useMidi from "../hooks/piano/useMidi.tsx";
+import useScore from "../hooks/piano/useScore.tsx";
+import useProgressTracking from "../hooks/piano/useProgressTracking.tsx";
 import PianoRoll from "../components/piano/PianoRoll.tsx";
 
 export default function Piano() {
-  const sheetMusicContainerRef = useRef();
-  const { midiInput, midiEvents } = useMidi();
-
-  // useEffect(() => {
-  //   if (midiInput) {
-  //     midiInput.addListener("midimessage", "all", (e) => {
-  //       const [type, note, velocity] = e.data;
-  //       console.log("MIDI message received:", { type, note, velocity });
-  //       // Save the MIDI message to the state
-  //       setMidiEvents((prevMessages) => [
-  //         ...prevMessages,
-  //         { type, note, velocity },
-  //       ]);
-  //     });
-
-  //     return () => {
-  //       if (midiInput) {
-  //         midiInput.removeListener("midimessage", "all");
-  //       }
-  //     };
-  //   }
-  // }, [midiInput]);
-
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -36,25 +14,39 @@ export default function Piano() {
         const xmlContent = e.target.result;
 
         if (sheetMusicContainerRef.current) {
-          const osmd = new OpenSheetMusicDisplay(
-            sheetMusicContainerRef.current,
-            {
-              backend: "svg",
-              drawTitle: true,
-            }
-          );
-
-          try {
-            await osmd.load(xmlContent);
-            osmd.render();
-          } catch (error) {
-            console.error("Error rendering MusicXML:", error);
-          }
+          loadScore(xmlContent, sheetMusicContainerRef.current);
         }
       };
       reader.readAsText(file);
     }
   };
+
+  const sheetMusicContainerRef = useRef();
+  const { midiEvents } = useMidi();
+  const {
+    osmd,
+    loadScore,
+    compareMidiEventWithNote,
+    notes,
+    handleMidiEvent,
+    setLeftHandProgress,
+    setRightHandProgress,
+  } = useScore();
+
+  const { leftHandProgress, rightHandProgress } = useProgressTracking(
+    osmd,
+    notes,
+    handleMidiEvent,
+    setLeftHandProgress,
+    setRightHandProgress
+  );
+
+  useEffect(() => {
+    if (!midiEvents || midiEvents.length === 0) return;
+
+    const latestMidiEvent = midiEvents[midiEvents.length - 1];
+    handleMidiEvent(latestMidiEvent);
+  }, [midiEvents, notes, osmd]);
 
   return (
     <div className="min-h-screen flex flex-col">

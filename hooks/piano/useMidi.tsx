@@ -13,6 +13,17 @@ export default function useMidi() {
     loadWebMidi();
   }, []);
 
+  const determineHand = (noteNumber) => {
+    // Define the threshold note number for left and right hands (e.g. Middle C is 60)
+    const threshold = 60;
+
+    if (noteNumber < threshold) {
+      return "left";
+    } else {
+      return "right";
+    }
+  };
+
   const handleMidiMessage = (event) => {
     const [type, note, velocity] = event.data;
     const isNoteOn = (type & 0xf0) === 0x90 && velocity > 0;
@@ -20,10 +31,19 @@ export default function useMidi() {
       (type & 0xf0) === 0x80 || ((type & 0xf0) === 0x90 && velocity === 0);
 
     if (isNoteOn) {
-      const midiEvent = { type: "note-on", note, velocity: velocity / 127 };
+      const midiEvent = {
+        type: "note-on",
+        note,
+        velocity: velocity / 127,
+        hand: determineHand(note),
+      };
       setMidiEvents((prevEvents) => [...prevEvents, midiEvent]);
     } else if (isNoteOff) {
-      const midiEvent = { type: "note-off", note };
+      const midiEvent = {
+        type: "note-off",
+        note,
+        hand: determineHand(note),
+      };
       setMidiEvents((prevEvents) => [...prevEvents, midiEvent]);
     }
   };
