@@ -2,7 +2,7 @@ export default async function handler(req, res) {
 
   const api = require('../../utils/qbt.js')
 
-  api.connect('http://10.0.0.4:9865', 'admin', '!Bt3,14159265@')
+  api.connect('http://192.168.1.11:9865', 'admin', '!Bt3,14159265@')
     .then(qbt => {
       qbt.addTorrent(req.body.urls, req.body.savepath)
         .then(torrents => {
