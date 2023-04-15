@@ -2,13 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import useOSMDLoader from "./useOSMDLoader.tsx";
 import useCursor from "./useCursor.tsx";
-import useScoreHighlighter from "./useScoreHighlighter.tsx";
 import useScoreData from "./useScoreData.tsx";
 
 const useOSMD = (elementRef, url) => {
   const [osmd, setOsmd] = useState(null);
   const osmdRef = useRef(null);
-  const { highlightGreen } = useScoreHighlighter(osmd);
   const { getData, systemHeight } = useScoreData(osmd);
 
   const cursor = useCursor(

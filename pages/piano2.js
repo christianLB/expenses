@@ -1,6 +1,7 @@
 import Head from "next/head";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import useOSMD from "../hooks/piano/useOSMD.tsx";
+import useMidi from "../hooks/piano/useMidi.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -10,20 +11,36 @@ import {
   faStepForward,
   faMinus,
   faEquals,
+  faRefresh,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import PianoRoll from "../components/piano/PianoRoll.tsx";
 
 export default function Piano() {
+  const { midiEvents } = useMidi();
+
   const containerRef = useRef(null);
   const {
+    osmd,
     prev,
     stop,
     next,
     play,
     pause,
+    reset,
+    isPlaying,
     currentMeasure,
     currentBeatNotesInfo,
+    handleMidiEvent,
   } = useOSMD(containerRef, "/sample.xml");
+
+  useEffect(() => {
+    if (!midiEvents || midiEvents.length === 0) return;
+
+    const latestMidiEvent = midiEvents[midiEvents.length - 1];
+    handleMidiEvent(latestMidiEvent);
+  }, [midiEvents, osmd]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
@@ -40,16 +57,23 @@ export default function Piano() {
             {currentBeatNotesInfo.map((note) => note.noteName).join(", ")}
           </div>
         </div>
-        <div className="fixed bottom-4 right-4 flex flex-col gap-4 bg-white rounded-lg p-4 shadow-lg">
+        <div className="fixed top-4 right-4 flex flex-row gap-4 bg-white rounded-lg p-4 shadow-lg">
           <div className="flex gap-4 mb-4">
-            <button onClick={play}>
-              <FontAwesomeIcon icon={faPlay} />
-            </button>
-            <button onClick={pause}>
+            {!isPlaying && (
+              <button onClick={play}>
+                <FontAwesomeIcon icon={faPlay} />
+              </button>
+            )}
+            {isPlaying && (
+              <button onClick={stop}>
+                <FontAwesomeIcon icon={faStop} />
+              </button>
+            )}
+            <button onClick={pause} disabled={!isPlaying}>
               <FontAwesomeIcon icon={faPause} />
             </button>
-            <button onClick={stop}>
-              <FontAwesomeIcon icon={faStop} />
+            <button onClick={reset} disabled={!isPlaying}>
+              <FontAwesomeIcon icon={faRefresh} />
             </button>
           </div>
           <div className="flex gap-4 mb-4">
@@ -71,6 +95,9 @@ export default function Piano() {
               <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
+        </div>
+        <div className={"fixed bottom-4 cneter"}>
+          <PianoRoll midiEvents={midiEvents} />
         </div>
       </main>
       <style jsx>{`

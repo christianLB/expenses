@@ -1,9 +1,36 @@
 import { useState, useEffect } from "react";
 
-const useNote = () => {
-  const fundamentalNoteToName = (fundamentalNote) => {
-    const noteNames = ["C", "D", "E", "F", "G", "A", "B"];
-    return noteNames[fundamentalNote % noteNames.length];
+const useNote = (osmd) => {
+  const setGraphicalNoteColor = (sourceNote, color) => {
+    if (
+      sourceNote &&
+      sourceNote.parentStaffEntry &&
+      sourceNote.parentStaffEntry.graphicalStaffEntry
+    ) {
+      const graphicalNotes =
+        sourceNote.parentStaffEntry.graphicalStaffEntry.findGraphicalNotesBySourceNote(
+          sourceNote
+        );
+      for (const graphicalNote of graphicalNotes) {
+        graphicalNote.setNoteheadColor(color);
+      }
+    }
+  };
+
+  const highlight = (notes, color) => {
+    if (!notes) {
+      return;
+    }
+
+    if (!Array.isArray(notes)) {
+      notes = [notes];
+    }
+
+    for (const note of notes) {
+      setGraphicalNoteColor(note, color);
+    }
+
+    osmd.render();
   };
 
   const getNoteInfo = (note) => {
@@ -46,16 +73,7 @@ const useNote = () => {
     };
   };
 
-  const noteToMidi = (noteName, accidental, octave) => {
-    const noteMap = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
-    const accidentalMap = { bb: -2, b: -1, "": 0, "#": 1, x: 2 };
-    const baseNote = noteMap[noteName] || 0;
-    const baseAccidental = accidentalMap[accidental] || 0;
-    const midiNoteNumber = (octave + 1) * 12 + baseNote + baseAccidental;
-    return midiNoteNumber;
-  };
-
-  return { getNoteInfo };
+  return { getNoteInfo, highlight };
 };
 
 export default useNote;
