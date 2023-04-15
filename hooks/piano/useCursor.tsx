@@ -1,6 +1,7 @@
 import { OpenSheetMusicDisplay, Cursor } from "opensheetmusicdisplay";
 import { useState, useEffect } from "react";
 import cursorStyles from "../../styles/Cursor.module.css";
+import useNote from "./useNote.tsx";
 
 const useCursor = (
   osmd: OpenSheetMusicDisplay | null,
@@ -11,24 +12,50 @@ const useCursor = (
   const [cursor, setCursor] = useState<Cursor | undefined>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [customCursor, setCustomCursor] = useState(null);
+  const [currentMeasure, setCurrentMeasure] = useState<Number>(-1);
+  const [currentBeatNotes, setCurrentBeatNotes] = useState([]);
+  const { getNoteInfo } = useNote();
+
+  const getCurrentMeasureIndex = () => {
+    if (cursor && cursor.iterator) {
+      const iterator = cursor.iterator;
+      const currentMeasureIndex = iterator.currentMeasureIndex;
+      return currentMeasureIndex;
+    }
+    return -1;
+  };
 
   // Initialize the custom cursor
   const initializeCursor = () => {
     const cursorInstance: Cursor | undefined = osmd?.cursor;
     cursorInstance?.show();
-
     cursorInstance?.cursorElement.classList.add(cursorStyles.custom);
     setCursor(cursorInstance);
-    console.log(cursorInstance);
-    console.log("systemHeight", systemHeight);
+  };
+
+  const getNotesForCurrentBeat = () => {
+    if (osmd && osmd.cursor) {
+      const iterator = osmd.cursor.iterator;
+
+      if (iterator.currentVoiceEntries) {
+        const notes = iterator.currentVoiceEntries.flatMap(
+          (voiceEntry) => voiceEntry.Notes
+        );
+
+        return notes;
+      }
+    }
+
+    return [];
   };
 
   // Move cursor to the next note
   const next = () => {
     if (cursor) {
       cursor.next();
-      //updateCursorPosition();
+      const measure = getCurrentMeasureIndex();
+      measure != currentMeasure && setCurrentMeasure(measure);
+      setCurrentBeatNotes(getNotesForCurrentBeat());
     }
   };
 
@@ -36,7 +63,9 @@ const useCursor = (
   const prev = () => {
     if (cursor) {
       cursor.previous();
-      //updateCursorPosition();
+      const measure = getCurrentMeasureIndex();
+      measure != currentMeasure && setCurrentMeasure(measure);
+      setCurrentBeatNotes(getNotesForCurrentBeat());
     }
   };
 
@@ -86,6 +115,9 @@ const useCursor = (
     reset,
     setSpeed,
     initializeCursor,
+    currentMeasure,
+    currentBeatNotes,
+    currentBeatNotesInfo: currentBeatNotes.map((note) => getNoteInfo(note)),
   };
 };
 

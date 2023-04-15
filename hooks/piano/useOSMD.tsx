@@ -33,7 +33,7 @@ const useOSMD = (elementRef, url) => {
         cursorsOptions: [
           {
             type: 0,
-            color: "#FF0000",
+            color: "#d2d2d2",
             alpha: 80,
             follow: true,
           },
