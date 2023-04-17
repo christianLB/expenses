@@ -1,6 +1,21 @@
 import { useState, useEffect } from "react";
 
 const useNote = (osmd) => {
+  const noteNames = [
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B",
+  ];
+
   const setGraphicalNoteColor = (sourceNote, color) => {
     if (
       sourceNote &&
@@ -33,6 +48,11 @@ const useNote = (osmd) => {
     osmd.render();
   };
 
+  const getNoteName = (midiNumber) => {
+    const note = noteNames[midiNumber % 12];
+    return note;
+  };
+
   const getNoteInfo = (note) => {
     if (note.isRest()) {
       return {
@@ -45,21 +65,8 @@ const useNote = (osmd) => {
     }
 
     const pitch = note.pitch;
-    const noteNames = [
-      "C",
-      "C#",
-      "D",
-      "D#",
-      "E",
-      "F",
-      "F#",
-      "G",
-      "G#",
-      "A",
-      "A#",
-      "B",
-    ];
-    const noteName = noteNames[pitch.halfTone % 12]; // Corrected note name calculation
+
+    const noteName = getNoteName(pitch.halfTone); //noteNames[pitch.halfTone % 12]; // Corrected note name calculation
     const accidental = pitch.accidental;
     const octave = pitch.octave;
     const duration = note.length.toString();
@@ -73,7 +80,7 @@ const useNote = (osmd) => {
     };
   };
 
-  return { getNoteInfo, highlight };
+  return { getNoteInfo, highlight, getNoteName };
 };
 
 export default useNote;

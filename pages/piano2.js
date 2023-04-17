@@ -1,7 +1,6 @@
 import Head from "next/head";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import useOSMD from "../hooks/piano/useOSMD.tsx";
-import useMidi from "../hooks/piano/useMidi.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -17,8 +16,6 @@ import {
 import PianoRoll from "../components/piano/PianoRoll.tsx";
 
 export default function Piano() {
-  const { midiEvents } = useMidi();
-
   const containerRef = useRef(null);
   const {
     osmd,
@@ -28,18 +25,13 @@ export default function Piano() {
     play,
     pause,
     reset,
+    getNoteName,
     isPlaying,
     currentMeasure,
     currentBeatNotesInfo,
-    handleMidiEvent,
+    midiEvents,
+    currentNotesOn,
   } = useOSMD(containerRef, "/sample.xml");
-
-  useEffect(() => {
-    if (!midiEvents || midiEvents.length === 0) return;
-
-    const latestMidiEvent = midiEvents[midiEvents.length - 1];
-    handleMidiEvent(latestMidiEvent);
-  }, [midiEvents, osmd]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -55,6 +47,10 @@ export default function Piano() {
           <div>
             Measure: {currentMeasure} | Notes:{" "}
             {currentBeatNotesInfo.map((note) => note.noteName).join(", ")}
+          </div>
+          <div>
+            current notes:{" "}
+            {currentNotesOn.map((note) => getNoteName(note)).join(", ")}
           </div>
         </div>
         <div className="fixed top-4 right-4 flex flex-row gap-4 bg-white rounded-lg p-4 shadow-lg">

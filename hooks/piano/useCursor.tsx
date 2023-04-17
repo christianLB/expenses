@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import cursorStyles from "../../styles/Cursor.module.css";
 import useNote from "./useNote.tsx";
 import useScoreHighlighter from "./useScoreHighlighter.tsx";
+import useMidi from "./useMidi.tsx";
 
 const useCursor = (
   osmd: OpenSheetMusicDisplay | null,
@@ -15,7 +16,9 @@ const useCursor = (
   const [playbackSpeed, setPlaybackSpeed] = useState(12);
   const [currentMeasure, setCurrentMeasure] = useState<Number>(-1);
   const [currentBeatNotes, setCurrentBeatNotes] = useState([]);
-  const { getNoteInfo, highlight } = useNote(osmd);
+  const [currentNotesOn, setCurrentNotesOn] = useState<Number[]>([]);
+  const { getNoteInfo, highlight, getNoteName } = useNote(osmd);
+  const { midiEvents } = useMidi();
 
   const getCurrentMeasureIndex = () => {
     if (cursor && cursor.iterator) {
@@ -49,6 +52,47 @@ const useCursor = (
 
     return [];
   };
+
+  // # write compareNotes function
+  // should compare currentNotesOn with currentBeatNotes.
+  // only return true if all notes in the beat are on.
+  // # create a function that will return true if the notes are on
+  const compareNotes = (beatNotes, notesOn) => {
+    console.log(beatNotes, notesOn);
+    for (
+      let i = 0;
+      i < beatNotes.filter((beatNote) => beatNote.halfTone !== 0).length;
+      i++
+    ) {
+      if (!notesOn.includes(beatNotes[i].halfTone)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // # create an effect on midiEvents to compare notes with the current beat
+  useEffect(() => {
+    // # take the latest midiEvent and if type note-on and not exists in currentNotesOn, add it to currentNotesOn.
+    // # If type is note-off, remove it from currentNotesOn
+    if (midiEvents.length > 0) {
+      const midiEvent = midiEvents[midiEvents.length - 1];
+      if (midiEvent.type === "note-on") {
+        if (!currentNotesOn.find((note) => note === midiEvent.note)) {
+          setCurrentNotesOn([...currentNotesOn, midiEvent.note]);
+        }
+      } else if (midiEvent.type === "note-off") {
+        setCurrentNotesOn(
+          currentNotesOn.filter((note) => note !== midiEvent.note)
+        );
+      }
+    }
+    const compare = compareNotes(currentBeatNotes, currentNotesOn);
+    if (compare) {
+      console.log(compare);
+      next();
+    }
+  }, [midiEvents]);
 
   // Move cursor to the next note
   const next = () => {
@@ -141,31 +185,33 @@ const useCursor = (
   };
 
   const handleMidiEvent = (midiEvent) => {
-    console.log("Midi event:", midiEvent);
+    //console.log("Midi event:", midiEvent);
     // const progressIndices = {
     //   left: leftHandProgress,
     //   right: rightHandProgress,
     //   both: Math.min(leftHandProgress, rightHandProgress),
     // };
-
     // // Pass notes and progressIndices as arguments to compareMidiEventWithNote
     // const result = true; //compareMidiEventWithNote(midiEvent, notes, progressIndices);
     // console.log("Comparison result:", result);
-
     // // Check if result is an object with isCorrect and hand properties
     // if (!result || typeof result !== "object") {
     //   return;
     // }
-
     // const { isCorrect, hand } = result;
     // const note = notes[progressIndices[hand]];
-
     // if (note) {
     //   updateNoteStyling(osmd, note.sourceNote, hand, isCorrect);
     // }
-
     //return result;
   };
+
+  useEffect(() => {
+    if (!midiEvents || midiEvents.length === 0) return;
+
+    const latestMidiEvent = midiEvents[midiEvents.length - 1];
+    handleMidiEvent(latestMidiEvent);
+  }, [midiEvents, osmd]);
 
   return {
     next,
@@ -175,12 +221,14 @@ const useCursor = (
     reset,
     setSpeed,
     initializeCursor,
-    handleMidiEvent,
+    getNoteName,
     stop: () => setIsPlaying(false),
     isPlaying,
+    midiEvents,
     currentMeasure,
     currentBeatNotes,
     currentBeatNotesInfo: currentBeatNotes.map((note) => getNoteInfo(note)),
+    currentNotesOn,
   };
 };
 
