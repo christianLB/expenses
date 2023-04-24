@@ -14,7 +14,6 @@ export default function useMidi() {
   }, []);
 
   const determineHand = (noteNumber) => {
-    // Define the threshold note number for left and right hands (e.g. Middle C is 60)
     const threshold = 60;
 
     if (noteNumber < threshold) {
@@ -48,6 +47,18 @@ export default function useMidi() {
     }
   };
 
+  const onMidiEvent = (callback) => {
+    if (midi) {
+      midi.inputs.forEach((input) => {
+        if (typeof callback === "function") {
+          input.addListener("midimessage", "all", callback);
+        } else {
+          input.removeListener("midimessage", "all");
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     if (!midi) return;
 
@@ -75,5 +86,5 @@ export default function useMidi() {
     });
   }, [midi]);
 
-  return { midi, midiEvents };
+  return { midi };
 }

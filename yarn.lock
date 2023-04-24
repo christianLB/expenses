@@ -1496,6 +1496,13 @@
   "resolved" "https://registry.npmjs.org/axe-core/-/axe-core-4.4.1.tgz"
   "version" "4.4.1"
 
+"axios@^0.26.0":
+  "integrity" "sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.26.1.tgz"
+  "version" "0.26.1"
+  dependencies:
+    "follow-redirects" "^1.14.8"
+
 "axios@^0.27.2":
   "integrity" "sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ=="
   "resolved" "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
@@ -1504,10 +1511,10 @@
     "follow-redirects" "^1.14.9"
     "form-data" "^4.0.0"
 
-"axios@^1.3.4":
-  "integrity" "sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-1.3.4.tgz"
-  "version" "1.3.4"
+"axios@^1.3.6":
+  "integrity" "sha512-PEcdkk7JcdPiMDkvM4K6ZBRYq9keuVJsToxm2zQIM70Qqo2WHTdJZMXcG9X+RmRp2VPNUQC8W1RAGbgt6b1yMg=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-1.3.6.tgz"
+  "version" "1.3.6"
   dependencies:
     "follow-redirects" "^1.15.0"
     "form-data" "^4.0.0"
@@ -2252,6 +2259,11 @@
   "resolved" "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   "version" "2.0.3"
 
+"eventsource-parser@^0.1.0":
+  "integrity" "sha512-M9QjFtEIkwytUarnx113HGmgtk52LSn3jNAtnWKi3V+b9rqSfQeVdLsaD5AG/O4IrGQwmAAHBIsqbmURPTd2rA=="
+  "resolved" "https://registry.npmjs.org/eventsource-parser/-/eventsource-parser-0.1.0.tgz"
+  "version" "0.1.0"
+
 "extend@^3.0.2":
   "integrity" "sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g=="
   "resolved" "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz"
@@ -2339,7 +2351,7 @@
   dependencies:
     "tslib" "^2.0.3"
 
-"follow-redirects@^1.14.9", "follow-redirects@^1.15.0":
+"follow-redirects@^1.14.8", "follow-redirects@^1.14.9", "follow-redirects@^1.15.0":
   "integrity" "sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA=="
   "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
   "version" "1.15.2"
@@ -3283,6 +3295,17 @@
     "@next/swc-win32-ia32-msvc" "12.1.4"
     "@next/swc-win32-x64-msvc" "12.1.4"
 
+"nextjs-openai@^6.0.2":
+  "integrity" "sha512-XxGPcsyiFU57oWkXWI3GgP0i/zehVwa/uOzKYJGRRKc6I1Ba32TgP5rVx1LZ4rKltPnZwfBpV8gfiEKTlOeteQ=="
+  "resolved" "https://registry.npmjs.org/nextjs-openai/-/nextjs-openai-6.0.2.tgz"
+  "version" "6.0.2"
+  dependencies:
+    "eventsource-parser" "^0.1.0"
+    "openai-streams" "^5.0.0"
+    "react" "^18.2.0"
+    "react-dom" "^18.2.0"
+    "yield-stream" "^2.0.4"
+
 "node-addon-api@^4.2.0":
   "integrity" "sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ=="
   "resolved" "https://registry.npmjs.org/node-addon-api/-/node-addon-api-4.3.0.tgz"
@@ -3434,6 +3457,23 @@
   "version" "1.4.0"
   dependencies:
     "wrappy" "1"
+
+"openai-streams@^5.0.0", "openai-streams@^5.1.0":
+  "integrity" "sha512-hJCYtXsTxpHHTjV1l+zdb8OJuZnxTbxjsDwGLhsIRGtf6XRttafqevI03SQz20Mv3ANIgkirFKD3Wrj5OsfsaA=="
+  "resolved" "https://registry.npmjs.org/openai-streams/-/openai-streams-5.1.0.tgz"
+  "version" "5.1.0"
+  dependencies:
+    "dotenv" "^16.0.3"
+    "eventsource-parser" "^0.1.0"
+    "yield-stream" "^3.0.0"
+
+"openai@^3.2.1":
+  "integrity" "sha512-762C9BNlJPbjjlWZi4WYK9iM2tAVAv0uUp1UmI34vb0CN5T2mjB/qM6RYBmNKMh/dN9fC+bxqPwWJZUTWW052A=="
+  "resolved" "https://registry.npmjs.org/openai/-/openai-3.2.1.tgz"
+  "version" "3.2.1"
+  dependencies:
+    "axios" "^0.26.0"
+    "form-data" "^4.0.0"
 
 "opensheetmusicdisplay@^1.7.5":
   "integrity" "sha512-DHFWwlbfKYoBSJpf8xfp42yV9G9xBPOqUz0TTq9FmGpONtQBbuqMGpbxP57MBFb6VyKzN+Zbug4L7IYNkRDBkg=="
@@ -3723,6 +3763,14 @@
     "loose-envify" "^1.1.0"
     "scheduler" "^0.21.0"
 
+"react-dom@^18.2.0":
+  "integrity" "sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g=="
+  "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz"
+  "version" "18.2.0"
+  dependencies:
+    "loose-envify" "^1.1.0"
+    "scheduler" "^0.23.0"
+
 "react-fast-compare@3.2.0":
   "integrity" "sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA=="
   "resolved" "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-3.2.0.tgz"
@@ -3806,6 +3854,13 @@
   "integrity" "sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A=="
   "resolved" "https://registry.npmjs.org/react/-/react-18.0.0.tgz"
   "version" "18.0.0"
+  dependencies:
+    "loose-envify" "^1.1.0"
+
+"react@^18.2.0":
+  "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="
+  "resolved" "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
+  "version" "18.2.0"
   dependencies:
     "loose-envify" "^1.1.0"
 
@@ -3949,6 +4004,13 @@
   dependencies:
     "loose-envify" "^1.1.0"
 
+"scheduler@^0.23.0":
+  "integrity" "sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw=="
+  "resolved" "https://registry.npmjs.org/scheduler/-/scheduler-0.23.0.tgz"
+  "version" "0.23.0"
+  dependencies:
+    "loose-envify" "^1.1.0"
+
 "semver@^6.0.0", "semver@^6.3.0":
   "integrity" "sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw=="
   "resolved" "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz"
@@ -3989,6 +4051,11 @@
   "integrity" "sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A=="
   "resolved" "https://registry.npmjs.org/shebang-regex/-/shebang-regex-3.0.0.tgz"
   "version" "3.0.0"
+
+"shim-streams@^0.0.2":
+  "integrity" "sha512-9Otb+FCl13XxRp1nVddtsCbwvB7AEMTjzc3/fixowyzvSVoCzu/VEstblB2SdIDbd61u5D/zpS5u9fGzDdOoZg=="
+  "resolved" "https://registry.npmjs.org/shim-streams/-/shim-streams-0.0.2.tgz"
+  "version" "0.0.2"
 
 "side-channel@^1.0.4":
   "integrity" "sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw=="
@@ -4403,6 +4470,11 @@
   dependencies:
     "loose-envify" "^1.0.0"
 
+"web-streams-polyfill@^3.2.1":
+  "integrity" "sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q=="
+  "resolved" "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz"
+  "version" "3.2.1"
+
 "webidl-conversions@^3.0.0":
   "integrity" "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ=="
   "resolved" "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
@@ -4474,3 +4546,19 @@
   "integrity" "sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg=="
   "resolved" "https://registry.npmjs.org/yaml/-/yaml-1.10.2.tgz"
   "version" "1.10.2"
+
+"yield-stream@^2.0.4":
+  "integrity" "sha512-fQWRA0DQbr2Qlu7Hu7L/CPtTfzeP99yI/MIwbWrlOf8ZOlNUf86hQMHBpHLQ+du6vknl1xR6l4RiU7LQ/7Oogg=="
+  "resolved" "https://registry.npmjs.org/yield-stream/-/yield-stream-2.3.0.tgz"
+  "version" "2.3.0"
+  dependencies:
+    "shim-streams" "^0.0.2"
+    "web-streams-polyfill" "^3.2.1"
+
+"yield-stream@^3.0.0":
+  "integrity" "sha512-I0fHp7xcR+ilGKgtLP+6d0SxTLfJcLDX/iiTEQZtg0U/cqWKvcHy4D9em6adhs3emSgik8YAZ2Jmv7gc1kyuhA=="
+  "resolved" "https://registry.npmjs.org/yield-stream/-/yield-stream-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "shim-streams" "^0.0.2"
+    "web-streams-polyfill" "^3.2.1"

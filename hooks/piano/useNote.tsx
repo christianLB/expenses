@@ -16,6 +16,38 @@ const useNote = (osmd) => {
     "B",
   ];
 
+  const pitchNotationToMidiNumber = (pitchNotation) => {
+    const noteToMidi = {
+      C: 0,
+      D: 2,
+      E: 4,
+      F: 5,
+      G: 7,
+      A: 9,
+      B: 11,
+    };
+
+    const regex = /^([A-Ga-g])([-+]*)(\d+)/;
+    const match = pitchNotation.match(regex);
+
+    if (!match) {
+      throw new Error(`Invalid pitch notation: ${pitchNotation}`);
+    }
+
+    const note = match[1].toUpperCase();
+    const accidental = match[2];
+    const octave = parseInt(match[3], 10);
+
+    let midiNumber = (octave + 1) * 12 + noteToMidi[note];
+
+    // Handle accidentals
+    if (accidental) {
+      midiNumber += accidental.length * (accidental[0] === "+" ? 1 : -1);
+    }
+
+    return midiNumber;
+  };
+
   const setGraphicalNoteColor = (sourceNote, color) => {
     if (
       sourceNote &&
@@ -42,10 +74,10 @@ const useNote = (osmd) => {
     }
 
     for (const note of notes) {
-      setGraphicalNoteColor(note, color);
+      const noteHead = note.notehead();
+      noteHead.style.fillStyle = color;
+      noteHead.draw();
     }
-
-    osmd.render();
   };
 
   const getNoteName = (midiNumber) => {
@@ -80,7 +112,7 @@ const useNote = (osmd) => {
     };
   };
 
-  return { getNoteInfo, highlight, getNoteName };
+  return { getNoteInfo, highlight, getNoteName, pitchNotationToMidiNumber };
 };
 
 export default useNote;

@@ -68,7 +68,7 @@ export default function Piano() {
             <button onClick={pause} disabled={!isPlaying}>
               <FontAwesomeIcon icon={faPause} />
             </button>
-            <button onClick={reset} disabled={!isPlaying}>
+            <button onClick={reset}>
               <FontAwesomeIcon icon={faRefresh} />
             </button>
           </div>
@@ -93,7 +93,7 @@ export default function Piano() {
           </div>
         </div>
         <div className={"fixed bottom-4 cneter"}>
-          <PianoRoll midiEvents={midiEvents} />
+          {/* <PianoRoll midiEvents={midiEvents} /> */}
         </div>
       </main>
       <style jsx>{`

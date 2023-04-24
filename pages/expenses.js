@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import Head from "next/head";
 import Footer from "../components/Footer.tsx";
 import NewExpense from "../components/NewExpense.tsx";
@@ -20,9 +21,25 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import { useTextBuffer } from "nextjs-openai";
 
 export default function Expenses() {
-  const { currentYear, setCurrentYear } = useExpensesContext();
+  const tableRef = useRef();
+  const { currentYear, setCurrentYear, groupedExpensesByCategory } =
+    useExpensesContext();
+  const data = `Qué me puedes decir de esta información?\n${tableRef.innerText}`;
+
+  // const { buffer, refresh, cancel, done } = useTextBuffer({
+  //   url: "./api/openai",
+  //   throttle: 100,
+  //   data,
+  // });
+
+  // const handleChatGptClick = () => {
+  //   const maxTokens = 100;
+  //   const prompt = `Qué me puedes decir de esta información?\n${tableRef.innerText}`;
+  // };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
@@ -86,10 +103,16 @@ export default function Expenses() {
               </Grid>
             </Box>
 
-            <Box borderWidth={1} borderRadius="lg" overflow="hidden">
+            <Box
+              ref={tableRef}
+              borderWidth={1}
+              borderRadius="lg"
+              overflow="hidden"
+            >
               <Table />
             </Box>
-
+            {/* <button onClick={refresh}>¿Qué es esto?</button> */}
+            {/* <StreamingText buffer={buffer} fade={600} /> */}
             <Box borderWidth={1} borderRadius="lg" overflow="hidden">
               <ExpensesDashboard />
             </Box>
