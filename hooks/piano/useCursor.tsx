@@ -2,7 +2,6 @@ import { OpenSheetMusicDisplay, Cursor, Note } from "opensheetmusicdisplay";
 import { useState, useEffect, useRef } from "react";
 import cursorStyles from "../../styles/Cursor.module.css";
 import useNote from "./useNote.tsx";
-import useScoreHighlighter from "./useScoreHighlighter.tsx";
 import useMidi from "./useMidi.tsx";
 
 const useCursor = (
@@ -11,15 +10,31 @@ const useCursor = (
   systemHeight
   //style: any
 ) => {
+  //state
+
   const [cursor, setCursor] = useState<Cursor | undefined>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(12);
   const [currentMeasure, setCurrentMeasure] = useState<Number>(-1);
-  //const [currentBeatNotes, setCurrentBeatNotes] = useState([]);
-  //const [currentNotesOn, setCurrentNotesOn] = useState<Number[]>([]);
+
+  const [selectedHands, setSelectedHands] = useState<{
+    [key: string]: boolean;
+  }>({
+    left: true,
+    right: true,
+  });
+  //hooks
+
+  const currentNotesOnRef = useRef<number[]>([]);
+  const selectedHandsRef = useRef(selectedHands);
   const { getNoteInfo, highlight, getNoteName, pitchNotationToMidiNumber } =
     useNote(osmd);
   const { midi } = useMidi();
+  //effects
+
+  useEffect(() => {
+    selectedHandsRef.current = selectedHands;
+  }, [selectedHands]);
 
   const getCurrentMeasureIndex = () => {
     if (cursor && cursor.iterator) {
@@ -39,31 +54,47 @@ const useCursor = (
     reset();
   };
 
+  const toggleHandSelection = (hand: string) => {
+    setSelectedHands((prevSelectedHands) => {
+      // Copy the previous state
+      const updatedSelectedHands = { ...prevSelectedHands };
+      // Toggle the selected hand
+      updatedSelectedHands[hand] = !updatedSelectedHands[hand];
+      // Update the state with the new values
+      return updatedSelectedHands;
+    });
+  };
+
   // # write compareNotes function
   // should compare currentNotesOn with currentBeatNotes.
   // only return true if all notes in the beat are on.
   // # create a function that will return true if the notes are on
-  const compareNotes = (beatNotes = [], notesOn = []) => {
+  const compareNotes = (beatNotes = [], notesOn = [], selectedHands) => {
     if (!notesOn.length) return false;
-    console.log("Comparing notes: ", beatNotes, notesOn);
 
     let allNotesOn = true;
     beatNotes.forEach((beatNote) => {
       if (beatNote.vfpitch) {
-        const halfTone = beatNote.sourceNote.pitch.halfTone;
-        const includes = notesOn.includes(halfTone);
-        if (includes) {
-          highlight(beatNote, "green");
-        } else {
-          allNotesOn = false;
-          highlight(beatNote, "black");
+        const staff = beatNote.sourceNote.ParentStaff.id; // Add this line to get the staff of the note
+        const isLeftHand = staff > 1; // Add this line to check if the note belongs to the left hand
+        if (
+          (isLeftHand && !!selectedHands.left) ||
+          (!isLeftHand && !!selectedHands.right)
+        ) {
+          const halfTone = beatNote.sourceNote.pitch.halfTone;
+          const includes = notesOn.includes(halfTone);
+          if (includes) {
+            highlight(beatNote, "green");
+          } else {
+            allNotesOn = false;
+            highlight(beatNote, "black");
+          }
         }
       }
     });
 
     return allNotesOn;
   };
-  const currentNotesOnRef = useRef<number[]>([]);
 
   const handleMidiEvent = (event) => {
     const eventType = event.data[0];
@@ -82,7 +113,11 @@ const useCursor = (
       });
       currentNotesOnRef.current.push(noteValue);
       const currentNotes = cursor?.GNotesUnderCursor();
-      const compare = compareNotes(currentNotes, currentNotesOnRef.current);
+      const compare = compareNotes(
+        currentNotes,
+        currentNotesOnRef.current,
+        selectedHandsRef.current
+      );
       compare && next();
     } else if (eventType === 128) {
       const notes = cursor?.GNotesUnderCursor();
@@ -99,7 +134,11 @@ const useCursor = (
         (note) => note !== noteValue
       );
       const currentNotes = cursor?.GNotesUnderCursor();
-      compareNotes(currentNotes, currentNotesOnRef.current);
+      compareNotes(
+        currentNotes,
+        currentNotesOnRef.current,
+        selectedHandsRef.current
+      );
     }
   };
 
@@ -208,6 +247,7 @@ const useCursor = (
     initializeCursor,
     getNoteName,
     stop: () => setIsPlaying(false),
+    toggleHandSelection,
     isPlaying,
     //midiEvents,
     currentMeasure: cursor?.iterator?.currentMeasureIndex,
@@ -217,6 +257,7 @@ const useCursor = (
     //   ?.GNotesUnderCursor()
     //   .map((note) => getNoteInfo(note)),
     currentNotesOn: currentNotesOnRef.current || [],
+    selectedHands,
   };
 };
 

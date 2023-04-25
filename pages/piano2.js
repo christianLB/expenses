@@ -26,11 +26,13 @@ export default function Piano() {
     pause,
     reset,
     getNoteName,
+    toggleHandSelection,
     isPlaying,
     currentMeasure,
     currentBeatNotesInfo,
     midiEvents,
     currentNotesOn,
+    selectedHands,
   } = useOSMD(containerRef, "/sample.xml");
 
   return (
@@ -90,6 +92,22 @@ export default function Piano() {
             <button onClick={() => setPlaybackSpeed(1.5)}>
               <FontAwesomeIcon icon={faPlus} />
             </button>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedHands.right}
+                onChange={() => toggleHandSelection("right")}
+              />
+              Right Hand
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedHands.left}
+                onChange={() => toggleHandSelection("left")}
+              />
+              Left Hand
+            </label>
           </div>
         </div>
         <div className={"fixed bottom-4 cneter"}>
