@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import cursorStyles from "../../styles/Cursor.module.css";
 import useNote from "./useNote.tsx";
 import useMidi from "./useMidi.tsx";
+import useClickNavigation from "./useClickNavigation.tsx";
 
 const useCursor = (
   osmd: OpenSheetMusicDisplay | null,
@@ -10,40 +11,55 @@ const useCursor = (
   systemHeight
   //style: any
 ) => {
-  //state
-
+  //state & hooks
   const [cursor, setCursor] = useState<Cursor | undefined>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(12);
-  const [currentMeasure, setCurrentMeasure] = useState<Number>(-1);
-
   const [selectedHands, setSelectedHands] = useState<{
     [key: string]: boolean;
   }>({
     left: true,
     right: true,
   });
-  //hooks
 
+  const { selectedMeasure, selectedVoiceEntry } = useClickNavigation(
+    osmd,
+    container
+  );
   const currentNotesOnRef = useRef<number[]>([]);
   const selectedHandsRef = useRef(selectedHands);
-  const { getNoteInfo, highlight, getNoteName, pitchNotationToMidiNumber } =
-    useNote(osmd);
-  const { midi } = useMidi();
+  const {
+    getNoteInfo,
+    highlight,
+    getNoteName,
+    pitchNotationToMidiNumber,
+    isRightHand,
+    isLeftHand,
+  } = useNote(osmd);
+  const { midi, midiEvents } = useMidi();
+
   //effects
+
+  useEffect(() => {
+    cursor?.reset();
+    cursor?.iterator.currentMeasureIndex = selectedMeasure;
+    //cursor?.iterator.currentVoiceEntryIndex = 0;
+    cursor?.previous(); //TODO: ???
+    cursor?.next();
+  }, [selectedMeasure, selectedVoiceEntry]);
 
   useEffect(() => {
     selectedHandsRef.current = selectedHands;
   }, [selectedHands]);
 
-  const getCurrentMeasureIndex = () => {
-    if (cursor && cursor.iterator) {
-      const iterator = cursor.iterator;
-      const currentMeasureIndex = iterator.currentMeasureIndex;
-      return currentMeasureIndex;
-    }
-    return -1;
-  };
+  // const getCurrentMeasureIndex = () => {
+  //   if (cursor && cursor.iterator) {
+  //     const iterator = cursor.iterator;
+  //     const currentMeasureIndex = iterator.currentMeasureIndex;
+  //     return currentMeasureIndex;
+  //   }
+  //   return -1;
+  // };
 
   // Initialize the custom cursor
   const initializeCursor = () => {
@@ -75,13 +91,12 @@ const useCursor = (
     let allNotesOn = true;
     beatNotes.forEach((beatNote) => {
       if (beatNote.vfpitch) {
-        const staff = beatNote.sourceNote.ParentStaff.id; // Add this line to get the staff of the note
-        const isLeftHand = staff > 1; // Add this line to check if the note belongs to the left hand
+        const sourceNote = beatNote.sourceNote;
         if (
-          (isLeftHand && !!selectedHands.left) ||
-          (!isLeftHand && !!selectedHands.right)
+          (isLeftHand(sourceNote) && !!selectedHands.left) ||
+          (isRightHand(sourceNote) && !!selectedHands.right)
         ) {
-          const halfTone = beatNote.sourceNote.pitch.halfTone;
+          const halfTone = sourceNote.pitch.halfTone;
           const includes = notesOn.includes(halfTone);
           if (includes) {
             highlight(beatNote, "green");
@@ -161,8 +176,6 @@ const useCursor = (
   const next = () => {
     if (cursor) {
       cursor.next();
-      const measure = getCurrentMeasureIndex();
-      measure != currentMeasure && setCurrentMeasure(measure);
     }
   };
 
@@ -170,8 +183,6 @@ const useCursor = (
   const prev = () => {
     if (cursor) {
       cursor.previous();
-      const measure = getCurrentMeasureIndex();
-      measure != currentMeasure && setCurrentMeasure(measure);
       const notes = cursor.GNotesUnderCursor();
       highlight(notes, "black");
     }
@@ -248,6 +259,7 @@ const useCursor = (
     getNoteName,
     stop: () => setIsPlaying(false),
     toggleHandSelection,
+    midiEvents,
     isPlaying,
     //midiEvents,
     currentMeasure: cursor?.iterator?.currentMeasureIndex,

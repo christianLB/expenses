@@ -111,7 +111,7 @@ export default function Piano() {
           </div>
         </div>
         <div className={"fixed bottom-4 cneter"}>
-          {/* <PianoRoll midiEvents={midiEvents} /> */}
+          <PianoRoll midiEvents={midiEvents} />
         </div>
       </main>
       <style jsx>{`

@@ -94,7 +94,7 @@ const PianoRoll: React.FC<PianoRollProps> = ({ midiEvents }) => {
     const whiteKeysCtx = whiteKeysCanvas.getContext("2d");
     if (!whiteKeysCtx) return;
 
-    midiEvents.forEach((event) => {
+    midiEvents?.forEach((event) => {
       const note = event.note - 21;
       if (note < 0 || note > 87) return;
 

@@ -86,5 +86,5 @@ export default function useMidi() {
     });
   }, [midi]);
 
-  return { midi };
+  return { midi, midiEvents };
 }

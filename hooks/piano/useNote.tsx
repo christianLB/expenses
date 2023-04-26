@@ -112,7 +112,24 @@ const useNote = (osmd) => {
     };
   };
 
-  return { getNoteInfo, highlight, getNoteName, pitchNotationToMidiNumber };
+  const isLeftHand = (sourceNote) => {
+    if (!sourceNote || !sourceNote.ParentStaff) return false;
+    return sourceNote.ParentStaff.id > 1;
+  };
+
+  const isRightHand = (sourceNote) => {
+    if (!sourceNote || !sourceNote.ParentStaff) return false;
+    return sourceNote.ParentStaff.id === 1;
+  };
+
+  return {
+    getNoteInfo,
+    highlight,
+    getNoteName,
+    pitchNotationToMidiNumber,
+    isLeftHand,
+    isRightHand,
+  };
 };
 
 export default useNote;
