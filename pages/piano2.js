@@ -12,8 +12,8 @@ import {
   faEquals,
   faRefresh,
   faPlus,
-  faHandPointLeft,
-  faHandPointRight,
+  faKeyboard,
+  faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import PianoRoll from "../components/piano/PianoRoll.tsx";
 import usePayloadCollection from "../hooks/usePayloadCollection.ts";
@@ -114,7 +114,7 @@ export default function Piano() {
                 }`}
                 onClick={() => toggleHandSelection("right")}
               >
-                <FontAwesomeIcon icon={faHandPointRight} />
+                <FontAwesomeIcon icon={faKeyboard} />
               </button>
               <button
                 className={`${
@@ -122,7 +122,7 @@ export default function Piano() {
                 }`}
                 onClick={() => toggleHandSelection("left")}
               >
-                <FontAwesomeIcon icon={faHandPointLeft} />
+                <FontAwesomeIcon icon={faMusic} />
               </button>
             </div>
           </div>
