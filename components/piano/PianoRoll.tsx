@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./PianoRoll.module.css";
 
-const PIANO_ROLL_HEIGHT = 400;
-const PIANO_ROLL_WIDTH = 800;
+const PIANO_ROLL_HEIGHT = 100;
+const PIANO_ROLL_WIDTH = 650;
 const WHITE_KEY_HEIGHT = PIANO_ROLL_HEIGHT;
 const BLACK_KEY_HEIGHT = PIANO_ROLL_HEIGHT * 0.6;
 const TOTAL_WHITE_KEYS = 52;

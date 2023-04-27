@@ -13,15 +13,11 @@ export default function useMidi() {
     loadWebMidi();
   }, []);
 
-  const determineHand = (noteNumber) => {
-    const threshold = 60;
+  const OCTAVE_OFFSET = 0;
 
-    if (noteNumber < threshold) {
-      return "left";
-    } else {
-      return "right";
-    }
-  };
+  function applyOctaveOffset(noteValue) {
+    return noteValue + OCTAVE_OFFSET;
+  }
 
   const handleMidiMessage = (event) => {
     const [type, note, velocity] = event.data;
@@ -29,19 +25,19 @@ export default function useMidi() {
     const isNoteOff =
       (type & 0xf0) === 0x80 || ((type & 0xf0) === 0x90 && velocity === 0);
 
+    const transposedNote = applyOctaveOffset(note);
+
     if (isNoteOn) {
       const midiEvent = {
         type: "note-on",
-        note,
+        note: transposedNote,
         velocity: velocity / 127,
-        hand: determineHand(note),
       };
       setMidiEvents((prevEvents) => [...prevEvents, midiEvent]);
     } else if (isNoteOff) {
       const midiEvent = {
         type: "note-off",
-        note,
-        hand: determineHand(note),
+        note: transposedNote,
       };
       setMidiEvents((prevEvents) => [...prevEvents, midiEvent]);
     }

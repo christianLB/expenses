@@ -14,7 +14,8 @@ const useOSMD = (elementRef, url) => {
     elementRef.current, // Pass elementRef.current instead of containerRef.current
     systemHeight //this should be change to receive the whole scoreData interface that doesn't yet exist.
   );
-  const { loadMusicXML } = useOSMDLoader(osmd, {
+
+  useOSMDLoader(osmd, url, {
     onReady: () => {
       getData();
       cursor.initializeCursor();
@@ -26,7 +27,6 @@ const useOSMD = (elementRef, url) => {
       osmdRef.current = new OpenSheetMusicDisplay(elementRef.current, {
         autoResize: true,
         backend: "svg",
-        //drawingParameters: "compacttight",
         drawTitle: true,
         cursorsOptions: [
           {
@@ -41,12 +41,10 @@ const useOSMD = (elementRef, url) => {
         drawLyricist: false,
         drawCredits: false,
         drawPartNames: false,
-        //drawMeasureNumbers: true,
         drawFingerings: true,
         renderSingleHorizontalStaffline: false,
       });
       setOsmd(osmdRef.current);
-      loadMusicXML(url);
     }
   }, [elementRef, url]);
 

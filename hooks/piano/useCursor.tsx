@@ -88,6 +88,8 @@ const useCursor = (
   const compareNotes = (beatNotes = [], notesOn = [], selectedHands) => {
     if (!notesOn.length) return false;
 
+    const OCTAVE_OFFSET = 12;
+
     let allNotesOn = true;
     beatNotes.forEach((beatNote) => {
       if (beatNote.vfpitch) {
@@ -97,7 +99,8 @@ const useCursor = (
           (isRightHand(sourceNote) && !!selectedHands.right)
         ) {
           const halfTone = sourceNote.pitch.halfTone;
-          const includes = notesOn.includes(halfTone);
+          const transposedHalfTone = halfTone + OCTAVE_OFFSET;
+          const includes = notesOn.includes(transposedHalfTone);
           if (includes) {
             highlight(beatNote, "green");
           } else {

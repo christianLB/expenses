@@ -5,7 +5,7 @@ interface IOSMDLoaderOptions {
   onReady?: () => void;
 }
 
-const useOSMDLoader = (osmd, { onReady }: IOSMDLoaderOptions) => {
+const useOSMDLoader = (osmd, url, { onReady }: IOSMDLoaderOptions) => {
   const loadMusicXML = async (file) => {
     if (osmd && file) {
       const reader = new FileReader();
@@ -23,19 +23,20 @@ const useOSMDLoader = (osmd, { onReady }: IOSMDLoaderOptions) => {
 
   // Load a sample MusicXML file on component mount
   useEffect(() => {
-    const loadSampleMusicXML = async () => {
-      const response = await fetch("/sample.xml");
-      const musicXMLContent = await response.text();
-      const musicXMLFile = new File([musicXMLContent], "sample.xml", {
-        type: "application/xml",
-      });
-      loadMusicXML(musicXMLFile); // Call loadMusicXML directly, instead of using the useOSMDLoader hook
-    };
-
-    if (osmd) {
-      loadSampleMusicXML();
+    if (url) {
+      const loadSampleMusicXML = async () => {
+        const response = await fetch(`/${url}`);
+        const musicXMLContent = await response.text();
+        const musicXMLFile = new File([musicXMLContent], url, {
+          type: "application/xml",
+        });
+        loadMusicXML(musicXMLFile); // Call loadMusicXML directly, instead of using the useOSMDLoader hook
+      };
+      if (osmd) {
+        loadSampleMusicXML();
+      }
     }
-  }, [osmd]);
+  }, [osmd, url]);
 
   return { loadMusicXML };
 };
