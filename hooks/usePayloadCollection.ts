@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useApi, { IRequestParams } from "./useApi.ts";
 import qs from "qs";
 
@@ -24,6 +24,7 @@ function usePayloadCollection({
   const prodUrl = "https://cms.anaxi.net/api";
   const localUrl = "http://192.168.1.11:3020/api";
   const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
+  const [findQuery, setFindQuery] = useState<string>("");
 
   const buildQueryString = useCallback((query) => {
     if (!query) return "";
@@ -31,9 +32,7 @@ function usePayloadCollection({
     return `&${queryString}`;
   }, []);
 
-  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}${buildQueryString(
-    query
-  )}`;
+  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}`;
 
   const {
     data,
@@ -42,13 +41,30 @@ function usePayloadCollection({
     loading: fetchAllLoading,
     error: fetchAllError,
     arrayData,
-  } = useApi(apiUrl, {
+  } = useApi(`${apiUrl}${buildQueryString(query)}`, {
     method: "GET",
     fetchOnInit,
     perPageLimit,
     clearOnStart,
     expand,
   });
+
+  const {
+    request: findByQuery,
+    data: queryResults,
+    loading: findByQueryLoading,
+    error: findByQueryError,
+    arrayData: arrayQueryResults,
+  } = useApi(apiUrl, {
+    method: "GET",
+    perPageLimit,
+    clearOnStart,
+    expand,
+  });
+
+  const findByQueryHandler = async (query: any) => {
+    return await findByQuery({ query: buildQueryString(query) });
+  };
 
   const {
     request: create,
@@ -108,7 +124,11 @@ function usePayloadCollection({
   }, [arrayData]);
 
   return {
-    data,
+    queryResults,
+    findByQuery: findByQueryHandler,
+    findByQueryLoading,
+    findByQueryError,
+    arrayQueryResults,
     fetchAll,
     fetchAllLoading,
     fetchAllError,

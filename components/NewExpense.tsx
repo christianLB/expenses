@@ -84,6 +84,8 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
     createIncomeHandler,
     fetchExpenses,
     fetchIncomes,
+    queryRestults,
+    findExpensesByQueryHandler,
   } = useExpensesContext();
 
   const [text, setText] = useState("");
@@ -96,7 +98,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
     options: expenseGroups,
   });
-
+  const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
   const handleChange = (e: any) => {
     setText(e.target.value);
   };
@@ -129,22 +131,47 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   const expenses = getExpenses();
 
   const addExpenses = async () => {
-    const payload = getExpenses().map((transaction) => {
-      return {
+    const payload: any[] = [];
+    getExpenses().forEach(async (transaction) => {
+      //check if exists
+      const date = formatDate(`${transaction.date}/${currentYear}`);
+      const valueDate = formatDate(`${transaction.valueDate}/${currentYear}`);
+      const amount = Math.abs(
+        parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+      );
+      const balance = parseFloat(
+        transaction.balance.replace(".", "").replace(",", ".")
+      );
+
+      const duplicateExpense = await findExpensesByQueryHandler({
+        date: {
+          equals: date,
+        },
+        and: [
+          {
+            amount: {
+              equals: amount,
+            },
+          },
+          {
+            name: {
+              equals: transaction.name,
+            },
+          },
+        ],
+      });
+      console.log({ duplicateExpense });
+      payload.push({
         body: {
           ...transaction,
-          date: formatDate(`${transaction.date}/${currentYear}`),
-          valueDate: formatDate(`${transaction.valueDate}/${currentYear}`),
-          amount: Math.abs(
-            parseFloat(transaction.amount.replace(".", "").replace(",", "."))
-          ),
-          balance: parseFloat(
-            transaction.balance.replace(".", "").replace(",", ".")
-          ),
+          date,
+          valueDate,
+          amount,
+          balance,
           category: selectedCategory,
           group: selectedGroup,
         },
-      };
+      });
     });
     const r = await createExpenseHandler(payload);
     fetchExpenses();
@@ -171,7 +198,6 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   };
 
   const getTransactionBody = (transaction) => {
-    console.log(transaction);
     return {
       body: {
         ...transaction,
@@ -185,8 +211,30 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
     };
   };
 
+  const findDuplicateTransaction = async (transactionBody: any) => {
+    const duplicateExpense = await findExpensesByQueryHandler({
+      date: {
+        equals: transactionBody.body.date,
+      },
+      and: [
+        {
+          amount: {
+            equals: transactionBody.body.amount,
+          },
+        },
+        {
+          name: {
+            equals: transactionBody.body.name,
+          },
+        },
+      ],
+    });
+    return duplicateExpense.docs.length > 0;
+  };
+
   return (
     <div style={containerStyles}>
+      {isDuplicate && <div>Duplicate transaction</div>}
       <textarea
         style={textAreaStyles}
         value={text}
@@ -216,8 +264,16 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
             <button
               className={buttonStyles}
               onClick={async () => {
+                const transactionBody = getTransactionBody(transaction);
+                const isDuplicate: boolean = await findDuplicateTransaction(
+                  transactionBody
+                );
+                if (isDuplicate) {
+                  setIsDuplicate(true);
+                  return;
+                }
                 await createExpenseHandler({
-                  ...getTransactionBody(transaction),
+                  ...transactionBody,
                 });
                 fetchExpenses();
               }}

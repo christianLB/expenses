@@ -17,6 +17,7 @@ const TransactionCard = ({ parsedTransaction, index, year }) => {
     expenseCategories,
     expenseGroups,
     fetchExpenses,
+    findExpensesByQueryHandler,
     clients,
   } = useExpensesContext();
 
@@ -38,17 +39,42 @@ const TransactionCard = ({ parsedTransaction, index, year }) => {
   }, [parsedTransaction]);
 
   const addExpense = async () => {
+    console.log("transactionCard addExpense");
+    const date = formatDate(`${transaction.date}/${year}`);
+    const valueDate = formatDate(`${transaction.valueDate}/${year}`);
+    const amount = Math.abs(
+      parseFloat(transaction.amount.replace(".", "").replace(",", "."))
+    );
+    const balance = parseFloat(
+      transaction.balance.replace(".", "").replace(",", ".")
+    );
+
+    const duplicateExpense = await findExpensesByQueryHandler({
+      date: {
+        equals: date,
+      },
+      and: [
+        {
+          amount: {
+            equals: amount,
+          },
+        },
+        {
+          name: {
+            equals: transaction.name,
+          },
+        },
+      ],
+    });
+    console.log(duplicateExpense);
+    return;
     const { doc: newExpense } = await createExpenseHandler({
       body: {
         ...transaction,
-        date: formatDate(`${transaction.date}/${year}`),
-        valueDate: formatDate(`${transaction.valueDate}/${year}`),
-        amount: Math.abs(
-          parseFloat(transaction.amount.replace(".", "").replace(",", "."))
-        ),
-        balance: parseFloat(
-          transaction.balance.replace(".", "").replace(",", ".")
-        ),
+        date,
+        valueDate,
+        amount,
+        balance,
         category: selectedCategory,
         group: selectedGroup,
       },

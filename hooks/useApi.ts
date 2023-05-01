@@ -99,7 +99,9 @@ function useApi(
         const value = param[name];
         _url = _url.replace(`:${name}`, value.toString());
       });
-
+      if (param.query) {
+        _url = `${url}${param.query}`;
+      }
       return fetch(_url, {
         method,
         ...(method.toLocaleLowerCase() === "post" ||
