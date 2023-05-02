@@ -27,7 +27,7 @@ const baseStyles = {
   positive: "text-green-600 font-bold",
   negative: "text-red-600 font-bold",
   highlighted: "bg-indigo-400",
-  highlightedMonth: "border-b",
+  highlightedMonth: "border",
 };
 
 const combinedStyles = {

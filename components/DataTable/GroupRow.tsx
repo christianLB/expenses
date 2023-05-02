@@ -47,7 +47,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
 
     // If the group is empty, don't render the component
     if (filtered.length === 0) {
-      return null;
+      //return null;
     }
 
     return (

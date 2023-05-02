@@ -121,7 +121,7 @@ const DataTable: React.FC<DataTableProps> = () => {
                 key={index}
                 category={category}
                 index={index}
-                color={colors[index]}
+                //color={colors[index]}
               />
             ))}
             {balanceCategory?.totals && (

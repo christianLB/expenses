@@ -23,10 +23,9 @@ interface GroupData {
 interface CategoryRowProps {
   category: CategoryData;
   index: number;
-  color: string;
 }
 const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
-  ({ category, color }, ref) => {
+  ({ category }, ref) => {
     const { collapsedKeys, toggleItemCollapse, handleDrop } =
       useContext<TableContextProps>(TableContext);
     const isCollapsed = !collapsedKeys.has(category.id);
@@ -44,27 +43,28 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
       <>
         {!isCollapsed &&
           category.groups.map((group, groupIndex) => (
-            <GroupRow
-              key={groupIndex}
-              group={group}
-              category={category}
-              color={color}
-            />
+            <GroupRow key={groupIndex} group={group} category={category} />
           ))}
         <tr
           ref={dragDropRef}
           className={styles.categoryRow}
           onClick={() => toggleItemCollapse(category.id)}
         >
-          <td className={styles.cell} style={{ backgroundColor: color }}></td>
-          <td className={styles.cell} style={{ backgroundColor: color }}>
+          <td
+            className={styles.cell}
+            style={{ backgroundColor: category.color }}
+          ></td>
+          <td
+            className={styles.cell}
+            style={{ backgroundColor: category.color }}
+          >
             {category.name}
           </td>
           {category.totals.map((total, index) => (
             <td
               className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""}`}
               key={index}
-              style={{ backgroundColor: color }}
+              style={{ backgroundColor: category.color }}
             >
               {total > 0 ? total.toFixed(2) : "-"}
             </td>
