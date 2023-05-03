@@ -51,6 +51,7 @@ const useExpensesTable = (expenses, categories, groups, income) => {
       name: "Income",
       groups: [],
       expenses: income,
+      color: "#72afff",
       totals: incomeTotals,
     };
 
@@ -88,6 +89,7 @@ const useExpensesTable = (expenses, categories, groups, income) => {
       name: "Summary",
       groups: [],
       expenses: [],
+      color: "#A2A2A2",
       totals: summaryTotals,
     };
     groupedExpenses.push(summaryCategory);

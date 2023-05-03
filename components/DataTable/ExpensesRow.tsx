@@ -45,7 +45,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
         className: "border-none w-full",
       });
     const expenseDate = new Date(expense.date);
-    const colorStyle = { backgroundColor: color, filter: "brightness(70%)" };
+    const colorStyle = { backgroundColor: color, filter: "brightness(120%)" };
 
     const [, drag] = useDrag({
       type: "EXPENSE",

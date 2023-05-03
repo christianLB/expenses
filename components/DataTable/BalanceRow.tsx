@@ -1,6 +1,7 @@
 // CategoryRow.tsx
 import React from "react";
 import styles from "./tableStyles.js";
+import TableCell from "./TableCell.tsx";
 
 interface CategoryData {
   id: string;
@@ -29,7 +30,8 @@ const BalanceRow = ({ category, color }) => {
         {"Balance"}
       </td>
       {category.totals.map((total, index) => (
-        <td
+        <TableCell
+          monthIndex={index}
           className={`${styles.cell} ${
             total <= 0 ? styles.balanceNegative : styles.balancePositive
           }`}
@@ -37,7 +39,7 @@ const BalanceRow = ({ category, color }) => {
           style={{ backgroundColor: color }}
         >
           {total.toFixed(2)}
-        </td>
+        </TableCell>
       ))}
     </tr>
   );

@@ -5,6 +5,7 @@ import { TableContext, TableContextProps } from "./DataTable.tsx";
 import GroupRow from "./GroupRow.tsx";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable.tsx";
+import TableCell from "./TableCell.tsx";
 
 interface CategoryData {
   id: string;
@@ -61,13 +62,14 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
             {category.name}
           </td>
           {category.totals.map((total, index) => (
-            <td
+            <TableCell
+              monthIndex={index}
               className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""}`}
               key={index}
               style={{ backgroundColor: category.color }}
             >
               {total > 0 ? total.toFixed(2) : "-"}
-            </td>
+            </TableCell>
           ))}
         </tr>
       </>

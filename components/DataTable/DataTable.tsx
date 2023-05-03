@@ -1,5 +1,5 @@
 // Table.tsx
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 import { useExpensesContext } from "../../hooks/expensesContext.tsx";
 import TableHeader from "./TableHeader.tsx";
 import CategoryRow from "./CategoryRow.tsx";
@@ -18,6 +18,7 @@ interface DataTableProps {
 }
 
 export interface TableContextProps {
+  setSelectedMonth: (month: number) => void;
   handleDrop: (draggedExpense: string, targetExpense: string) => void;
 }
 
@@ -27,6 +28,7 @@ export const TableContext = createContext<TableContextProps | undefined>(
 //main component
 const DataTable: React.FC<DataTableProps> = () => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const {
     //categoryGroupExpenses: data,
     groupedExpensesByCategory: categories,
@@ -111,7 +113,14 @@ const DataTable: React.FC<DataTableProps> = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <TableContext.Provider
-        value={{ collapsedKeys, toggleItemCollapse, colors, handleDrop }}
+        value={{
+          collapsedKeys,
+          toggleItemCollapse,
+          colors,
+          handleDrop,
+          selectedMonth,
+          setSelectedMonth,
+        }}
       >
         <table className={`${tableStyles.table} w-full`}>
           <TableHeader />

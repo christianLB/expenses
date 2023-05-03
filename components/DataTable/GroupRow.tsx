@@ -6,6 +6,7 @@ import { TableContext, TableContextProps } from "./DataTable.tsx";
 import ExpensesRow from "./ExpensesRow.tsx";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable.tsx";
+import TableCell from "./TableCell.tsx";
 
 interface GroupData {
   id: string;
@@ -17,17 +18,19 @@ interface GroupData {
 interface GroupRowProps {
   group: GroupData;
   groupName: string;
-  color: string;
+  category: any;
 }
 
 const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
-  ({ group, color }, ref) => {
-    const { collapsedKeys, toggleItemCollapse, handleDrop } =
+  ({ group, category }, ref) => {
+    const { selectedMonth, collapsedKeys, toggleItemCollapse, handleDrop } =
       useContext<TableContextProps>(TableContext);
     const isCollapsed = !collapsedKeys.has(group.id);
-    const colorStyle = { backgroundColor: color, filter: "brightness(90%)" };
+    const colorStyle = {
+      backgroundColor: category.color,
+      filter: "brightness(110%)",
+    };
     const padding = { paddingLeft: "2.5em", fontSize: "0.7rem" };
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
     const [, drop] = useDrop({
       accept: "EXPENSE",
@@ -36,11 +39,6 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
 
     const dragDropRef = (instance) => {
       drop(instance);
-    };
-    const handleMonthClick = (e, monthIndex) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setSelectedMonth(monthIndex);
     };
 
     const filtered = filterByMonth(group.expenses, selectedMonth);
@@ -57,7 +55,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
             <ExpensesRow
               key={expense.id}
               expense={expense}
-              color={color}
+              color={category.color}
               categoryId={expense.category?.id}
               groupId={expense.group?.id}
             />
@@ -75,18 +73,17 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
             {group.name}
           </td>
           {group.totals.map((total, monthIndex) => (
-            <td
+            <TableCell
               key={monthIndex}
-              style={{ ...colorStyle, ...padding }}
-              className={`${
-                monthIndex === selectedMonth ? styles.highlightedMonth : ""
-              }`}
-              onClick={(e) => {
-                total > 0 && handleMonthClick(e, monthIndex);
+              monthIndex={monthIndex}
+              style={{
+                ...padding,
+                backgroundColor: category.color,
               }}
+              className={styles.groupCell}
             >
               {total > 0 ? total.toFixed(2) : "-"}
-            </td>
+            </TableCell>
           ))}
         </tr>
       </>
