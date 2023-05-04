@@ -45,3 +45,21 @@
   padding: 1rem;
   text-align: center;
 }
+
+@keyframes brightness-blink {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
+}
+
+.blinking {
+  animation: brightness-blink 1s linear infinite;
+}
+
+.groupRow:hover td {
+  filter: brightness(1.1);
+}
