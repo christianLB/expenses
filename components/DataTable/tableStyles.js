@@ -1,7 +1,7 @@
 const baseStyles = {
   table:
     "w-full text-sm bg-white shadow-md rounded-lg overflow-hidden border-collapse mt-10",
-  cell: "border-gray-300 px-4 py-2 text-left font-semibold",
+  cell: "px-4 py-2 text-left font-semibold",
 
   expcell: "py-1 text-left text-white",
 
@@ -18,7 +18,7 @@ const baseStyles = {
   positive: "text-green-600 font-bold",
   negative: "text-red-600 font-bold",
   highlighted: "bg-indigo-400",
-  highlightedMonth: "border",
+  highlightedMonth: "",
 };
 
 const combinedStyles = {

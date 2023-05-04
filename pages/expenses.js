@@ -53,7 +53,7 @@ export default function Expenses() {
           <VStack spacing={6} w="100%">
             <Box>
               <Grid
-                templateColumns="repeat(auto-fit, minmax(240px, 1fr))"
+                templateColumns="repeat(auto-fit, minmax(320px, 1fr))"
                 gap={4}
               >
                 <GridItem>

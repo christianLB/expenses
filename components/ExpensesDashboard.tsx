@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Pie, Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 
-import {
-  Chart,
+ChartJS.register(
   ArcElement,
   BarElement,
   CategoryScale,
   LinearScale,
-} from "chart.js";
-
-Chart.register(ArcElement, BarElement, CategoryScale, LinearScale);
+  Tooltip,
+  Legend
+);
 
 const ExpenseDashboard = () => {
   const { expenses, categories, groups, colors } = useExpensesContext();
@@ -59,7 +67,7 @@ const ExpenseDashboard = () => {
       labels: groups.map((group) => group.name),
       datasets: [
         {
-          label: "Expense Amount",
+          label: "Total anual",
           data: groups.map((group) => groupTotals[group.id]),
           backgroundColor: colors,
         },
@@ -67,51 +75,22 @@ const ExpenseDashboard = () => {
     });
   }, [expenses, categories, groups, colors]);
 
-  const handlePieSliceHover = (event, element) => {
-    if (element[0]) {
-      const index = element[0].index;
-      const category = categories[index];
-      const filteredExpenses = expenses.filter(
-        (expense) => expense.category.id === category.id
-      );
-      const groupTotals = groups.reduce((acc, group) => {
-        acc[group.id] = 0;
-        return acc;
-      }, {});
-
-      filteredExpenses.forEach((expense) => {
-        if (expense.group) {
-          groupTotals[expense.group.id] += expense.amount;
-        }
-      });
-
-      setGroupData({
-        labels: groups.map((group) => group.name),
-        datasets: [
-          {
-            label: "Expense Amount",
-            data: groups.map((group) => groupTotals[group.id]),
-            backgroundColor: colors,
-          },
-        ],
-      });
-    }
-  };
-
   return (
     <div
       style={{
         display: "flex",
-        justifyContent: "space-around",
         paddingTop: "20px",
+        width: "1000px",
+        height: "100%",
       }}
     >
-      <div style={{ width: "35%" }}>
-        <h2 style={{ textAlign: "center" }}>Expense Categories</h2>
+      <div style={{ width: "30%" }}>
+        <h2 style={{ textAlign: "center" }}>Categorías</h2>
         <Pie
           data={categoryData}
           options={{
-            interaction: { mode: "nearest", intersect: false, axis: "x" },
+            interaction: { mode: "index", intersect: false },
+
             aspectRatio: 1,
             plugins: {
               tooltip: {
@@ -126,15 +105,14 @@ const ExpenseDashboard = () => {
               },
             },
           }}
-          getelementatEvent={handlePieSliceHover}
         />
       </div>
       <div style={{ width: "65%" }}>
-        <h2 style={{ textAlign: "center" }}>Expense Groups</h2>
+        <h2 style={{ textAlign: "center" }}>Grupos</h2>
         <Bar
           data={groupData}
           options={{
-            interaction: { mode: "nearest", intersect: false, axis: "x" },
+            interaction: { mode: "index", intersect: false },
             aspectRatio: 1.5,
             plugins: {
               tooltip: {
