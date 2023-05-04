@@ -23,8 +23,13 @@ interface GroupRowProps {
 
 const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
   ({ group, category }, ref) => {
-    const { selectedMonth, collapsedKeys, toggleItemCollapse, handleDrop } =
-      useContext<TableContextProps>(TableContext);
+    const {
+      selectedMonth,
+      collapsedKeys,
+      toggleItemCollapse,
+      handleDrop,
+      isDragging,
+    } = useContext<TableContextProps>(TableContext);
     const isCollapsed = !collapsedKeys.has(group.id);
     const colorStyle = {
       backgroundColor: category.color,
@@ -44,8 +49,8 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
     const filtered = filterByMonth(group.expenses, selectedMonth);
 
     // If the group is empty, don't render the component
-    if (filtered.length === 0) {
-      //return null;
+    if (filtered.length === 0 && !isDragging) {
+      return null;
     }
 
     return (

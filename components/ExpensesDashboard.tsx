@@ -30,6 +30,12 @@ const ExpenseDashboard = () => {
     labels: [],
     datasets: [{ label: "Expense Amount", data: [], backgroundColor: [] }],
   });
+  const [filteredCategory, setFilteredCategory] = useState(null);
+
+  const handleCategoryFilter = (category) => {
+    setFilteredCategory(filteredCategory === category ? null : category);
+    console.log("Filtered Category:", filteredCategory);
+  };
 
   useEffect(() => {
     if (!categories || !groups) return;
@@ -73,7 +79,50 @@ const ExpenseDashboard = () => {
         },
       ],
     });
+    console.log("Group Data:", groupData);
   }, [expenses, categories, groups, colors]);
+
+  const filteredGroupData = () => {
+    const extractGroups = () => {
+      if (!filteredCategory) return groups;
+
+      const category = categories.find(
+        (category) => category.name === filteredCategory
+      );
+      if (!category) return [];
+
+      return groups.filter((group) => group.categoryId === category.id);
+    };
+
+    const filteredGroups = extractGroups();
+
+    const filteredData = {
+      labels: filteredGroups.map((group) => group.name),
+      datasets: [
+        {
+          label: "Amount",
+          data: filteredGroups.map((group) => group.total),
+          backgroundColor: filteredGroups.map((group) => {
+            const category = categories.find(
+              (cat) => cat.id === group.categoryId
+            );
+            return category ? category.color : "rgba(0, 0, 0, 0.1)";
+          }),
+          borderColor: filteredGroups.map((group) => {
+            const category = categories.find(
+              (cat) => cat.id === group.categoryId
+            );
+            return category ? category.color : "rgba(0, 0, 0, 0.1)";
+          }),
+          borderWidth: 1,
+        },
+      ],
+    };
+    console.log("Filtered Groups:", filteredGroups);
+    console.log("Filtered Data:", filteredData);
+
+    return filteredData;
+  };
 
   return (
     <div
@@ -104,13 +153,22 @@ const ExpenseDashboard = () => {
                 },
               },
             },
+            onClick: (event, elements) => {
+              if (elements.length > 0) {
+                const index = elements[0].index;
+                const category = categoryData.labels[index];
+                handleCategoryFilter(category);
+              } else {
+                handleCategoryFilter(null);
+              }
+            },
           }}
         />
       </div>
       <div style={{ width: "65%" }}>
         <h2 style={{ textAlign: "center" }}>Grupos</h2>
         <Bar
-          data={groupData}
+          data={filteredGroupData()}
           options={{
             interaction: { mode: "index", intersect: false },
             aspectRatio: 1.5,

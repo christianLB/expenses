@@ -1,10 +1,10 @@
 // ExpensesRow.tsx
-import React, { forwardRef, useContext } from "react";
+import React, { forwardRef, useContext, useEffect } from "react";
 import styles from "./tableStyles.js";
 import useSelect from "../../hooks/useSelect.tsx";
 import { useExpensesContext } from "../../hooks/expensesContext.tsx";
 //import { DeleteIcon, Icon } from "@chakra-ui/icons";
-import { useDrag, useDrop } from "react-dnd";
+import { DragSourceMonitor, useDrag, useDrop } from "react-dnd";
 import withDraggable from "./withDraggable.tsx";
 //import withDroppable from "./withDroppable.tsx";
 import { TableContextProps, TableContext } from "./DataTable.tsx";
@@ -36,7 +36,8 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
         placeHolder: "category",
         className: "border-none",
       });
-    const { handleDrop } = useContext<TableContextProps>(TableContext);
+    const { handleDrop, setIsDragging } =
+      useContext<TableContextProps>(TableContext);
 
     const { selected: selectedGroup, SelectComponent: GroupsSelect } =
       useSelect({
@@ -47,11 +48,18 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
     const expenseDate = new Date(expense.date);
     const colorStyle = { backgroundColor: color, filter: "brightness(120%)" };
 
-    const [, drag] = useDrag({
+    const [{ isDragging }, drag] = useDrag({
       type: "EXPENSE",
       item: { id: props.expense.id },
+      collect: (monitor: DragSourceMonitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     });
 
+    useEffect(() => {
+      if (isDragging) setIsDragging(isDragging);
+      else setTimeout(() => setIsDragging(isDragging), 1000);
+    }, [isDragging]);
     // const [, drop] = useDrop({
     //   accept: "EXPENSE",
     //   drop: (item: any) => handleDrop(item.id, props.categoryId, props.groupId),

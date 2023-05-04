@@ -18,6 +18,8 @@ interface DataTableProps {
 }
 
 export interface TableContextProps {
+  isDragging: boolean;
+  setIsDragging: (value: boolean) => void;
   setSelectedMonth: (month: number) => void;
   handleDrop: (draggedExpense: string, targetExpense: string) => void;
 }
@@ -29,6 +31,7 @@ export const TableContext = createContext<TableContextProps | undefined>(
 const DataTable: React.FC<DataTableProps> = () => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [isDragging, setIsDragging] = useState(false);
   const {
     //categoryGroupExpenses: data,
     groupedExpensesByCategory: categories,
@@ -120,6 +123,8 @@ const DataTable: React.FC<DataTableProps> = () => {
           handleDrop,
           selectedMonth,
           setSelectedMonth,
+          isDragging,
+          setIsDragging,
         }}
       >
         <table className={`${tableStyles.table} w-full`}>
