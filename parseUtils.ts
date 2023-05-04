@@ -148,21 +148,36 @@ function processIncomes(incomes, data) {
 export const parseSingleTransaction = (feed) => {
   const lines = feed.split("\n");
   const result: any = {};
+  console.log({ feed, lines });
+  let inObservations = false;
 
   lines.forEach((line) => {
     if (line.startsWith("Descripción")) {
       result.name = line.substring("Descripción".length).trim();
+      inObservations = false;
     } else if (line.startsWith("Observaciones")) {
-      result.name += " " + line.substring("Observaciones".length).trim();
+      inObservations = true;
+      result.name +=
+        " " +
+        line
+          .substring("Observaciones".length)
+          .trim()
+          .replace(/[\r\n]+/g, " ");
+    } else if (inObservations && line.trim() !== "") {
+      result.name += " " + line.trim().replace(/[\r\n]+/g, " ");
     } else if (line.startsWith("Fecha del movimiento")) {
+      inObservations = false;
       result.date = line.substring("Fecha del movimiento".length).trim();
     } else if (line.startsWith("Fecha valor")) {
+      inObservations = false;
       result.valueDate = line.substring("Fecha valor".length).trim();
     } else if (line.startsWith("Importe")) {
+      inObservations = false;
       result.amount = parseFloat(
         line.substring("Importe".length).trim().replace(",", ".")
       );
     } else if (line.startsWith("Divisa")) {
+      inObservations = false;
       result.currency = line.substring("Divisa".length).trim();
     }
   });
