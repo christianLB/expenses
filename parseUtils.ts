@@ -7,6 +7,7 @@ function initializeCategory(categoryData) {
   return {
     id: categoryData ? categoryData.id : "uncategorized",
     name: categoryData ? categoryData.name : "Uncategorized",
+    color: "#FF0000",
     groups: [],
     totals: Array(13).fill(0), // Initialize an array of 13 zeros (12 months + sum of all months)
   };
@@ -95,6 +96,7 @@ function processExpenses(expenses, categories, groups) {
       category = findOrCreateCategory(data.categories, {
         id: 0,
         name: "Uncategorized",
+        color: "#FF0000",
       });
     }
 

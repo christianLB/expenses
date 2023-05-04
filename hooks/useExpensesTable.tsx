@@ -32,7 +32,11 @@ const useExpensesTable = (expenses, categories, groups, income) => {
       return { categories: [] };
     }
 
-    const uncategorized: any = { id: "0", name: "Uncategorized" };
+    const uncategorized: any = {
+      id: "0",
+      name: "Uncategorized",
+      color: "#da9898",
+    };
     const noGroup = { id: "0", name: "No Group" };
 
     const expensesByCategory = _(expenses)
