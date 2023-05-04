@@ -1,9 +1,9 @@
 // CategoryRow.tsx
 import React, { useContext } from "react";
 import { TableContext, TableContextProps } from "./DataTable.tsx";
-import styles from "./tableStyles.js";
+import nextStyles from "../../styles/Expenses.module.css";
 
-const TableCell = ({ children, style, className, monthIndex }) => {
+const TableCell = ({ children = "", style, className, monthIndex = -1 }) => {
   const { selectedMonth, setSelectedMonth } =
     useContext<TableContextProps>(TableContext);
 
@@ -13,10 +13,11 @@ const TableCell = ({ children, style, className, monthIndex }) => {
 
   return (
     <td
-      className={className}
+      className={`${className} ${
+        monthIndex === selectedMonth ? nextStyles.blinking : ""
+      }`}
       style={{
         ...style,
-        filter: `brightness(${monthIndex === selectedMonth ? "120" : "110"}%)`,
       }}
       onClick={handleClick}
     >

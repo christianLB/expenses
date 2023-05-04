@@ -27,7 +27,7 @@ export default function Expenses() {
   const tableRef = useRef();
   const { currentYear, setCurrentYear, groupedExpensesByCategory } =
     useExpensesContext();
-  const data = `Qué me puedes decir de esta información?\n${tableRef.innerText}`;
+  //const data = `Qué me puedes decir de esta información?\n${tableRef.innerText}`;
 
   // const { buffer, refresh, cancel, done } = useTextBuffer({
   //   url: "./api/openai",

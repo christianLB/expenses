@@ -6,7 +6,6 @@ import GroupRow from "./GroupRow.tsx";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable.tsx";
 import TableCell from "./TableCell.tsx";
-
 interface CategoryData {
   id: string;
   name: string;
@@ -56,7 +55,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
             style={{ backgroundColor: category.color }}
           ></td>
           <td
-            className={styles.cell}
+            className={`${styles.cell}`}
             style={{ backgroundColor: category.color }}
           >
             {category.name}

@@ -7,7 +7,7 @@ import ExpensesRow from "./ExpensesRow.tsx";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable.tsx";
 import TableCell from "./TableCell.tsx";
-
+import nextStyles from "../../styles/Expenses.module.css";
 interface GroupData {
   id: string;
   groupName: string;
@@ -62,16 +62,19 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
           ))}
         <tr
           ref={dragDropRef}
-          className={styles.groupRow}
+          className={`${styles.groupRow} ${nextStyles.groupRow}`}
           onClick={() => toggleItemCollapse(group.id)}
         >
-          <td className={styles.groupCell} style={colorStyle}></td>
-          <td
-            style={{ ...colorStyle, ...padding }}
+          <TableCell
+            className={styles.groupCell}
+            style={{ backgroundColor: category.color }}
+          ></TableCell>
+          <TableCell
+            style={{ ...padding, backgroundColor: category.color }}
             className={styles.groupCell}
           >
             {group.name}
-          </td>
+          </TableCell>
           {group.totals.map((total, monthIndex) => (
             <TableCell
               key={monthIndex}
