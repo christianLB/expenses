@@ -63,3 +63,14 @@
 .groupRow:hover td {
   filter: brightness(1.1);
 }
+
+.gpt h3 {
+  padding: 2px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  background-color: #d2d2d2;
+}
+
+.gpt p {
+  margin-bottom: 15px;
+}

@@ -63,7 +63,7 @@ function useApi(
     onFinish = () => {},
     onFail = () => {},
     onSuccess = () => {},
-  }: IUseApiProps
+  }: IUseApiProps = {}
 ): useApiReturn {
   const POST = method === "POST";
   const PUT = method === "PUT";
