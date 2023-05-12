@@ -161,6 +161,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         ],
       });
       console.log({ duplicateExpense });
+
       payload.push({
         body: {
           ...transaction,

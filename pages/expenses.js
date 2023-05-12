@@ -29,7 +29,7 @@ import styles from "../styles/Expenses.module.css";
 
 export default function Expenses() {
   const tableRef = useRef();
-  const { currentYear, setCurrentYear, groupedExpensesByCategory } =
+  const { currentYear, setCurrentYear, groupedExpensesByCategory, categories } =
     useExpensesContext();
   //const data = `Qué me puedes decir de esta información?\n${tableRef.innerText}`;
   const {

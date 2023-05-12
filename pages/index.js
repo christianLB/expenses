@@ -1,7 +1,63 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import Footer from "../components/Footer.tsx";
+
 export default function Home() {
+  useEffect(() => {
+    const messages = [
+      "Wake up, Neo...",
+      "The Matrix has you...",
+      "Follow the white rabbit.",
+      "Knock, knock, Neo.",
+    ];
+
+    const delayBetweenMessages = 2000; // in milliseconds
+    const delayBetweenCharacters = 100; // in milliseconds
+
+    const consoleElement = document.getElementById("matrixConsole");
+
+    function typeMessage(message, callback) {
+      consoleElement.textContent = ""; // clear the element before typing
+      let i = 0;
+      const intervalId = setInterval(() => {
+        if (i < message.length) {
+          consoleElement.textContent += message[i];
+          i++;
+        }
+        if (i === message.length) {
+          clearInterval(intervalId);
+          callback();
+        }
+      }, delayBetweenCharacters);
+    }
+
+    function typeMessages(messages, currentMessageIndex) {
+      if (currentMessageIndex >= messages.length) {
+        return;
+      }
+
+      const currentMessage = messages[currentMessageIndex];
+      typeMessage(currentMessage, () => {
+        // Start blinking effect
+        let blinkState = false;
+        const blinkIntervalId = setInterval(() => {
+          consoleElement.innerHTML = consoleElement.textContent.replace(
+            /.$/,
+            `<span class="${blinkState ? "blink" : ""}">$&</span>`
+          );
+          blinkState = !blinkState;
+        }, 1000);
+
+        setTimeout(() => {
+          clearInterval(blinkIntervalId); // Stop blinking effect
+          typeMessages(messages, currentMessageIndex + 1);
+        }, delayBetweenMessages);
+      });
+    }
+
+    typeMessages(messages, 0);
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,10 +67,8 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1>Hello World!</h1>
+        <pre id="matrixConsole" className={styles.matrixConsole}></pre>
       </main>
-
-      <Footer />
     </div>
   );
 }
