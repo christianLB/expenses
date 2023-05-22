@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Head from "next/head";
 import Footer from "../components/Footer.tsx";
 import NewExpense from "../components/NewExpense.tsx";
@@ -37,6 +37,28 @@ export default function Expenses() {
     loading,
     response,
   } = useApi("./api/gpt4", { method: "POST" });
+
+  const {
+    request: gmail,
+    gmailLoading,
+    gmailResponse,
+  } = useApi("./api/gmail", {
+    method: "POST",
+    //fetchOnInit: true,
+    body: { label: "BBVA/gastos" },
+  });
+
+  const getGmail = async () => {
+    const resp = await gmail();
+    const resp2 = resp.map((message) => {
+      return message.message.attachments[0].text;
+    });
+    console.table(resp2);
+  };
+
+  useEffect(() => {
+    getGmail();
+  }, []);
 
   // const { buffer, refresh, cancel, done } = useTextBuffer({
   //   url: "./api/openai",

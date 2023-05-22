@@ -1,5 +1,6 @@
 .container {
   padding: 0 2rem;
+  background-color: black;
 }
 
 .main {
@@ -112,5 +113,33 @@
   .grid {
     width: 100%;
     flex-direction: column;
+  }
+}
+
+.matrixConsole {
+  color: lime;
+  font-family: "Courier New", monospace;
+  font-size: 20px;
+  white-space: pre;
+  margin: 20px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.matrixCursor {
+  color: lime;
+  font-family: "Courier New", monospace;
+  font-size: 20px;
+  animation: blink 1s step-end infinite;
+}
+
+.blink {
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
   }
 }

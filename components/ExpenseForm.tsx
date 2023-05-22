@@ -80,7 +80,7 @@ const ExpenseForm = ({ fixedExpenses }) => {
     });
     const result = await response.json();
     router.replace(router.asPath);
-    console.log("sos tarado eh", result);
+    //console.log("sos tarado eh", result);
 
     // send the data to the API or save it to the database
   };

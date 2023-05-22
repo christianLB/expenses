@@ -34,7 +34,7 @@ const ExpenseDashboard = () => {
 
   const handleCategoryFilter = (category) => {
     setFilteredCategory(filteredCategory === category ? null : category);
-    console.log("Filtered Category:", filteredCategory);
+    //console.log("Filtered Category:", filteredCategory);
   };
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const ExpenseDashboard = () => {
         },
       ],
     });
-    console.log("Group Data:", groupData);
+    //console.log("Group Data:", groupData);
   }, [expenses, categories, groups, colors]);
 
   const filteredGroupData = () => {
@@ -118,8 +118,8 @@ const ExpenseDashboard = () => {
         },
       ],
     };
-    console.log("Filtered Groups:", filteredGroups);
-    console.log("Filtered Data:", filteredData);
+    //console.log("Filtered Groups:", filteredGroups);
+    //console.log("Filtered Data:", filteredData);
 
     return filteredData;
   };
