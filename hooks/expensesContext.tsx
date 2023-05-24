@@ -3,6 +3,7 @@ import { generateYearlyQuery } from "../parseUtils.ts";
 import { generateSummaryData } from "../parseUtils.ts";
 import useExpensesTable from "./useExpensesTable.tsx";
 import usePayloadCollection from "./usePayloadCollection.ts";
+import useApi from "./useApi.ts";
 
 const ExpensesContext = createContext({});
 
@@ -57,6 +58,16 @@ export const ExpensesProvider = ({ children }) => {
     fetchAll: fetchIncomes,
   } = usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
 
+  const {
+    //request: gmail,
+    loading: gmailLoading,
+    response: gmailResponse,
+  } = useApi("./api/gmail", {
+    method: "POST",
+    fetchOnInit: true,
+    body: { label: "BBVA/gastos" },
+  });
+
   const { groupedExpensesByCategory } = useExpensesTable(
     expenses,
     categories,
@@ -82,6 +93,8 @@ export const ExpensesProvider = ({ children }) => {
     categories,
     clients,
     groupedExpensesByCategory,
+    gmailLoading,
+    gmailResponse,
     // categoryGroupExpenses:
     //   expenses && categories && groups && incomes
     //     ? generateSummaryData(expenses, categories, groups, incomes)

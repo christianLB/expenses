@@ -66,17 +66,24 @@ function parseText(text) {
   const amount = amountMatch
     ? Math.abs(parseFloat(amountMatch[1].replace(".", "").replace(",", ".")))
     : null;
-  const date = dateMatch ? dateMatch[1] : "";
+  const date = dateMatch ? formatDate(dateMatch[1]) : "";
   const account = accountMatch ? accountMatch[1] : "";
-  const valueDate = valueDateMatch ? valueDateMatch[1] : "";
+  const valueDate = valueDateMatch ? formatDate(valueDateMatch[1]) : "";
   const currency = currencyMatch ? currencyMatch[1] : "";
 
   return {
-    Name: name,
-    Amount: amount,
-    Date: date,
-    Account: account,
-    ValueDate: valueDate,
-    Currency: currency,
+    name,
+    amount,
+    date,
+    account,
+    valueDate,
+    currency,
   };
 }
+
+export const formatDate = (date) => {
+  const dateString = `${date}/${new Date().getFullYear()}`;
+  const [day, month, year] = dateString.split("/");
+  const dateObject = new Date(`${year}-${month}-${day}`);
+  return dateObject;
+};

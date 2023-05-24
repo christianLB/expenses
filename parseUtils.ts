@@ -150,7 +150,7 @@ function processIncomes(incomes, data) {
 export const parseSingleTransaction = (feed) => {
   const lines = feed.split("\n");
   const result: any = {};
-  console.log({ feed, lines });
+  //console.log({ feed, lines });
   let inObservations = false;
 
   lines.forEach((line) => {

@@ -9,18 +9,44 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
 export default async function handler(req, res) {
+  const prodUrl = process.env.PROD_URL;
+  const localUrl = process.env.LOCAL_URL;
+  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
+
   if (req.method === "POST") {
     const label = req.body.label; // Assume that the label is in the body of the POST request
 
     try {
-      const messages = await listMessages(oAuth2Client, `label:${label}`);
+      const messages = await listMessages(
+        oAuth2Client,
+        `label:${label} is:unread`
+      );
       const outMessages = [];
       for (let msg of messages) {
         const message = await getMessage(oAuth2Client, msg.id);
         const attachments = await getAttachments(oAuth2Client, msg.id);
         message.attachments = attachments;
-        outMessages.push({ message });
-        // Here you can process the message and its attachments as needed
+
+        // Parse the expense from the message
+        const expense = message.attachments[0].text;
+        //Insert the expense into the database
+        const response = await fetch("http://localhost:3001/api/addExpense", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(expense),
+        });
+
+        // Check if the request was successful
+        if (response.ok) {
+          // Mark the message as read
+          //await markAsRead(oAuth2Client, msg.id);
+          outMessages.push(expense);
+        } else {
+          console.error(
+            "Failed to insert expense into database:",
+            await response.text()
+          );
+        }
       }
 
       res.status(200).send(outMessages);
@@ -31,6 +57,18 @@ export default async function handler(req, res) {
   } else {
     res.status(405).send("Method not allowed");
   }
+}
+
+async function markAsRead(auth, messageId) {
+  const gmail = google.gmail({ version: "v1", auth });
+
+  await gmail.users.messages.modify({
+    userId: "me",
+    id: messageId,
+    requestBody: {
+      removeLabelIds: ["UNREAD"],
+    },
+  });
 }
 
 async function listMessages(auth, query) {
