@@ -13,6 +13,7 @@ export default async function handler(req, res) {
   console.log(`GMAIL_CLIENT_SECRET: ${process.env.GMAIL_CLIENT_SECRET}`);
   console.log(`GMAIL_REDIRECT_URI: ${process.env.GMAIL_REDIRECT_URI}`);
   console.log(`GMAIL_REFRESH_TOKEN: ${process.env.GMAIL_REFRESH_TOKEN}`);
+  console.log(`PROD_URL: ${process.env.PROD_URL}`);
 
   const prodUrl = process.env.PROD_URL;
   const localUrl = process.env.LOCAL_URL;
