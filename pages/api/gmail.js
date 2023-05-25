@@ -9,6 +9,11 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
 export default async function handler(req, res) {
+  console.log(`GMAIL_CLIENT_ID: ${process.env.GMAIL_CLIENT_ID}`);
+  console.log(`GMAIL_CLIENT_SECRET: ${process.env.GMAIL_CLIENT_SECRET}`);
+  console.log(`GMAIL_REDIRECT_URI: ${process.env.GMAIL_REDIRECT_URI}`);
+  console.log(`GMAIL_REFRESH_TOKEN: ${process.env.GMAIL_REFRESH_TOKEN}`);
+
   const prodUrl = process.env.PROD_URL;
   const localUrl = process.env.LOCAL_URL;
   const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
