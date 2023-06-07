@@ -3,7 +3,7 @@ import React, { forwardRef } from "react";
 import { useDrag, useDrop, DragPreviewImage } from "react-dnd";
 
 const withDraggable = (WrappedComponent) => {
-  return forwardRef((props, ref) => {
+  return forwardRef((props: any, ref) => {
     const [{ isDragging }, drag, preview] = useDrag({
       type: "EXPENSE",
       item: { id: props.expense.id },
@@ -14,7 +14,7 @@ const withDraggable = (WrappedComponent) => {
 
     const [, drop] = useDrop({
       accept: "EXPENSE",
-      drop: (item) => props.handleDrop(item.id),
+      drop: (item: any) => props.handleDrop(item.id),
     });
 
     return (

@@ -4,7 +4,7 @@ import { useState } from "react";
 const useSelect = ({
   options = [],
   placeHolder = "Select option",
-  className,
+  className = "",
   valueKey = "id",
   labelKey = "name",
 }) => {

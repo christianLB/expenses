@@ -1,9 +1,10 @@
+//@ts-nocheck
 import { OpenSheetMusicDisplay, Cursor, Note } from "opensheetmusicdisplay";
 import { useState, useEffect, useRef } from "react";
 import cursorStyles from "../../styles/Cursor.module.css";
-import useNote from "./useNote.tsx";
-import useMidi from "./useMidi.tsx";
-import useClickNavigation from "./useClickNavigation.tsx";
+import useNote from "./useNote";
+import useMidi from "./useMidi";
+import useClickNavigation from "./useClickNavigation";
 
 const useCursor = (
   osmd: OpenSheetMusicDisplay | null,
@@ -42,7 +43,7 @@ const useCursor = (
 
   useEffect(() => {
     cursor?.reset();
-    cursor?.iterator.currentMeasureIndex = selectedMeasure;
+    if (cursor?.iterator) cursor.iterator.currentMeasureIndex = selectedMeasure;
     //cursor?.iterator.currentVoiceEntryIndex = 0;
     cursor?.previous(); //TODO: ???
     cursor?.next();

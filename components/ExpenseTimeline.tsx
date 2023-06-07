@@ -3,7 +3,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import MonthColumnView from "./MonthColumnView.tsx";
+import MonthColumnView from "./MonthColumnView";
 //...
 const views = {
   month: true,

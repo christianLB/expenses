@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import { useState } from "react";
 

@@ -1,16 +1,16 @@
 // GroupRow.tsx
-import React, { forwardRef, useContext, useState } from "react";
+import React, { forwardRef, useContext } from "react";
 import { useDrop } from "react-dnd";
-import { filterByMonth } from "../../parseUtils.ts";
-import { TableContext, TableContextProps } from "./DataTable.tsx";
-import ExpensesRow from "./ExpensesRow.tsx";
+import { filterByMonth } from "../../parseUtils";
+import { TableContext, TableContextProps } from "./DataTable";
+import ExpensesRow from "./ExpensesRow";
 import styles from "./tableStyles.js";
-import withDroppable from "./withDroppable.tsx";
-import TableCell from "./TableCell.tsx";
+import withDroppable from "./withDroppable";
+import TableCell from "./TableCell";
 import nextStyles from "../../styles/Expenses.module.css";
 interface GroupData {
   id: string;
-  groupName: string;
+  name: string;
   totals: Array<number>;
   expenses: Array<any>; // Define a more specific interface for expenses if needed
 }
@@ -59,6 +59,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
           filtered.map((expense, expenseIndex) => (
             <ExpensesRow
               key={expense.id}
+              //@ts-ignore
               expense={expense}
               color={category.color}
               categoryId={expense.category?.id}

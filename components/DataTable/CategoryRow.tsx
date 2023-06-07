@@ -9,6 +9,7 @@ import TableCell from "./TableCell";
 interface CategoryData {
   id: string;
   name: string;
+  color: string;
   groups: Array<GroupData>;
   totals: Array<number>;
 }
@@ -21,7 +22,8 @@ interface GroupData {
 }
 
 interface CategoryRowProps {
-  category: CategoryData;
+  key: number;
+  category?: CategoryData;
   index: number;
 }
 const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
@@ -43,6 +45,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
       <>
         {!isCollapsed &&
           category.groups.map((group, groupIndex) => (
+            //@ts-ignore
             <GroupRow key={groupIndex} group={group} category={category} />
           ))}
         <tr

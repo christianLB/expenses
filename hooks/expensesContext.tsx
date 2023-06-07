@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
-import { generateYearlyQuery } from "../parseUtils.ts";
-import { generateSummaryData } from "../parseUtils.ts";
-import useExpensesTable from "./useExpensesTable.tsx";
-import usePayloadCollection from "./usePayloadCollection.ts";
-import useApi from "./useApi.ts";
+import { generateYearlyQuery } from "../parseUtils";
+import useExpensesTable from "./useExpensesTable";
+import usePayloadCollection from "./usePayloadCollection";
+import useApi from "./useApi";
 
-const ExpensesContext = createContext({});
+const ExpensesContext = createContext<any>({});
 
 export const useExpensesContext = () => useContext(ExpensesContext);
 

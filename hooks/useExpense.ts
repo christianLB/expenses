@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { useState } from "react";
-import useApi from "./useApi.ts";
+import useApi from "./useApi";
 import qs from "qs";
 export interface IExpenseGroup {
   id: number;

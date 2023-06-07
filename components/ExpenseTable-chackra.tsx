@@ -8,7 +8,7 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import useToggle from "../hooks/useToggle.ts";
+import useToggle from "../hooks/useToggle";
 
 const months = [
   "Jan",

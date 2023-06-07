@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "@chakra-ui/react";
-import useExpenseCategory from "../hooks/useExpenseCategory.tsx";
-import useExpenseGroup from "../hooks/useExpenseGroup.tsx";
+import useExpenseCategory from "../hooks/useExpenseCategory";
+import useExpenseGroup from "../hooks/useExpenseGroup";
 import {
   parseTransactionInfo,
   parseTransactionList,
   formatDate,
-} from "../utils.ts";
-import useSelect from "../hooks/useSelect.tsx";
-import TransactionCard from "../components/TransactionCard.tsx";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
+} from "../utils";
+import useSelect from "../hooks/useSelect";
+import TransactionCard from "../components/TransactionCard";
+import { useExpensesContext } from "../hooks/expensesContext";
 import styles from "../styles/TransactionCard.module.css";
-import { parseSingleTransaction } from "../parseUtils.ts";
+import { parseSingleTransaction } from "../parseUtils";
 
 interface TransactionInfo {
   date?: Date;
@@ -234,6 +234,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
   };
 
   return (
+    //@ts-ignore
     <div style={containerStyles}>
       {isDuplicate && <div>Duplicate transaction</div>}
       <textarea
@@ -241,6 +242,7 @@ const NewExpense = ({ loading, onCreate = (params) => {} }) => {
         value={text}
         onChange={handleChange}
       ></textarea>
+      {/* @ts-ignore */}
       <div style={resultPaneStyle}>
         {!!fields.length && (
           <>

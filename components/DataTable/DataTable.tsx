@@ -1,13 +1,13 @@
 // Table.tsx
 import React, { createContext, useState } from "react";
-import { useExpensesContext } from "../../hooks/expensesContext.tsx";
-import TableHeader from "./TableHeader.tsx";
-import CategoryRow from "./CategoryRow.tsx";
+import { useExpensesContext } from "../../hooks/expensesContext";
+import TableHeader from "./TableHeader";
+import CategoryRow from "./CategoryRow";
 import tableStyles from "./tableStyles.js";
-import useCollapsedState from "../../hooks/useCollapsedState.tsx";
+import useCollapsedState from "../../hooks/useCollapsedState";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import BalanceRow from "./BalanceRow.tsx";
+import BalanceRow from "./BalanceRow";
 
 interface DataTableProps {
   data?: {
@@ -21,6 +21,8 @@ export interface TableContextProps {
   isDragging: boolean;
   collapsedKeys?: any;
   toggleItemCollapse?: any;
+  selectedMonth?: number;
+  colors: string[];
   setIsDragging: (value: boolean) => void;
   setSelectedMonth: (month: number) => void;
   handleDrop: (draggedExpense: string, targetExpense: string, type) => void;
@@ -31,7 +33,7 @@ export const TableContext = createContext<TableContextProps | undefined>(
 );
 //main component
 const DataTable: React.FC<DataTableProps> = () => {
-  const [collapsedKeys, toggleItemCollapse] = useCollapsedState();
+  const [collapsedKeys, toggleItemCollapse] = useCollapsedState({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [isDragging, setIsDragging] = useState(false);
   const {
@@ -133,12 +135,8 @@ const DataTable: React.FC<DataTableProps> = () => {
           <TableHeader />
           <tbody>
             {displayCategories?.map((category, index) => (
-              <CategoryRow
-                key={index}
-                category={category}
-                index={index}
-                //color={colors[index]}
-              />
+              //@ts-ignore
+              <CategoryRow key={index} category={category} index={index} />
             ))}
             {balanceCategory?.totals && (
               <BalanceRow

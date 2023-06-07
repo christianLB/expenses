@@ -105,6 +105,7 @@ const useExpensesTable = (expenses, categories, groups, income) => {
       name: "Balance",
       groups: [],
       expenses: [],
+      color: "",
       totals: balanceTotals,
     };
     groupedExpenses.push(balanceCategory);

@@ -5,11 +5,11 @@ import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 const CategoryRow = ({
   category,
   color,
-  isIncome,
-  isBalance,
+  isIncome = false,
+  isBalance = false,
   totals,
   collapsed,
-  onToggleCollapse,
+  onToggleCollapse = () => {},
 }) => {
   const hasGroups = !!category.groups;
 

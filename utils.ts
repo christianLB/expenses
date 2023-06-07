@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import _ from "lodash";
 import { IExpense } from "./hooks/useExpense";
 import { IIncome } from "./hooks/useIncome";

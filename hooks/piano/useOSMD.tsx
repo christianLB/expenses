@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useState, useEffect, useRef } from "react";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import useOSMDLoader from "./useOSMDLoader.tsx";

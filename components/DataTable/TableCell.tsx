@@ -1,6 +1,6 @@
 // CategoryRow.tsx
 import React, { useContext } from "react";
-import { TableContext, TableContextProps } from "./DataTable.tsx";
+import { TableContext, TableContextProps } from "./DataTable";
 import nextStyles from "../../styles/Expenses.module.css";
 
 const TableCell = ({ children = "", style, className, monthIndex = -1 }) => {

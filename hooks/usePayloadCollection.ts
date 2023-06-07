@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import useApi, { IRequestParams } from "./useApi.ts";
+import useApi, { IRequestParams } from "./useApi";
 import qs from "qs";
 
 interface IUsePayloadCollectionProps {
@@ -21,9 +21,8 @@ function usePayloadCollection({
   expand,
   query,
 }: IUsePayloadCollectionProps) {
-  const prodUrl = "https://cms.anaxi.net/api";
-  const localUrl = "http://192.168.1.11:3020/api";
-  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
+  const CMSApiUrl = process.env.NEXT_PUBLIC_CMS_API_URL;
+
   const [findQuery, setFindQuery] = useState<string>("");
 
   const buildQueryString = useCallback((query) => {
@@ -32,7 +31,7 @@ function usePayloadCollection({
     return `&${queryString}`;
   }, []);
 
-  const apiUrl = `${baseUrl}/${collection}?limit=${perPageLimit}&depth=${depth}`;
+  const apiUrl = `${CMSApiUrl}/${collection}?limit=${perPageLimit}&depth=${depth}`;
 
   const {
     data,
@@ -71,7 +70,7 @@ function usePayloadCollection({
     response: createResponse,
     loading: createLoading,
     error: createError,
-  } = useApi(`${baseUrl}/${collection}`, {
+  } = useApi(`${CMSApiUrl}/${collection}`, {
     method: "POST",
   });
 
@@ -80,7 +79,7 @@ function usePayloadCollection({
     response: updateResponse,
     loading: updating,
     error: updateError,
-  } = useApi(`${baseUrl}/${collection}/:id`, {
+  } = useApi(`${CMSApiUrl}/${collection}/:id`, {
     method: "PUT",
   });
 
@@ -89,7 +88,7 @@ function usePayloadCollection({
     response: deleteResponse,
     loading: deleteLoading,
     error: deleteError,
-  } = useApi(`${baseUrl}/${collection}/:id`, {
+  } = useApi(`${CMSApiUrl}/${collection}/:id`, {
     method: "DELETE",
   });
 

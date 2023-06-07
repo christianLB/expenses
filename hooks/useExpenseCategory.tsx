@@ -1,4 +1,4 @@
-import useApi from "./useApi.ts";
+import useApi from "./useApi";
 
 const useExpenseCategory = () => {
   const baseUrl = "https://cms.anaxi.net/api";

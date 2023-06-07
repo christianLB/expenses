@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import * as _ from "lodash";
 import useApi from "./useApi.ts";
 export interface IExpenseGroup {

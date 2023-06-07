@@ -9,7 +9,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import { useExpensesContext } from "../hooks/expensesContext";
 
 ChartJS.register(
   ArcElement,

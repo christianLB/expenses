@@ -1,14 +1,12 @@
 // ExpensesRow.tsx
 import React, { forwardRef, useContext, useEffect } from "react";
 import styles from "./tableStyles.js";
-import useSelect from "../../hooks/useSelect.tsx";
-import { useExpensesContext } from "../../hooks/expensesContext.tsx";
+import useSelect from "../../hooks/useSelect";
+import { useExpensesContext } from "../../hooks/expensesContext";
 //import { DeleteIcon, Icon } from "@chakra-ui/icons";
 import { DragSourceMonitor, useDrag, useDrop } from "react-dnd";
-import withDraggable from "./withDraggable.tsx";
-//import withDroppable from "./withDroppable.tsx";
-import { TableContextProps, TableContext } from "./DataTable.tsx";
-import useIcon from "../../hooks/useIcon.tsx";
+import withDraggable from "./withDraggable";
+import { TableContextProps, TableContext } from "./DataTable";
 
 interface ExpenseData {
   id: string;

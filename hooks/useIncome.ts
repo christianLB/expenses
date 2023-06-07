@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import useApi from "./useApi.ts";
+import useApi from "./useApi";
 import qs from "qs";
 
 export interface IIncome {

@@ -1,8 +1,8 @@
 import { Card, Spinner, CardBody } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { formatDate } from "../utils.ts";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
-import useSelect from "../hooks/useSelect.tsx";
+import { formatDate } from "../utils";
+import { useExpensesContext } from "../hooks/expensesContext";
+import useSelect from "../hooks/useSelect";
 import styles from "../styles/TransactionCard.module.css";
 const buttonStyles =
   "bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer";
@@ -31,7 +31,7 @@ const TransactionCard = ({ parsedTransaction, index, year }) => {
     placeHolder: "group",
   });
 
-  const [transaction, setTransaction] = useState({ id: "" });
+  const [transaction, setTransaction] = useState<any>({ id: "" });
   const transactionId = transaction.id;
 
   useEffect(() => {

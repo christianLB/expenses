@@ -3,10 +3,10 @@ import React, { forwardRef } from "react";
 import { useDrop } from "react-dnd";
 
 const withDroppable = (WrappedComponent) => {
-  return forwardRef((props, ref) => {
+  return forwardRef((props: any, ref) => {
     const [, drop] = useDrop({
       accept: "EXPENSE",
-      drop: (item) =>
+      drop: (item: any) =>
         props.handleDrop(item.id, props.categoryId, props.groupId),
     });
 

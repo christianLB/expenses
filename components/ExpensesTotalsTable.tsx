@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Table, IconButton, Box, Collapse } from "@chakra-ui/react";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import * as _ from "lodash";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
+import { useExpensesContext } from "../hooks/expensesContext";
 
 const monthNames = [
   "Jan",

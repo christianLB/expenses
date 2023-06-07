@@ -1,3 +1,4 @@
+//@ts-nocheck
 // hooks/useScore.ts
 import { useEffect, useState } from "react";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";

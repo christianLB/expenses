@@ -1,11 +1,11 @@
 import React from "react";
 import { Table } from "@chakra-ui/react";
-import { useExpensesContext } from "../../hooks/expensesContext.tsx";
-import CategoryRow from "./CategoryRow.tsx";
-import GroupRow from "./GroupRow.tsx";
-import MonthHeader from "./MonthHeader.tsx";
-import useCollapsedState from "../../hooks/useCollapsedState.ts"; // Import the custom hook
-import { getMonthNames, colors } from "../../utils.ts";
+import { useExpensesContext } from "../../hooks/expensesContext";
+import CategoryRow from "./CategoryRow";
+import GroupRow from "./GroupRow";
+import MonthHeader from "./MonthHeader";
+import useCollapsedState from "../../hooks/useCollapsedState"; // Import the custom hook
+import { getMonthNames, colors } from "../../utils";
 
 const ExpenseTable = () => {
   const { categoryGroupExpenses: expensesResult = {} } = useExpensesContext();

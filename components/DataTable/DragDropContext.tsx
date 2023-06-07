@@ -2,6 +2,7 @@
 import { createContext, useContext } from "react";
 
 interface DragDropContextData {
+  children?: any;
   handleDrop: (itemId: string, categoryId?: string, groupId?: string) => void;
 }
 
@@ -11,8 +12,15 @@ const DragDropContext = createContext<DragDropContextData>({
 
 export const useDragDropContext = () => useContext(DragDropContext);
 
-export const DragDropContextProvider: React.FC<DragDropContextData> = ({ children, handleDrop }) => {
-  return <DragDropContext.Provider value={{ handleDrop }}>{children}</DragDropContext.Provider>;
+export const DragDropContextProvider: React.FC<DragDropContextData> = ({
+  children,
+  handleDrop,
+}) => {
+  return (
+    <DragDropContext.Provider value={{ handleDrop }}>
+      {children}
+    </DragDropContext.Provider>
+  );
 };
 
 export default DragDropContext;
