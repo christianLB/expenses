@@ -23,9 +23,8 @@ export default async function handler(req, res) {
     const queryString = qs.stringify({ where: query });
     return `&${queryString}`;
   };
-  console.log(`${CMS_URL}/expenses?query=${buildQueryString(query)}`);
   const getResponse = await fetch(
-    `${API_URL}/expenses?query=${buildQueryString(query)}`,
+    `${CMS_URL}/expenses?query=${buildQueryString(query)}`,
     {
       method: "GET",
     }
