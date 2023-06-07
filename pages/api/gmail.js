@@ -1,42 +1,51 @@
 import { google } from "googleapis";
-
-const oAuth2Client = new google.auth.OAuth2(
-  process.env.GMAIL_CLIENT_ID,
-  process.env.GMAIL_CLIENT_SECRET,
-  process.env.GMAIL_REDIRECT_URI
-);
-
-oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
+import { authOptions } from "/pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth/next";
 
 export default async function handler(req, res) {
-  console.log(`GMAIL_CLIENT_ID: ${process.env.GMAIL_CLIENT_ID}`);
-  console.log(`GMAIL_CLIENT_SECRET: ${process.env.GMAIL_CLIENT_SECRET}`);
-  console.log(`GMAIL_REDIRECT_URI: ${process.env.GMAIL_REDIRECT_URI}`);
-  console.log(`GMAIL_REFRESH_TOKEN: ${process.env.GMAIL_REFRESH_TOKEN}`);
-  console.log(`PROD_URL: ${process.env.PROD_URL}`);
+  console.log(`checking gmail for ${req.body.label}`);
+  const session = await getServerSession(req, res, authOptions);
 
-  const prodUrl = process.env.PROD_URL;
-  const localUrl = process.env.LOCAL_URL;
-  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
+  if (!session) {
+    res.status(401).json({ message: "You must be logged in." });
+    return;
+  }
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    process.env.GMAIL_REDIRECT_URI
+  );
+
+  oauth2Client.setCredentials({
+    access_token: session.accessToken,
+    refresh_token: session.refreshToken,
+  });
+
+  const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
   if (req.method === "POST") {
     const label = req.body.label; // Assume that the label is in the body of the POST request
 
     try {
       const messages = await listMessages(
-        oAuth2Client,
-        `label:${label} is:unread`
+        gmail,
+        `label:${label} is:unread`,
+        session.user.email
       );
       const outMessages = [];
       for (let msg of messages) {
-        const message = await getMessage(oAuth2Client, msg.id);
-        const attachments = await getAttachments(oAuth2Client, msg.id);
+        const message = await getMessage(gmail, msg.id, session.user.email);
+        const attachments = await getAttachments(
+          gmail,
+          msg.id,
+          session.user.email
+        );
         message.attachments = attachments;
 
         // Parse the expense from the message
         const expense = message.attachments[0].text;
         //Insert the expense into the database
-        const response = await fetch("http://localhost:3001/api/addExpense", {
+        const response = await fetch("/pages/api/addExpense", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(expense),
@@ -45,13 +54,15 @@ export default async function handler(req, res) {
         // Check if the request was successful
         if (response.ok) {
           // Mark the message as read
-          //await markAsRead(oAuth2Client, msg.id);
           outMessages.push(expense);
+          await markAsRead(gmail, msg.id, session.user.email);
         } else {
-          console.error(
-            "Failed to insert expense into database:",
-            await response.text()
-          );
+          const resp = await response.text();
+          if (resp.includes("Duplicate expense record not saved")) {
+            // If the expense is a duplicate, mark the message as read
+            await markAsRead(gmail, msg.id, session.user.email);
+          }
+          console.error("Failed to insert expense into database:", resp);
         }
       }
 
@@ -65,11 +76,9 @@ export default async function handler(req, res) {
   }
 }
 
-async function markAsRead(auth, messageId) {
-  const gmail = google.gmail({ version: "v1", auth });
-
+async function markAsRead(gmail, messageId, sesionEmail) {
   await gmail.users.messages.modify({
-    userId: "me",
+    userId: sesionEmail,
     id: messageId,
     requestBody: {
       removeLabelIds: ["UNREAD"],
@@ -77,13 +86,11 @@ async function markAsRead(auth, messageId) {
   });
 }
 
-async function listMessages(auth, query) {
+async function listMessages(gmail, query, sesionEmail) {
   return new Promise((resolve, reject) => {
-    const gmail = google.gmail({ version: "v1", auth });
-
     gmail.users.messages.list(
       {
-        userId: "me",
+        userId: sesionEmail,
         q: query,
       },
       (err, res) => {
@@ -103,13 +110,11 @@ async function listMessages(auth, query) {
   });
 }
 
-async function getMessage(auth, messageId) {
+async function getMessage(gmail, messageId, sesionEmail) {
   return new Promise((resolve, reject) => {
-    const gmail = google.gmail({ version: "v1", auth });
-
     gmail.users.messages.get(
       {
-        userId: "me",
+        userId: sesionEmail,
         id: messageId,
       },
       (err, res) => {
@@ -124,13 +129,11 @@ async function getMessage(auth, messageId) {
   });
 }
 
-async function getAttachmentData(auth, messageId, attachmentId) {
+async function getAttachmentData(gmail, messageId, attachmentId, sesionEmail) {
   return new Promise((resolve, reject) => {
-    const gmail = google.gmail({ version: "v1", auth });
-
     gmail.users.messages.attachments.get(
       {
-        userId: "me",
+        userId: sesionEmail,
         messageId: messageId,
         id: attachmentId,
       },
@@ -146,13 +149,12 @@ async function getAttachmentData(auth, messageId, attachmentId) {
   });
 }
 
-async function getAttachments(auth, messageId) {
-  const gmail = google.gmail({ version: "v1", auth });
-
+async function getAttachments(gmail, messageId, sesionEmail) {
   const res = await gmail.users.messages.get({
-    userId: "me",
+    userId: sesionEmail,
     id: messageId,
   });
+  console.log("sessionEmail", sesionEmail, messageId);
 
   const parts = res.data.payload.parts;
 
@@ -160,9 +162,10 @@ async function getAttachments(auth, messageId) {
     if (part.filename && part.filename.length > 0) {
       if (part.body.attachmentId) {
         const attachmentData = await getAttachmentData(
-          auth,
+          gmail,
           messageId,
-          part.body.attachmentId
+          part.body.attachmentId,
+          sesionEmail
         );
         const attachment = {
           filename: part.filename,
@@ -177,7 +180,7 @@ async function getAttachments(auth, messageId) {
           params.append("pdfData", attachmentData);
           params.append("password", "72298830D");
 
-          const response = await fetch("http://localhost:3001/api/pdf2json", {
+          const response = await fetch("/pages/api/pdf2json", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: params,

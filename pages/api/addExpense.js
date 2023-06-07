@@ -40,14 +40,16 @@ export default async function handler(req, res) {
     // If any matching expenses are found, it's a duplicate
     res.status(400).json({ message: "Duplicate expense record not saved." });
   } else {
-    const postResponse = await fetch(`${baseUrl}/expenses`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(incomingExpense),
-    });
-
-    const data = await postResponse.json();
-    console.log(data, incomingExpense.date, incomingExpense.valueDate);
-    res.status(200).json({ data });
+    if (incomingExpense.name && incomingExpense.amount) {
+      const postResponse = await fetch(`${baseUrl}/expenses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(incomingExpense),
+      });
+      const data = await postResponse.json();
+      console.log(data, incomingExpense.date, incomingExpense.valueDate);
+      res.status(200).json({ data });
+    }
+    res.status(200).json({ message: "empty expense" });
   }
 }

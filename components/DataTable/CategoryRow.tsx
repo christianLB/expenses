@@ -1,11 +1,11 @@
 // CategoryRow.tsx
 import React, { useContext, forwardRef } from "react";
 import { useDrop } from "react-dnd";
-import { TableContext, TableContextProps } from "./DataTable.tsx";
-import GroupRow from "./GroupRow.tsx";
+import { TableContext, TableContextProps } from "./DataTable";
+import GroupRow from "./GroupRow";
 import styles from "./tableStyles.js";
-import withDroppable from "./withDroppable.tsx";
-import TableCell from "./TableCell.tsx";
+import withDroppable from "./withDroppable";
+import TableCell from "./TableCell";
 interface CategoryData {
   id: string;
   name: string;

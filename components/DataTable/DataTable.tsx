@@ -19,9 +19,11 @@ interface DataTableProps {
 
 export interface TableContextProps {
   isDragging: boolean;
+  collapsedKeys?: any;
+  toggleItemCollapse?: any;
   setIsDragging: (value: boolean) => void;
   setSelectedMonth: (month: number) => void;
-  handleDrop: (draggedExpense: string, targetExpense: string) => void;
+  handleDrop: (draggedExpense: string, targetExpense: string, type) => void;
 }
 
 export const TableContext = createContext<TableContextProps | undefined>(

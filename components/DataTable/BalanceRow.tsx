@@ -1,7 +1,7 @@
 // CategoryRow.tsx
 import React from "react";
 import styles from "./tableStyles.js";
-import TableCell from "./TableCell.tsx";
+import TableCell from "./TableCell";
 
 interface CategoryData {
   id: string;
