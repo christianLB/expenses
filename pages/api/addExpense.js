@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     res.status(400).json({ message: "Duplicate expense record not saved." });
   } else {
     if (incomingExpense.name && incomingExpense.amount) {
-      const postResponse = await fetch(`${API_URL}/expenses`, {
+      const postResponse = await fetch(`${CMS_URL}/expenses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(incomingExpense),
