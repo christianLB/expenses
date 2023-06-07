@@ -22,6 +22,7 @@ export default async function handler(req, res) {
   });
 
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+  const API_URL = process.env.API_URL;
 
   if (req.method === "POST") {
     const label = req.body.label; // Assume that the label is in the body of the POST request
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
         // Parse the expense from the message
         const expense = message.attachments[0].text;
         //Insert the expense into the database
-        const response = await fetch("/pages/api/addExpense", {
+        const response = await fetch(`${API_URL}/addExpense`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(expense),
@@ -180,7 +181,7 @@ async function getAttachments(gmail, messageId, sesionEmail) {
           params.append("pdfData", attachmentData);
           params.append("password", "72298830D");
 
-          const response = await fetch("/pages/api/pdf2json", {
+          const response = await fetch(`${API_URL}/pdf2json`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: params,
