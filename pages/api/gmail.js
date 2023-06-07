@@ -2,6 +2,8 @@ import { google } from "googleapis";
 import { authOptions } from "/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 
+const API_URL = process.env.API_URL;
+
 export default async function handler(req, res) {
   console.log(`checking gmail for ${req.body.label}`);
   const session = await getServerSession(req, res, authOptions);
@@ -22,7 +24,6 @@ export default async function handler(req, res) {
   });
 
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-  const API_URL = process.env.API_URL;
 
   if (req.method === "POST") {
     const label = req.body.label; // Assume that the label is in the body of the POST request
