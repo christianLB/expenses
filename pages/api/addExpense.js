@@ -1,7 +1,7 @@
 import qs from "qs";
 
 export default async function handler(req, res) {
-  const API_URL = process.env.API_URL;
+  const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
   // The incoming expense data
   const incomingExpense = req.body; // Assuming this is coming in the request body
 
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const queryString = qs.stringify({ where: query });
     return `&${queryString}`;
   };
-
+  console.log(`${CMS_URL}/expenses?query=${buildQueryString(query)}`);
   const getResponse = await fetch(
     `${API_URL}/expenses?query=${buildQueryString(query)}`,
     {
