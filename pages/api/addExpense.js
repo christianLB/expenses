@@ -1,10 +1,7 @@
 import qs from "qs";
 
 export default async function handler(req, res) {
-  const prodUrl = process.env.PROD_URL;
-  const localUrl = process.env.LOCAL_URL;
-  const baseUrl = process.env.NODE_ENV === "development" ? localUrl : prodUrl;
-
+  const API_URL = process.env.API_URL;
   // The incoming expense data
   const incomingExpense = req.body; // Assuming this is coming in the request body
 
@@ -28,7 +25,7 @@ export default async function handler(req, res) {
   };
 
   const getResponse = await fetch(
-    `${baseUrl}/expenses?query=${buildQueryString(query)}`,
+    `${API_URL}/expenses?query=${buildQueryString(query)}`,
     {
       method: "GET",
     }
@@ -41,7 +38,7 @@ export default async function handler(req, res) {
     res.status(400).json({ message: "Duplicate expense record not saved." });
   } else {
     if (incomingExpense.name && incomingExpense.amount) {
-      const postResponse = await fetch(`${baseUrl}/expenses`, {
+      const postResponse = await fetch(`${API_URL}/expenses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(incomingExpense),
