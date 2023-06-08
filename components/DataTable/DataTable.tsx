@@ -2,7 +2,7 @@
 import React, { createContext, useState } from "react";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import TableHeader from "./TableHeader";
-import CategoryRow from "./CategoryRow";
+import CategoryRow, { CategoryData, GroupData } from "./CategoryRow";
 import tableStyles from "./tableStyles.js";
 import useCollapsedState from "../../hooks/useCollapsedState";
 import { DndProvider } from "react-dnd";
@@ -22,9 +22,14 @@ export interface TableContextProps {
   collapsedKeys?: any;
   toggleItemCollapse?: any;
   selectedMonth?: number;
+  hoveredCategory: CategoryData;
   colors: string[];
   setIsDragging: (value: boolean) => void;
-  setSelectedMonth: (month: number) => void;
+  handleCellClick: (
+    parentRow: CategoryData | GroupData,
+    montIhndex: number
+  ) => void;
+  setHoveredCategory: (category: CategoryData) => void;
   handleDrop: (draggedExpense: string, targetExpense: string, type) => void;
 }
 
@@ -35,6 +40,7 @@ export const TableContext = createContext<TableContextProps | undefined>(
 const DataTable: React.FC<DataTableProps> = () => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
   const [isDragging, setIsDragging] = useState(false);
   const {
     //categoryGroupExpenses: data,
@@ -102,6 +108,14 @@ const DataTable: React.FC<DataTableProps> = () => {
     }
   };
 
+  const handleCellClick = (parentRow, monthIndex) => {
+    const isCollapsed = !collapsedKeys.has(parentRow.id);
+    const columnChange = monthIndex !== selectedMonth;
+    if (columnChange) isCollapsed && toggleItemCollapse(parentRow.id);
+    if (!columnChange) toggleItemCollapse(parentRow.id);
+    setSelectedMonth(monthIndex);
+  };
+
   const balanceCategory = categories.find(
     (category) => category.id === "balance"
   );
@@ -126,9 +140,11 @@ const DataTable: React.FC<DataTableProps> = () => {
           colors,
           handleDrop,
           selectedMonth,
-          setSelectedMonth,
+          handleCellClick,
           isDragging,
           setIsDragging,
+          setHoveredCategory,
+          hoveredCategory,
         }}
       >
         <table className={`${tableStyles.table} w-full`}>

@@ -1,20 +1,24 @@
 import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { Button } from "@chakra-ui/react";
 
 export default function Component() {
   const { data: session } = useSession();
-  if (session) {
-    return (
-      <>
-        Signed in as {session?.user?.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
-    );
-  }
+  const signedIn = !!session;
+  const action: () => void = signedIn ? signOut : signIn;
+
   return (
-    <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
-    </>
+    <div
+      className={`flex p-2 items-center justify-center m-2 ${
+        signedIn ? "self-end" : "self-center"
+      }`}
+    >
+      {session?.user?.email}
+      <Button className={"ml-2"} onClick={() => action()}>
+        Sign {signedIn ? "out" : "in"}
+      </Button>
+    </div>
   );
+
+  return;
 }

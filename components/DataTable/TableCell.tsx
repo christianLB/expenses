@@ -3,13 +3,15 @@ import React, { useContext } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import nextStyles from "../../styles/Expenses.module.css";
 
-const TableCell = ({ children = "", style, className, monthIndex = -1 }) => {
-  const { selectedMonth, setSelectedMonth } =
-    useContext<TableContextProps>(TableContext);
-
-  const handleClick = () => {
-    setSelectedMonth(monthIndex);
-  };
+const TableCell = ({
+  children = "",
+  style = {},
+  className,
+  monthIndex = -1,
+  onClick = () => {},
+  onMouseMove = () => {},
+}) => {
+  const { selectedMonth } = useContext<TableContextProps>(TableContext);
 
   return (
     <td
@@ -19,7 +21,8 @@ const TableCell = ({ children = "", style, className, monthIndex = -1 }) => {
       style={{
         ...style,
       }}
-      onClick={handleClick}
+      onClick={onClick}
+      onMouseMove={onMouseMove}
     >
       {children}
     </td>

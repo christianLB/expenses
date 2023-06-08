@@ -6,7 +6,7 @@ import GroupRow from "./GroupRow";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable";
 import TableCell from "./TableCell";
-interface CategoryData {
+export interface CategoryData {
   id: string;
   name: string;
   color: string;
@@ -14,7 +14,7 @@ interface CategoryData {
   totals: Array<number>;
 }
 
-interface GroupData {
+export interface GroupData {
   id: string;
   groupName: string;
   totals: Array<number>;
@@ -28,8 +28,14 @@ interface CategoryRowProps {
 }
 const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
   ({ category }, ref) => {
-    const { collapsedKeys, toggleItemCollapse, handleDrop } =
-      useContext<TableContextProps>(TableContext);
+    const {
+      collapsedKeys,
+      toggleItemCollapse,
+      handleDrop,
+      handleCellClick,
+      setHoveredCategory,
+      hoveredCategory,
+    } = useContext<TableContextProps>(TableContext);
     const isCollapsed = !collapsedKeys.has(category.id);
 
     const [, drop] = useDrop({
@@ -40,7 +46,8 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
     const dragDropRef = (instance) => {
       drop(instance);
     };
-
+    const isIncome = category.name === "Income";
+    const isHovered = category.id === hoveredCategory?.id;
     return (
       <>
         {!isCollapsed &&
@@ -51,14 +58,18 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
         <tr
           ref={dragDropRef}
           className={styles.categoryRow}
-          onClick={() => toggleItemCollapse(category.id)}
+          //onClick={() => toggleItemCollapse(category.id)}
         >
           <td
             className={styles.cell}
             style={{ backgroundColor: category.color }}
           ></td>
           <td
-            className={`${styles.cell}`}
+            className={`cursor-pointer ${styles.cell} ${
+              !isCollapsed || isIncome || isHovered
+                ? styles.expandedRowCell
+                : ""
+            }`}
             style={{ backgroundColor: category.color }}
           >
             {category.name}
@@ -66,9 +77,20 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
           {category.totals.map((total, index) => (
             <TableCell
               monthIndex={index}
-              className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""}`}
+              className={`${styles.cell} ${
+                total <= 0 ? styles.emptyCell : ""
+              } ${
+                !isCollapsed || isIncome || isHovered
+                  ? styles.expandedRowCell
+                  : ""
+              }`}
               key={index}
-              style={{ backgroundColor: category.color }}
+              style={{
+                backgroundColor:
+                  !isCollapsed || isIncome || isHovered ? category.color : "",
+              }}
+              onClick={() => handleCellClick(category, index)}
+              onMouseMove={() => setHoveredCategory(category)}
             >
               {total > 0 ? total.toFixed(2) : "-"}
             </TableCell>
