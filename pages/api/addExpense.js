@@ -16,7 +16,7 @@ export default async function handler(req, res) {
           equals: incomingExpense.name,
         },
         date: {
-          equals: formatDate(`${incomingExpense.date}/${new Date.now().getFullYear}`)
+          equals: formatDate(`${incomingExpense.date}`)
         }
       },
     ],
