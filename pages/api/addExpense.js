@@ -1,5 +1,4 @@
 import qs from "qs";
-import { formatDate } from '../../utils'
 
 export default async function handler(req, res) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
@@ -16,12 +15,12 @@ export default async function handler(req, res) {
           equals: incomingExpense.name,
         },
         date: {
-          equals: incomingExpense.date
-        }
+          equals: incomingExpense.date,
+        },
       },
     ],
   };
-  console.log(query)
+
   const buildQueryString = (query) => {
     if (!query) return "";
     const queryString = qs.stringify({ where: query });
