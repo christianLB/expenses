@@ -46,17 +46,42 @@ function extractTextFromPdfData(pdfJson) {
 }
 
 function parseText(text) {
-  const descriptionMatch = text.match(/Descripción (.*?) Importe/);
-  const amountMatch = text.match(/Importe (.*?) Divisa/);
-  const currencyMatch = text.match(/Divisa (.*?) Fecha del movimiento/);
-  const dateMatch = text.match(/Fecha del movimiento (.*?) Fecha valor/);
-  const valueDateMatch = text.match(/Fecha valor (.*?) Cuenta cargo\/abono/);
-  const accountMatch = text.match(
+  // Parsing for the first debit movements.
+  let descriptionMatch = text.match(/Descripción (.*?) Importe/);
+  let amountMatch = text.match(/Importe (.*?) Divisa/);
+  let currencyMatch = text.match(/Divisa (.*?) Fecha del movimiento/);
+  let dateMatch = text.match(/Fecha del movimiento (.*?) Fecha valor/);
+  let valueDateMatch = text.match(/Fecha valor (.*?) Cuenta cargo\/abono/);
+  let accountMatch = text.match(
     /Cuenta cargo\/abono (.*?) Titular de la cuenta/
   );
-  const observationsMatch = text.match(
+  let observationsMatch = text.match(
     /Observaciones (.*?) BANCO BILBAO VIZCAYA ARGENTARIA/
   );
+
+  // If the first type of parsing didn't match, try the second type: transfers.
+  if (
+    !descriptionMatch ||
+    !amountMatch ||
+    !currencyMatch ||
+    !dateMatch ||
+    !valueDateMatch ||
+    !accountMatch
+  ) {
+    descriptionMatch = text.match(
+      /Justificante de la operación (.*?) Fecha de la operación/
+    );
+    dateMatch = text.match(/Fecha de la operación (.*?) Tipo de transferencia/);
+    amountMatch = text.match(/Importe (.*?) € Comisión/);
+    currencyMatch = text.match(/Importe .*? (.*?) € Comisión/);
+    valueDateMatch = text.match(
+      /Fecha de abono al beneficiario (.*?) Ordenante/
+    );
+    accountMatch = text.match(
+      /Cuenta destino \(beneficiario\) (.*?) Fecha de abono al beneficiario/
+    );
+    observationsMatch = text.match(/Concepto (.*?) Referencia BBVA/);
+  }
 
   const name = (
     descriptionMatch
