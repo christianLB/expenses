@@ -8,6 +8,7 @@ import useCollapsedState from "../../hooks/useCollapsedState";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BalanceRow from "./BalanceRow";
+import SummaryRow from "./SummaryRow";
 
 interface DataTableProps {
   data?: {
@@ -119,11 +120,14 @@ const DataTable: React.FC<DataTableProps> = () => {
   const balanceCategory = categories.find(
     (category) => category.id === "balance"
   );
-  const uncategorized = categories.find((category) => category.id === "0");
+  const summaryCategory = categories.find(
+    (category) => category.id === "summary"
+  );
 
   const displayCategories = categories.filter((category) => {
     // Filter out the balance category as it will be rendered separately
     if (category.id === "balance") return false;
+    if (category.id === "summary") return false;
 
     // Filter out the uncategorized category if it's empty
     if (category.id === "0" && category.totals[12] <= 0) return false;
@@ -154,6 +158,12 @@ const DataTable: React.FC<DataTableProps> = () => {
               //@ts-ignore
               <CategoryRow key={index} category={category} index={index} />
             ))}
+            {summaryCategory?.totals && (
+              <SummaryRow
+                category={summaryCategory}
+                color={colors[colors.length - 1]}
+              />
+            )}
             {balanceCategory?.totals && (
               <BalanceRow
                 category={balanceCategory}

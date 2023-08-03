@@ -22,22 +22,18 @@ interface CategoryRowProps {
   index: number;
   color: string;
 }
-const BalanceRow = ({ category, color }) => {
+const SummaryRow = ({ category, color }) => {
   return (
     <tr className={styles.categoryRow}>
       <td className={styles.cell} style={{ backgroundColor: color }}></td>
       <td
         className={`${styles.cell} text-white`}
         style={{ backgroundColor: color }}
-      >
-        Balance
-      </td>
+      ></td>
       {category.totals.map((total, index) => (
         <TableCell
           monthIndex={index}
-          className={`${styles.cell} ${
-            total <= 0 ? styles.balanceNegative : styles.balancePositive
-          }`}
+          className={`${styles.cell} text-white`}
           key={index}
           style={{ backgroundColor: color }}
         >
@@ -48,4 +44,4 @@ const BalanceRow = ({ category, color }) => {
   );
 };
 
-export default BalanceRow;
+export default SummaryRow;

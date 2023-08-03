@@ -57,7 +57,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
           ))}
         <tr
           ref={dragDropRef}
-          className={styles.categoryRow}
+          className={`${styles.categoryRow}`}
           //onClick={() => toggleItemCollapse(category.id)}
         >
           <td
@@ -65,7 +65,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
             style={{ backgroundColor: category.color }}
           ></td>
           <td
-            className={`cursor-pointer ${styles.cell} ${
+            className={`cursor-pointer text-white ${styles.cell} ${
               !isCollapsed || isIncome || isHovered
                 ? styles.expandedRowCell
                 : ""

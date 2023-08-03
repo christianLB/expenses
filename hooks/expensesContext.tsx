@@ -65,6 +65,7 @@ export const ExpensesProvider = ({ children }) => {
     method: "POST",
     fetchOnInit: true,
     body: { label: "BBVA/gastos" },
+    onFinish: () => fetchExpenses(),
   });
 
   const { groupedExpensesByCategory } = useExpensesTable(
