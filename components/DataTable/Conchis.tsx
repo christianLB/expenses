@@ -64,18 +64,26 @@ const Conchis = ({ category }) => {
     useContext<TableContextProps>(TableContext);
   const isCollapsed = !collapsedKeys.has(category.id);
   console.log(category);
+  const totalAmount = category.totals.reduce((a, b) => a + b, 0);
+  const groupsWithExpenses = category.groups.filter(
+    (group) => group.expenses.length > 0
+  );
+
   return (
     <TableRow show={!isCollapsed} color={category.color}>
       <div className="flex gap-5 w-full text-white rounded p-2 font-semibold relative">
         <div className="left-panel">
           <h2 className="text-2xl">{category.name}</h2>
           <p className="text-xl">
-            Total: {category.totals.reduce((a, b) => a + b, 0)}
+            {totalAmount.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}
           </p>
         </div>
         <div className="right-panel">
           <h3 className="text-lg">Expenses:</h3>
-          {category.groups.map((group) => (
+          {groupsWithExpenses.map((group) => (
             <div key={group.id}>
               <h4>{group.name}</h4>
               <ul>
