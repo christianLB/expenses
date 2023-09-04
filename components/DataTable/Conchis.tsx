@@ -65,19 +65,24 @@ const Conchis = ({ category }) => {
 
   return (
     <TableRow show={!isCollapsed} color={category.color}>
-      <div className="w-full text-white rounded p-2 font-semibold relative">
-        <span className={"absolute top-0"} style={{ left: "52px" }}>
-          {category.name}
-        </span>
-        <span className={"absolute top-0"} style={{ left: "100px" }}>
-          ID: {category.id}
-        </span>
-        <span className={"absolute top-0"} style={{ left: "200px" }}>
-          Totals: {category.totals.join(', ')}
-        </span>
-        <span className={"absolute top-0"} style={{ left: "300px" }}>
-          Groups: {category.groups.join(', ')}
-        </span>
+      <div className="flex justify-between w-full text-white rounded p-2 font-semibold relative">
+        <div className="left-panel">
+          <h2 className="text-2xl">{category.name}</h2>
+          <p className="text-xl">Total: {category.totals.reduce((a, b) => a + b, 0)}</p>
+        </div>
+        <div className="right-panel">
+          <h3 className="text-lg">Expenses:</h3>
+          {category.groups.map(group => (
+            <div key={group.id}>
+              <h4>{group.name}</h4>
+              <ul>
+                {group.expenses.map(expense => (
+                  <li key={expense.id}>{expense.name}: {expense.amount}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
     </TableRow>
   );
