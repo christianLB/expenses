@@ -69,7 +69,15 @@ const Conchis = ({ category }) => {
         <span className={"absolute top-0"} style={{ left: "52px" }}>
           {category.name}
         </span>
-        garlana
+        <span className={"absolute top-0"} style={{ left: "100px" }}>
+          ID: {category.id}
+        </span>
+        <span className={"absolute top-0"} style={{ left: "200px" }}>
+          Totals: {category.totals.join(', ')}
+        </span>
+        <span className={"absolute top-0"} style={{ left: "300px" }}>
+          Groups: {category.groups.join(', ')}
+        </span>
       </div>
     </TableRow>
   );
