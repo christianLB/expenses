@@ -60,7 +60,8 @@ const TableRow = ({ children, show, color }) => {
 };
 
 const Conchis = ({ category }) => {
-  const { collapsedKeys } = useContext<TableContextProps>(TableContext);
+  const { collapsedKeys, selectedMonth } =
+    useContext<TableContextProps>(TableContext);
   const isCollapsed = !collapsedKeys.has(category.id);
   console.log(category);
   return (
@@ -79,7 +80,10 @@ const Conchis = ({ category }) => {
               <h4>{group.name}</h4>
               <ul>
                 {group.expenses
-                  .filter((expense) => new Date(expense.date).getMonth() === selectedMonth)
+                  .filter(
+                    (expense) =>
+                      new Date(expense.date).getMonth() === selectedMonth
+                  )
                   .map((expense) => (
                     <li key={expense.id}>
                       {expense.name}: {expense.amount}
