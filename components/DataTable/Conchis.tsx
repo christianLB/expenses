@@ -24,7 +24,7 @@ const TableRow = ({ children, show, color }) => {
   // Measure content height
   React.useLayoutEffect(() => {
     if (contentRef.current) {
-      console.log(contentRef.current?.getBoundingClientRect().height);
+      //console.log(contentRef.current?.getBoundingClientRect().height);
       setContentHeight(contentRef.current.getBoundingClientRect().height);
     }
   }, [contentRef.current]);
@@ -62,22 +62,26 @@ const TableRow = ({ children, show, color }) => {
 const Conchis = ({ category }) => {
   const { collapsedKeys } = useContext<TableContextProps>(TableContext);
   const isCollapsed = !collapsedKeys.has(category.id);
-
+  console.log(category);
   return (
     <TableRow show={!isCollapsed} color={category.color}>
-      <div className="flex justify-between w-full text-white rounded p-2 font-semibold relative">
+      <div className="flex gap-5 w-full text-white rounded p-2 font-semibold relative">
         <div className="left-panel">
           <h2 className="text-2xl">{category.name}</h2>
-          <p className="text-xl">Total: {category.totals.reduce((a, b) => a + b, 0)}</p>
+          <p className="text-xl">
+            Total: {category.totals.reduce((a, b) => a + b, 0)}
+          </p>
         </div>
         <div className="right-panel">
           <h3 className="text-lg">Expenses:</h3>
-          {category.groups.map(group => (
+          {category.groups.map((group) => (
             <div key={group.id}>
               <h4>{group.name}</h4>
               <ul>
-                {group.expenses.map(expense => (
-                  <li key={expense.id}>{expense.name}: {expense.amount}</li>
+                {group.expenses.map((expense) => (
+                  <li key={expense.id}>
+                    {expense.name}: {expense.amount}
+                  </li>
                 ))}
               </ul>
             </div>
