@@ -78,11 +78,13 @@ const Conchis = ({ category }) => {
             <div key={group.id}>
               <h4>{group.name}</h4>
               <ul>
-                {group.expenses.map((expense) => (
-                  <li key={expense.id}>
-                    {expense.name}: {expense.amount}
-                  </li>
-                ))}
+                {group.expenses
+                  .filter((expense) => new Date(expense.date).getMonth() === selectedMonth)
+                  .map((expense) => (
+                    <li key={expense.id}>
+                      {expense.name}: {expense.amount}
+                    </li>
+                  ))}
               </ul>
             </div>
           ))}
