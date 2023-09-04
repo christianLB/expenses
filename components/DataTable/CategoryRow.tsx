@@ -6,6 +6,7 @@ import GroupRow from "./GroupRow";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable";
 import TableCell from "./TableCell";
+import Conchis from "./Conchis";
 export interface CategoryData {
   id: string;
   name: string;
@@ -50,11 +51,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
     const isHovered = category.id === hoveredCategory?.id;
     return (
       <>
-        {!isCollapsed &&
-          category.groups.map((group, groupIndex) => (
-            //@ts-ignore
-            <GroupRow key={groupIndex} group={group} category={category} />
-          ))}
+        <Conchis category={category} />
         <tr
           ref={dragDropRef}
           className={`${styles.categoryRow}`}

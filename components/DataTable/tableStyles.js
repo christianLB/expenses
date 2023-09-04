@@ -1,6 +1,5 @@
 const baseStyles = {
-  table:
-    "w-full text-sm bg-white shadow-md rounded-lg overflow-hidden border-collapse mt-10",
+  table: "w-full text-sm bg-white shadow-md rounded-lg overflow-hidden mt-10",
   cell: "px-4 py-2 text-left font-semibold",
   expcell: "py-1 text-left text-white",
   emptyCell: "py-1 text-center font-semibold text-gray-600",
