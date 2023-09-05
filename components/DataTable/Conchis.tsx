@@ -71,13 +71,11 @@ const Conchis = ({ category }) => {
           <h2 className="text-2xl">{category.name}</h2>
         </div>
         <div className="right-panel">
-          <h3 className="text-lg">Expenses:</h3>
+          <h2 className="text-2xl">{category.name} for {selectedMonth}</h2>
+          <h3 className="text-lg">Total: {totalForMonth}</h3>
           {category.groups.map((group) => (
             <div key={group.id}>
-              <h4>{group.name}</h4>
-              {group.expenses.map((expense) => (
-                <p key={expense.id}>{expense.name}: {expense.amount}</p>
-              ))}
+              <h4>{group.name}: {group.totals[selectedMonth]}</h4>
             </div>
           ))}
         </div>
