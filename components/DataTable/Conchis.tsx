@@ -64,9 +64,11 @@ const Conchis = ({ category }) => {
     useContext<TableContextProps>(TableContext);
   const isCollapsed = !collapsedKeys.has(category.id);
   console.log(category);
-  const totalAmount = category.totals.reduce((a, b) => a + b, 0);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const selectedMonthName = monthNames[selectedMonth];
+  const totalAmount = category.totals[selectedMonth];
   const groupsWithExpenses = category.groups.filter(
-    (group) => group.expenses.length > 0
+    (group) => group.totals[selectedMonth] > 0
   );
 
   return (
@@ -74,6 +76,7 @@ const Conchis = ({ category }) => {
       <div className="flex gap-5 w-full text-white rounded p-2 font-semibold relative">
         <div className="left-panel">
           <h2 className="text-2xl">{category.name}</h2>
+          <h3 className="text-lg">{selectedMonthName}</h3>
           <p className="text-xl">
             {totalAmount.toLocaleString("en-US", {
               style: "currency",
@@ -86,18 +89,12 @@ const Conchis = ({ category }) => {
           {groupsWithExpenses.map((group) => (
             <div key={group.id}>
               <h4>{group.name}</h4>
-              <ul>
-                {group.expenses
-                  .filter(
-                    (expense) =>
-                      new Date(expense.date).getMonth() === selectedMonth
-                  )
-                  .map((expense) => (
-                    <li key={expense.id}>
-                      {expense.name}: {expense.amount}
-                    </li>
-                  ))}
-              </ul>
+              <p>
+                {group.totals[selectedMonth].toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
             </div>
           ))}
         </div>
