@@ -64,37 +64,20 @@ const Conchis = ({ category }) => {
     useContext<TableContextProps>(TableContext);
   const isCollapsed = !collapsedKeys.has(category.id);
   console.log(category);
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const selectedMonthName = monthNames[selectedMonth];
-  const totalAmount = category.totals[selectedMonth];
-  const groupsWithExpenses = category.groups.filter(
-    (group) => group.totals[selectedMonth] > 0
-  );
-
   return (
     <TableRow show={!isCollapsed} color={category.color}>
       <div className="flex gap-5 w-full text-white rounded p-2 font-semibold relative">
         <div className="left-panel">
           <h2 className="text-2xl">{category.name}</h2>
-          <h3 className="text-lg">{selectedMonthName}</h3>
-          <p className="text-xl">
-            {totalAmount.toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}
-          </p>
         </div>
         <div className="right-panel">
           <h3 className="text-lg">Expenses:</h3>
-          {groupsWithExpenses.map((group) => (
+          {category.groups.map((group) => (
             <div key={group.id}>
               <h4>{group.name}</h4>
-              <p>
-                {group.totals[selectedMonth].toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </p>
+              {group.expenses.map((expense) => (
+                <p key={expense.id}>{expense.name}: {expense.amount}</p>
+              ))}
             </div>
           ))}
         </div>
