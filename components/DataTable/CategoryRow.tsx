@@ -68,22 +68,20 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
             }`}
             style={{ backgroundColor: category.color }}
           >
-            {category.name}
+            {(isCollapsed && category.name) || ""}
           </td>
           {category.totals.map((total, index) => (
             <TableCell
               monthIndex={index}
               className={`${styles.cell} ${
                 total <= 0 ? styles.emptyCell : ""
-              } ${
-                !isCollapsed || isIncome || isHovered
-                  ? styles.expandedRowCell
-                  : ""
-              }`}
+              } ${isIncome || isHovered ? styles.expandedRowCell : ""}`}
               key={index}
               style={{
                 backgroundColor:
-                  !isCollapsed || isIncome || isHovered ? category.color : "",
+                  isCollapsed || !isCollapsed || isIncome || isHovered
+                    ? category.color
+                    : "",
               }}
               onClick={() => handleCellClick(category, index)}
               onMouseMove={() => setHoveredCategory(category)}
