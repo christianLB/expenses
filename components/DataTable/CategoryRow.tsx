@@ -2,11 +2,10 @@
 import React, { useContext, forwardRef } from "react";
 import { useDrop } from "react-dnd";
 import { TableContext, TableContextProps } from "./DataTable";
-import GroupRow from "./GroupRow";
 import styles from "./tableStyles.js";
 import withDroppable from "./withDroppable";
 import TableCell from "./TableCell";
-import Conchis from "./Conchis";
+import CategoryDetail from "./CategoryDetail";
 export interface CategoryData {
   id: string;
   name: string;
@@ -51,7 +50,7 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
     const isHovered = category.id === hoveredCategory?.id;
     return (
       <>
-        <Conchis category={category} />
+        <CategoryDetail category={category} />
         <tr
           ref={dragDropRef}
           className={`${styles.categoryRow}`}
