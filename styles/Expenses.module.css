@@ -75,3 +75,13 @@
 .gpt p {
   margin-bottom: 15px;
 }
+
+.expensesblock {
+  display: grid;
+  grid-template-rows: 44px auto;
+  grid-template-columns: 25% 50% 25%;
+}
+
+.gridRow {
+  display: contents; /* Esto hará que los elementos hijos sean tratados como si estuvieran en el contenedor grid */
+}

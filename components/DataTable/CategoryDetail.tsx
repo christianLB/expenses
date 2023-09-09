@@ -1,12 +1,12 @@
 // GroupRow.tsx
-import React, { useContext, useEffect, useRef } from "react";
+import React, { Fragment, useContext, useEffect, useRef } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import { useSpring, animated } from "react-spring";
 import tableStyles from "./tableStyles";
 import ExpandablePanel from "../ExpandablePanel";
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
-
+import nextStyles from "../../styles/Expenses.module.css";
 interface GroupData {
   id: string;
   name: string;
@@ -42,6 +42,10 @@ const CategoryDetail = ({ category }) => {
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
     options: groups,
   });
+
+  const isAnySelected = (groupExpensesIds) => {
+    return groupExpensesIds.some((id) => selectedExpenses.includes(id));
+  };
 
   const handleApply = async () => {
     // Tus gastos seleccionados
@@ -118,12 +122,18 @@ const CategoryDetail = ({ category }) => {
 
                 const groupExpensesIds = group.expenses.map((e) => e.id);
 
+                const headerStyles =
+                  "flex items-center mt-2 mb-1 bg-white opacity-30 text-black";
+
                 return (
                   filteredExpenses.length > 0 && (
-                    <div key={group.id} className="my-2">
+                    <div
+                      key={group.id}
+                      className={`${nextStyles.expensesblock} font-semibold`}
+                    >
                       {/*group header*/}
-                      <div className="flex justify-between px-5 py-1 font-semibold bg-white opacity-30 text-black items-center">
-                        <h3 className="flex text-xl flex-row items-center gap-2">
+                      <div className={`${nextStyles.gridRow} px-5 py-1`}>
+                        <span className={`${headerStyles} text-xl pl-5`}>
                           <input
                             checked={isAllSelected(groupExpensesIds)}
                             className="mr-2"
@@ -131,49 +141,48 @@ const CategoryDetail = ({ category }) => {
                             onChange={() => handleSelectAll(groupExpensesIds)}
                           />
                           {group.name}
-                          <div className="flex flex-row gap-2">
-                            <span>{CategoriesSelect}</span>
-                            <span>{GroupsSelect}</span>
-                            <span>
-                              <button
-                                //disabled={creatingExpense || deletingExpense}
-                                className={`text-sm w-full border px-2`}
-                                onClick={handleApply}
-                              >
-                                Apply
-                              </button>
-                            </span>
-                          </div>
-                        </h3>
-                        <span>{group.totals[selectedMonth].toFixed(2)}</span>
+                        </span>
+                        <span className={`${headerStyles} gap-5`}>
+                          {isAnySelected(groupExpensesIds) && (
+                            <>
+                              <span>{CategoriesSelect}</span>
+                              <span>{GroupsSelect}</span>
+                              <span>
+                                <button
+                                  className={`text-sm w-full border px-2`}
+                                  onClick={handleApply}
+                                >
+                                  Apply
+                                </button>
+                              </span>
+                            </>
+                          )}
+                        </span>
+                        <span className={headerStyles}>
+                          {group.totals[selectedMonth].toFixed(2)}
+                        </span>
                       </div>
-                      <ul className="list-disc pl-5">
-                        {sortedExpenses.map((expense, index) => (
-                          <li
-                            key={index}
-                            className="p-1 flex justify-between font-semibold"
-                          >
+
+                      {sortedExpenses.map((expense, index) => (
+                        <div key={expense.id} className={nextStyles.gridRow}>
+                          <span className={"pl-5"}>
                             <input
                               className={"mr-2"}
                               type="checkbox"
                               checked={selectedExpenses.includes(expense.id)}
                               onChange={() => handleSelectExpense(expense.id)}
                             />
-                            <span className="w-1/4">
+                            <span>
                               {new Date(expense.date).toLocaleDateString(
                                 "default",
                                 { day: "2-digit", month: "short" }
                               )}
                             </span>
-                            <span className="w-3/4 text-left">
-                              {expense.name}
-                            </span>
-                            <span className="w-1/4 text-right">
-                              {expense.amount}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                          </span>
+                          <span>{expense.name}</span>
+                          <span className="text-right">{expense.amount}</span>
+                        </div>
+                      ))}
                     </div>
                   )
                 );
