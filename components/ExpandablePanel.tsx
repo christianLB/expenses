@@ -4,7 +4,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 const ExpandablePanel = ({
   children,
   show,
-  dependencies,
+  dependencies = [],
   defaultConfig = {},
 }) => {
   const contentRef = useRef(null);

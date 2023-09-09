@@ -1,5 +1,11 @@
 // GroupRow.tsx
-import React, { Fragment, useContext, useEffect, useRef } from "react";
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import { useSpring, animated } from "react-spring";
 import tableStyles from "./tableStyles";
@@ -47,6 +53,20 @@ const CategoryDetail = ({ category }) => {
     return groupExpensesIds.some((id) => selectedExpenses.includes(id));
   };
 
+  // Añade un estado para manejar qué grupos están expandidos
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  // Función para manejar el click en el header del grupo
+  const toggleGroupExpansion = (groupId: string) => {
+    const newExpandedGroups = new Set(expandedGroups);
+    if (newExpandedGroups.has(groupId)) {
+      newExpandedGroups.delete(groupId);
+    } else {
+      newExpandedGroups.add(groupId);
+    }
+    setExpandedGroups(newExpandedGroups);
+  };
+
   const handleApply = async () => {
     // Tus gastos seleccionados
     const selectedGroupExpenses = category.groups.flatMap((group) =>
@@ -68,7 +88,6 @@ const CategoryDetail = ({ category }) => {
   };
 
   return (
-    // <TableRow show={!isCollapsed} color={category.color}>
     <tr className={tableStyles.categoryRow}>
       <td colSpan={15} className={"p-0"}>
         <ExpandablePanel
@@ -132,7 +151,10 @@ const CategoryDetail = ({ category }) => {
                       className={`${nextStyles.expensesblock} font-semibold`}
                     >
                       {/*group header*/}
-                      <div className={`${nextStyles.gridRow} px-5 py-1`}>
+                      <div
+                        className={`${nextStyles.gridRow} cusror-pointer`}
+                        onClick={() => toggleGroupExpansion(group.id)} // Añade el evento aquí
+                      >
                         <span className={`${headerStyles} text-xl pl-5`}>
                           <input
                             checked={isAllSelected(groupExpensesIds)}
@@ -158,31 +180,37 @@ const CategoryDetail = ({ category }) => {
                             </>
                           )}
                         </span>
-                        <span className={headerStyles}>
+                        <span
+                          className={`${headerStyles} justify-end text-right pr-2 text-lg`}
+                        >
                           {group.totals[selectedMonth].toFixed(2)}
                         </span>
                       </div>
-
-                      {sortedExpenses.map((expense, index) => (
-                        <div key={expense.id} className={nextStyles.gridRow}>
-                          <span className={"pl-5"}>
-                            <input
-                              className={"mr-2"}
-                              type="checkbox"
-                              checked={selectedExpenses.includes(expense.id)}
-                              onChange={() => handleSelectExpense(expense.id)}
-                            />
-                            <span>
-                              {new Date(expense.date).toLocaleDateString(
-                                "default",
-                                { day: "2-digit", month: "short" }
-                              )}
+                      <ExpandablePanel
+                        show={expandedGroups.has(group.id)}
+                        dependencies={[selectedMonth]}
+                      >
+                        {sortedExpenses.map((expense, index) => (
+                          <div key={expense.id} className={nextStyles.gridRow}>
+                            <span className={"pl-5"}>
+                              <input
+                                className={"mr-2"}
+                                type="checkbox"
+                                checked={selectedExpenses.includes(expense.id)}
+                                onChange={() => handleSelectExpense(expense.id)}
+                              />
+                              <span>
+                                {new Date(expense.date).toLocaleDateString(
+                                  "default",
+                                  { day: "2-digit", month: "short" }
+                                )}
+                              </span>
                             </span>
-                          </span>
-                          <span>{expense.name}</span>
-                          <span className="text-right">{expense.amount}</span>
-                        </div>
-                      ))}
+                            <span>{expense.name}</span>
+                            <span className="text-right">{expense.amount}</span>
+                          </div>
+                        ))}
+                      </ExpandablePanel>
                     </div>
                   )
                 );

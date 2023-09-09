@@ -79,9 +79,9 @@
 .expensesblock {
   display: grid;
   grid-template-rows: 44px auto;
-  grid-template-columns: 25% 50% 25%;
 }
 
 .gridRow {
-  display: contents; /* Esto hará que los elementos hijos sean tratados como si estuvieran en el contenedor grid */
+  display: grid;
+  grid-template-columns: 25% 50% 25%;
 }
