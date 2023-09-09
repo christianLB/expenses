@@ -21,13 +21,15 @@ export interface GroupData {
   expenses: Array<any>; // Define a more specific interface for expenses if needed
 }
 
-interface CategoryRowProps {
+interface CategoryRowProps extends CategoryData {
   key: number;
   category?: CategoryData;
   index: number;
+  draggableProps: any;
+  dragListeners: any;
 }
 const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
-  ({ category }, ref) => {
+  (category, ref) => {
     const {
       collapsedKeys,
       toggleItemCollapse,
@@ -36,8 +38,9 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
       setHoveredCategory,
       hoveredCategory,
     } = useContext<TableContextProps>(TableContext);
-    const isCollapsed = !collapsedKeys.has(category.id);
 
+    const { draggableProps, dragListeners } = category;
+    const isCollapsed = !collapsedKeys.has(category?.id);
     const [, drop] = useDrop({
       accept: "EXPENSE",
       drop: (item: any) => handleDrop(item.id, category.id, "category"),
@@ -46,8 +49,8 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
     const dragDropRef = (instance) => {
       drop(instance);
     };
-    const isIncome = category.name === "Income";
-    const isHovered = category.id === hoveredCategory?.id;
+    const isIncome = category?.name === "Income";
+    const isHovered = category?.id === hoveredCategory?.id;
     return (
       <>
         <CategoryDetail category={category} />
@@ -55,22 +58,23 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
           ref={dragDropRef}
           className={`${styles.categoryRow}`}
           //onClick={() => toggleItemCollapse(category.id)}
+          //{...draggableProps}
         >
           <td
             className={styles.cell}
-            style={{ backgroundColor: category.color }}
+            style={{ backgroundColor: category?.color }}
           ></td>
           <td
-            className={`cursor-pointer text-white ${styles.cell} ${
+            className={`cursor-pointer text-white text-base ${styles.cell} ${
               !isCollapsed || isIncome || isHovered
                 ? styles.expandedRowCell
                 : ""
             }`}
-            style={{ backgroundColor: category.color }}
+            style={{ backgroundColor: category?.color }}
           >
-            {(isCollapsed && category.name) || ""}
+            {(isCollapsed && category?.name) || ""}
           </td>
-          {category.totals.map((total, index) => (
+          {category?.totals.map((total, index) => (
             <TableCell
               monthIndex={index}
               className={`${styles.cell} ${

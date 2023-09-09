@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -8,7 +8,6 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-
 import {
   arrayMove,
   SortableContext,
@@ -16,11 +15,31 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
 interface ISortableItemProps {
   ItemComponent: React.FunctionComponent<any>;
   id: string | number;
   index: number;
+  [key: string]: any;
+}
+export interface OnSortReturn {
+  sortedList: any[];
+  affectedIndexes: { start: number; end: number };
+  affectedItems: any[];
+}
+interface ISortableItem {
+  [key: string]: any;
+}
+
+interface ISortableListProps {
+  autoSort?: string;
+  ItemComponent: React.FunctionComponent<any>;
+  keyName?: string;
+  items: ISortableItem[];
+  onSort?: (
+    sortableData: any,
+    affectedIndexes?: { start: number; end: number }
+  ) => void;
+  onItemSort?: (item: any) => void;
   [key: string]: any;
 }
 
@@ -31,8 +50,14 @@ const SortableItem = ({
   ...itemProps
 }: ISortableItemProps) => {
   // It should render the ItemComponent and pass the item object as a prop
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: _id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: _id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -50,24 +75,14 @@ const SortableItem = ({
       setNodeRef={setNodeRef}
       dragListeners={listeners}
       sortableProps={sortableProps}
+      isDragging={isDragging}
       {...itemProps}
     />
   );
 };
 
-interface ISortableItem {
-  [key: string]: any;
-}
-
-interface ISortableListProps {
-  ItemComponent: React.FunctionComponent<any>;
-  keyName?: string;
-  items: ISortableItem[];
-  onSort: (sortableData: any) => void;
-  [key: string]: any;
-}
-
 const SortableList = ({
+  autoSort = "order",
   items: defaultItems = [],
   ItemComponent,
   keyName = "id",
@@ -85,30 +100,48 @@ const SortableList = ({
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    const Ids = items.map((item: any) => item[keyName]);
-    const oldIndex = Ids.indexOf(active.id);
-    const newIndex = Ids.indexOf(over.id);
+    const oldIndex = items.findIndex(
+      (item: any) => item[keyName] === active.id
+    );
+    const newIndex = items.findIndex((item: any) => item[keyName] === over.id);
+
     let updatedValues: any = arrayMove(items, oldIndex, newIndex);
 
-    // If the items have an 'order' property, update it
-    if (updatedValues.length > 0 && "order" in updatedValues[0]) {
-      updatedValues = updatedValues.map((item: any, index: number) => ({
-        ...item,
-        order: index,
-      }));
+    const lowerIndex = Math.min(oldIndex, newIndex);
+    const upperIndex = Math.max(oldIndex, newIndex);
+
+    if (autoSort) {
+      for (let i = lowerIndex; i <= upperIndex; i++) {
+        updatedValues[i][autoSort] = i;
+      }
     }
+
     if (active.id !== over.id) {
       setItems(updatedValues);
-      onSort(updatedValues);
+
+      const affectedIndexes: { start: number; end: number } = {
+        start: lowerIndex,
+        end: upperIndex,
+      };
+      const affectedItems = updatedValues.slice(lowerIndex, upperIndex + 1);
+      const onSortReturn: OnSortReturn = {
+        sortedList: updatedValues,
+        affectedIndexes,
+        affectedItems,
+      };
+      onSort(onSortReturn);
     }
   };
 
   useLayoutEffect(() => {
     if (defaultItems?.length > 0) {
-      setItems(defaultItems);
-      return;
+      const sortedItems = [...defaultItems];
+      if (autoSort) {
+        sortedItems.sort((a, b) => (a[autoSort] < b[autoSort] ? -1 : 1));
+      }
+      setItems(sortedItems);
     }
-  }, [defaultItems]);
+  }, [defaultItems, autoSort]);
 
   return (
     <DndContext

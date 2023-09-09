@@ -9,6 +9,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
+import SortableList from "../SortableList";
+import useToggleList from "../../hooks/useToggleList";
 
 interface DataTableProps {
   data?: {
@@ -30,8 +32,13 @@ export interface TableContextProps {
     parentRow: CategoryData | GroupData,
     montIhndex: number
   ) => void;
+  handleSelectExpense: (expenseId: string) => void;
+  isAllSelected: (group: any) => boolean;
+  handleSelectAll: (group: any) => void;
+  selectedExpenses: string[];
   setHoveredCategory: (category: CategoryData) => void;
   handleDrop: (draggedExpense: string, targetExpense: string, type) => void;
+  categories: any;
 }
 
 export const TableContext = createContext<TableContextProps | undefined>(
@@ -43,6 +50,14 @@ const DataTable: React.FC<DataTableProps> = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
   const [isDragging, setIsDragging] = useState(false);
+
+  const {
+    list: selectedExpenses,
+    toggleItem: handleSelectExpense,
+    toggleAll: handleSelectAll,
+    isAllSelected,
+  } = useToggleList();
+
   const {
     //categoryGroupExpenses: data,
     groupedExpensesByCategory: categories,
@@ -143,21 +158,30 @@ const DataTable: React.FC<DataTableProps> = () => {
           toggleItemCollapse,
           colors,
           handleDrop,
+          isAllSelected,
           selectedMonth,
+          handleSelectAll,
           handleCellClick,
+          handleSelectExpense,
           isDragging,
+          selectedExpenses,
           setIsDragging,
           setHoveredCategory,
           hoveredCategory,
+          categories,
         }}
       >
         <table className={`${tableStyles.table} w-full`}>
           <TableHeader />
           <tbody>
-            {displayCategories?.map((category, index) => (
+            <SortableList
+              items={displayCategories}
+              ItemComponent={CategoryRow}
+            />
+            {/* {displayCategories?.map((category, index) => (
               //@ts-ignore
               <CategoryRow key={index} category={category} index={index} />
-            ))}
+            ))} */}
             {summaryCategory?.totals && (
               <SummaryRow
                 category={summaryCategory}

@@ -57,7 +57,8 @@
 }
 
 .blinking {
-  animation: brightness-blink 1s linear infinite;
+  /*animation: brightness-blink 1s linear infinite;*/
+  filter: brightness(1.2);
 }
 
 .groupRow:hover td {
