@@ -186,31 +186,31 @@ const CategoryDetail = ({ category }) => {
                           {group.totals[selectedMonth].toFixed(2)}
                         </span>
                       </div>
-                      <ExpandablePanel
+                      {/* <ExpandablePanel
                         show={expandedGroups.has(group.id)}
                         dependencies={[selectedMonth]}
-                      >
-                        {sortedExpenses.map((expense, index) => (
-                          <div key={expense.id} className={nextStyles.gridRow}>
-                            <span className={"pl-5"}>
-                              <input
-                                className={"mr-2"}
-                                type="checkbox"
-                                checked={selectedExpenses.includes(expense.id)}
-                                onChange={() => handleSelectExpense(expense.id)}
-                              />
-                              <span>
-                                {new Date(expense.date).toLocaleDateString(
-                                  "default",
-                                  { day: "2-digit", month: "short" }
-                                )}
-                              </span>
+                      > */}
+                      {sortedExpenses.map((expense, index) => (
+                        <div key={expense.id} className={nextStyles.gridRow}>
+                          <span className={"pl-5"}>
+                            <input
+                              className={"mr-2"}
+                              type="checkbox"
+                              checked={selectedExpenses.includes(expense.id)}
+                              onChange={() => handleSelectExpense(expense.id)}
+                            />
+                            <span>
+                              {new Date(expense.date).toLocaleDateString(
+                                "default",
+                                { day: "2-digit", month: "short" }
+                              )}
                             </span>
-                            <span>{expense.name}</span>
-                            <span className="text-right">{expense.amount}</span>
-                          </div>
-                        ))}
-                      </ExpandablePanel>
+                          </span>
+                          <span>{expense.name}</span>
+                          <span className="text-right">{expense.amount}</span>
+                        </div>
+                      ))}
+                      {/* </ExpandablePanel> */}
                     </div>
                   )
                 );
