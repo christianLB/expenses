@@ -70,10 +70,15 @@ const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
                 ? styles.expandedRowCell
                 : ""
             }`}
-            style={{ backgroundColor: category?.color }}
+            style={{
+              background: category?.color
+                ? `linear-gradient(to right, ${category.color} 0%, ${category.color} 80%, ${category.color}80 150%)`
+                : "",
+            }}
           >
             {(isCollapsed && category?.name) || ""}
           </td>
+
           {category?.totals.map((total, index) => (
             <TableCell
               monthIndex={index}

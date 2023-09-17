@@ -1,7 +1,7 @@
 const baseStyles = {
   table:
     "w-full text-sm shadow-md rounded-lg overflow-hidden mt-10 border-none",
-  cell: "px-4 py-2 text-left font-semibold text-white border-none",
+  cell: "px-4 py-2 text-left font-semibold text-white",
   expcell: "py-1 text-left text-white",
   emptyCell: "py-1 text-center font-semibold text-gray-600",
   expandedRowCell: "",
