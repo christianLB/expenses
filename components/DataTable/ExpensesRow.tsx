@@ -34,8 +34,7 @@ const ExpensesRow = forwardRef<HTMLTableRowElement, ExpensesRowProps>(
         placeHolder: "category",
         className: "border-none",
       });
-    const { handleDrop, setIsDragging } =
-      useContext<TableContextProps>(TableContext);
+    const { setIsDragging } = useContext<TableContextProps>(TableContext);
 
     const { selected: selectedGroup, SelectComponent: GroupsSelect } =
       useSelect({

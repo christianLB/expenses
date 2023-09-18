@@ -23,13 +23,8 @@ interface GroupRowProps {
 
 const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
   ({ group, category }, ref) => {
-    const {
-      selectedMonth,
-      collapsedKeys,
-      toggleItemCollapse,
-      handleDrop,
-      isDragging,
-    } = useContext<TableContextProps>(TableContext);
+    const { selectedMonth, collapsedKeys, toggleItemCollapse, isDragging } =
+      useContext<TableContextProps>(TableContext);
     const isCollapsed = !collapsedKeys.has(group.id);
     const colorStyle = {
       backgroundColor: category.color,
@@ -39,7 +34,7 @@ const GroupRow = forwardRef<HTMLTableRowElement, GroupRowProps>(
 
     const [, drop] = useDrop({
       accept: "EXPENSE",
-      drop: (item: any) => handleDrop(item?.id, group?.id, "group"),
+      drop: (item: any) => {},
     });
 
     const dragDropRef = (instance) => {
