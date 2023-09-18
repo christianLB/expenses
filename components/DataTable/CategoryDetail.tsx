@@ -1,14 +1,7 @@
 // GroupRow.tsx
-import React, {
-  Fragment,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
-import { useSpring, animated } from "react-spring";
-import tableStyles from "./tableStyles";
+
 import ExpandablePanel from "../ExpandablePanel";
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
@@ -88,138 +81,131 @@ const CategoryDetail = ({ category }) => {
   };
 
   return (
-    <tr className={tableStyles.categoryRow}>
-      <td colSpan={15} className={"p-0"}>
-        <ExpandablePanel
-          show={!isCollapsed}
-          dependencies={[
-            selectedMonth,
-            category.expenses.length,
-            category.groups.length,
-          ]}
-          defaultConfig={{
-            backgroundColor: category.color,
-            filter: "brightness(110%)",
+    <ExpandablePanel
+      show={!isCollapsed}
+      dependencies={[
+        selectedMonth,
+        category.expenses.length,
+        category.groups.length,
+      ]}
+      defaultConfig={{
+        backgroundColor: category.color,
+        filter: "brightness(110%)",
+      }}
+    >
+      <div className="w-full h-full">
+        {/* Top Panel */}
+        <div
+          className="flex justify-between w-full p-4"
+          style={{
+            background: `linear-gradient(to right, ${category.color}, ${category.color}, white)`,
+            borderBottom: `1px solid rgba(255,255,255,0.3)`,
           }}
         >
-          <div className="w-full h-full">
-            {/* Top Panel */}
-            <div
-              className="flex justify-between w-full p-4"
-              style={{
-                background: `linear-gradient(to right, ${category.color}, ${category.color}, white)`,
-                borderBottom: `1px solid rgba(255,255,255,0.3)`,
-              }}
-            >
-              <div>
-                <h1 className="text-white text-3xl font-bold">
-                  {category.name}
-                </h1>
-                <h2 className="text-white text-2xl"></h2>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">Total de {month}</h1>
-                <h1 className="text-2xl font-bold text-right">
-                  {category.totals[selectedMonth].toFixed(2)}
-                </h1>
-                {/* Future Chart Here */}
-              </div>
-            </div>
+          <div>
+            <h1 className="text-white text-3xl font-bold">{category.name}</h1>
+            <h2 className="text-white text-2xl"></h2>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Total de {month}</h1>
+            <h1 className="text-2xl font-bold text-right">
+              {category.totals[selectedMonth].toFixed(2)}
+            </h1>
+            {/* Future Chart Here */}
+          </div>
+        </div>
 
-            {/* Bottom Panel */}
-            <div className="w-full p-4 text-white">
-              {category.groups.map((group: GroupData) => {
-                // Filtrar los gastos según el mes seleccionado
-                const filteredExpenses = group.expenses.filter((expense) => {
-                  return new Date(expense.date).getMonth() === selectedMonth;
-                });
+        {/* Bottom Panel */}
+        <div className="w-full p-4 text-white">
+          {category.groups.map((group: GroupData) => {
+            // Filtrar los gastos según el mes seleccionado
+            const filteredExpenses = group.expenses.filter((expense) => {
+              return new Date(expense.date).getMonth() === selectedMonth;
+            });
 
-                const sortedExpenses = filteredExpenses.sort(
-                  (a, b) =>
-                    new Date(a.date).getTime() - new Date(b.date).getTime()
-                );
+            const sortedExpenses = filteredExpenses.sort(
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+            );
 
-                const groupExpensesIds = group.expenses.map((e) => e.id);
+            const groupExpensesIds = group.expenses.map((e) => e.id);
 
-                const headerStyles =
-                  "flex items-center mt-2 mb-1 bg-white opacity-30 text-black";
+            const headerStyles =
+              "flex items-center mt-2 mb-1 bg-white opacity-30 text-black";
 
-                return (
-                  filteredExpenses.length > 0 && (
-                    <div
-                      key={group.id}
-                      className={`${nextStyles.expensesblock} font-semibold`}
+            return (
+              filteredExpenses.length > 0 && (
+                <div
+                  key={group.id}
+                  className={`${nextStyles.expensesblock} font-semibold`}
+                >
+                  {/*group header*/}
+                  <div
+                    className={`${nextStyles.gridRow} cusror-pointer`}
+                    onClick={() => toggleGroupExpansion(group.id)} // Añade el evento aquí
+                  >
+                    <span className={`${headerStyles} text-xl pl-5`}>
+                      <input
+                        checked={isAllSelected(groupExpensesIds)}
+                        className="mr-2"
+                        type="checkbox"
+                        onChange={() => handleSelectAll(groupExpensesIds)}
+                      />
+                      {group.name}
+                    </span>
+                    <span className={`${headerStyles} gap-5`}>
+                      {isAnySelected(groupExpensesIds) && (
+                        <>
+                          <span>{CategoriesSelect}</span>
+                          <span>{GroupsSelect}</span>
+                          <span>
+                            <button
+                              className={`text-sm w-full border px-2`}
+                              onClick={handleApply}
+                            >
+                              Apply
+                            </button>
+                          </span>
+                        </>
+                      )}
+                    </span>
+                    <span
+                      className={`${headerStyles} justify-end text-right pr-2 text-lg`}
                     >
-                      {/*group header*/}
-                      <div
-                        className={`${nextStyles.gridRow} cusror-pointer`}
-                        onClick={() => toggleGroupExpansion(group.id)} // Añade el evento aquí
-                      >
-                        <span className={`${headerStyles} text-xl pl-5`}>
-                          <input
-                            checked={isAllSelected(groupExpensesIds)}
-                            className="mr-2"
-                            type="checkbox"
-                            onChange={() => handleSelectAll(groupExpensesIds)}
-                          />
-                          {group.name}
-                        </span>
-                        <span className={`${headerStyles} gap-5`}>
-                          {isAnySelected(groupExpensesIds) && (
-                            <>
-                              <span>{CategoriesSelect}</span>
-                              <span>{GroupsSelect}</span>
-                              <span>
-                                <button
-                                  className={`text-sm w-full border px-2`}
-                                  onClick={handleApply}
-                                >
-                                  Apply
-                                </button>
-                              </span>
-                            </>
-                          )}
-                        </span>
-                        <span
-                          className={`${headerStyles} justify-end text-right pr-2 text-lg`}
-                        >
-                          {group.totals[selectedMonth].toFixed(2)}
-                        </span>
-                      </div>
-                      {/* <ExpandablePanel
+                      {group.totals[selectedMonth].toFixed(2)}
+                    </span>
+                  </div>
+                  {/* <ExpandablePanel
                         show={expandedGroups.has(group.id)}
                         dependencies={[selectedMonth]}
                       > */}
-                      {sortedExpenses.map((expense, index) => (
-                        <div key={expense.id} className={nextStyles.gridRow}>
-                          <span className={"pl-5"}>
-                            <input
-                              className={"mr-2"}
-                              type="checkbox"
-                              checked={selectedExpenses.includes(expense.id)}
-                              onChange={() => handleSelectExpense(expense.id)}
-                            />
-                            <span>
-                              {new Date(expense.date).toLocaleDateString(
-                                "default",
-                                { day: "2-digit", month: "short" }
-                              )}
-                            </span>
-                          </span>
-                          <span>{expense.name}</span>
-                          <span className="text-right">{expense.amount}</span>
-                        </div>
-                      ))}
-                      {/* </ExpandablePanel> */}
+                  {sortedExpenses.map((expense, index) => (
+                    <div key={expense.id} className={nextStyles.gridRow}>
+                      <span className={"pl-5"}>
+                        <input
+                          className={"mr-2"}
+                          type="checkbox"
+                          checked={selectedExpenses.includes(expense.id)}
+                          onChange={() => handleSelectExpense(expense.id)}
+                        />
+                        <span>
+                          {new Date(expense.date).toLocaleDateString(
+                            "default",
+                            { day: "2-digit", month: "short" }
+                          )}
+                        </span>
+                      </span>
+                      <span>{expense.name}</span>
+                      <span className="text-right">{expense.amount}</span>
                     </div>
-                  )
-                );
-              })}
-            </div>
-          </div>
-        </ExpandablePanel>
-      </td>
-    </tr>
+                  ))}
+                  {/* </ExpandablePanel> */}
+                </div>
+              )
+            );
+          })}
+        </div>
+      </div>
+    </ExpandablePanel>
   );
 };
 

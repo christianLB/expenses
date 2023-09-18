@@ -74,9 +74,7 @@ const useExpensesTable = (expenses, categories, groups, income) => {
 
       const totals = getTotals(categoryExpenses);
       return {
-        id: category.id,
-        name: category.name,
-        color: category.color,
+        ...category,
         groups: groupedExpensesByGroup,
         expenses: categoryExpenses,
         totals,

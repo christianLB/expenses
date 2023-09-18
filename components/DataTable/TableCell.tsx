@@ -14,10 +14,10 @@ const TableCell = ({
   const { selectedMonth } = useContext<TableContextProps>(TableContext);
 
   return (
-    <td
+    <div
       className={`${className} ${
         monthIndex === selectedMonth ? nextStyles.blinking : ""
-      }`}
+      } select-none`}
       style={{
         ...style,
       }}
@@ -25,7 +25,7 @@ const TableCell = ({
       onMouseMove={onMouseMove}
     >
       {children}
-    </td>
+    </div>
   );
 };
 export default TableCell;

@@ -2,6 +2,7 @@
 import React from "react";
 import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
+import nextStyles from "../../styles/Expenses.module.css";
 
 interface CategoryData {
   id: string;
@@ -24,14 +25,13 @@ interface CategoryRowProps {
 }
 const BalanceRow = ({ category, color }) => {
   return (
-    <tr className={styles.categoryRow}>
-      <td className={styles.cell} style={{ backgroundColor: color }}></td>
-      <td
+    <div className={`${styles.categoryRow} ${nextStyles.gridtable}`}>
+      <div
         className={`${styles.cell} text-white`}
         style={{ backgroundColor: color }}
       >
         Balance
-      </td>
+      </div>
       {category.totals.map((total, index) => (
         <TableCell
           monthIndex={index}
@@ -44,7 +44,7 @@ const BalanceRow = ({ category, color }) => {
           {total.toFixed(2)}
         </TableCell>
       ))}
-    </tr>
+    </div>
   );
 };
 

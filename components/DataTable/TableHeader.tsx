@@ -1,6 +1,7 @@
 // TableHeader.tsx
 import React from "react";
 import styles from "./tableStyles.js";
+import nextStyles from "../../styles/Expenses.module.css";
 
 interface TableHeaderProps {}
 
@@ -22,15 +23,14 @@ const TableHeader: React.FC<TableHeaderProps> = () => {
   ];
 
   return (
-    <thead>
-      <tr>
-        <th></th>
-        <th>Category/Group</th>
-        {months.map((month, index) => (
-          <th key={index}>{month}</th>
-        ))}
-      </tr>
-    </thead>
+    <div className={`${styles.categoryRow} ${nextStyles.gridtable}`}>
+      <div></div>
+      {months.map((month, index) => (
+        <div className="text-center" key={index}>
+          {month}
+        </div>
+      ))}
+    </div>
   );
 };
 

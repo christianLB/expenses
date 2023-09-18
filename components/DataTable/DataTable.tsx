@@ -11,6 +11,8 @@ import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
+import { group } from "console";
+import ExpandablePanel from "../ExpandablePanel";
 
 interface DataTableProps {
   data?: {
@@ -50,6 +52,7 @@ const DataTable: React.FC<DataTableProps> = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
   const [isDragging, setIsDragging] = useState(false);
+  const [expanded, toggleExpanded] = useState(false);
 
   const {
     list: selectedExpenses,
@@ -171,31 +174,27 @@ const DataTable: React.FC<DataTableProps> = () => {
           categories,
         }}
       >
-        <table className={`${tableStyles.table} w-full`}>
+        <div className={`${tableStyles.table} w-full`}>
           <TableHeader />
-          <tbody>
-            <SortableList
-              items={displayCategories}
-              ItemComponent={CategoryRow}
+          <SortableList items={displayCategories} ItemComponent={CategoryRow} />
+          {/* <ExpandablePanel
+            show={true}
+            dependencies={[selectedMonth]}
+          ></ExpandablePanel> */}
+          {summaryCategory?.totals && (
+            <SummaryRow
+              category={summaryCategory}
+              color={colors[colors.length - 1]}
+              onClick={() => toggleExpanded(!expanded)}
             />
-            {/* {displayCategories?.map((category, index) => (
-              //@ts-ignore
-              <CategoryRow key={index} category={category} index={index} />
-            ))} */}
-            {summaryCategory?.totals && (
-              <SummaryRow
-                category={summaryCategory}
-                color={colors[colors.length - 1]}
-              />
-            )}
-            {balanceCategory?.totals && (
-              <BalanceRow
-                category={balanceCategory}
-                color={colors[colors.length - 1]}
-              />
-            )}
-          </tbody>
-        </table>
+          )}
+          {balanceCategory?.totals && (
+            <BalanceRow
+              category={balanceCategory}
+              color={colors[colors.length - 1]}
+            />
+          )}
+        </div>
       </TableContext.Provider>
     </DndProvider>
   );

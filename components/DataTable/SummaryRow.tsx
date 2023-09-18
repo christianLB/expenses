@@ -2,6 +2,7 @@
 import React from "react";
 import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
+import nextStyles from "../../styles/Expenses.module.css";
 
 interface CategoryData {
   id: string;
@@ -22,14 +23,18 @@ interface CategoryRowProps {
   index: number;
   color: string;
 }
-const SummaryRow = ({ category, color }) => {
+const SummaryRow = ({ category, color, onClick = () => {} }) => {
   return (
-    <tr className={styles.categoryRow}>
-      <td className={styles.cell} style={{ backgroundColor: color }}></td>
-      <td
+    <div
+      className={`${styles.categoryRow} ${nextStyles.gridtable}`}
+      onClick={onClick}
+    >
+      <div
         className={`${styles.cell} text-white`}
         style={{ backgroundColor: color }}
-      ></td>
+      >
+        Gastos
+      </div>
       {category.totals.map((total, index) => (
         <TableCell
           monthIndex={index}
@@ -40,7 +45,7 @@ const SummaryRow = ({ category, color }) => {
           {total.toFixed(2)}
         </TableCell>
       ))}
-    </tr>
+    </div>
   );
 };
 

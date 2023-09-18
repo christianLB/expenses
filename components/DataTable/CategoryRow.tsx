@@ -1,11 +1,11 @@
 // CategoryRow.tsx
-import React, { useContext, forwardRef } from "react";
-import { useDrop } from "react-dnd";
+import React, { useContext } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import styles from "./tableStyles.js";
-import withDroppable from "./withDroppable";
 import TableCell from "./TableCell";
 import CategoryDetail from "./CategoryDetail";
+import nextStyles from "../../styles/Expenses.module.css";
+
 export interface CategoryData {
   id: string;
   name: string;
@@ -25,86 +25,64 @@ interface CategoryRowProps extends CategoryData {
   key: number;
   category?: CategoryData;
   index: number;
-  draggableProps: any;
+  sortableProps: any;
   dragListeners: any;
 }
-const CategoryRow = forwardRef<HTMLTableRowElement, CategoryRowProps>(
-  (category, ref) => {
-    const {
-      collapsedKeys,
-      toggleItemCollapse,
-      handleDrop,
-      handleCellClick,
-      setHoveredCategory,
-      hoveredCategory,
-    } = useContext<TableContextProps>(TableContext);
 
-    const { draggableProps, dragListeners } = category;
-    const isCollapsed = !collapsedKeys.has(category?.id);
-    const [, drop] = useDrop({
-      accept: "EXPENSE",
-      drop: (item: any) => handleDrop(item.id, category.id, "category"),
-    });
+const CategoryRow = (props: CategoryRowProps) => {
+  const {
+    collapsedKeys,
+    handleCellClick,
+    setHoveredCategory,
+    hoveredCategory,
+  } = useContext<TableContextProps>(TableContext);
 
-    const dragDropRef = (instance) => {
-      drop(instance);
-    };
-    const isIncome = category?.name === "Income";
-    const isHovered = category?.id === hoveredCategory?.id;
-    return (
-      <>
-        <CategoryDetail category={category} />
-        <tr
-          ref={dragDropRef}
-          className={`${styles.categoryRow}`}
-          //onClick={() => toggleItemCollapse(category.id)}
-          //{...draggableProps}
+  const { sortableProps, dragListeners, ...category } = props;
+  const isCollapsed = !collapsedKeys.has(category?.id);
+
+  const isIncome = category?.name === "Income";
+  const isHovered = category?.id === hoveredCategory?.id;
+
+  return (
+    <div className={`text-gray:600`} {...sortableProps}>
+      <CategoryDetail category={category} />
+      <div className={`${nextStyles.gridtable}`}>
+        <div
+          {...dragListeners}
+          className={`cursor-grabbing text-white text-base ${styles.cell} ${
+            !isCollapsed || isIncome || isHovered ? styles.expandedRowCell : ""
+          } select-none`}
+          style={{
+            background: category?.color
+              ? `linear-gradient(to right, ${category.color} 0%, ${category.color} 80%, ${category.color}80 150%)`
+              : "",
+          }}
         >
-          <td
-            className={styles.cell}
-            style={{ backgroundColor: category?.color }}
-          ></td>
-          <td
-            className={`cursor-pointer text-white text-base ${styles.cell} ${
-              !isCollapsed || isIncome || isHovered
-                ? styles.expandedRowCell
-                : ""
+          {(isCollapsed && category?.name) || ""}
+        </div>
+
+        {category?.totals.map((total, index) => (
+          <TableCell
+            monthIndex={index}
+            className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""} ${
+              isIncome || isHovered ? styles.expandedRowCell : ""
             }`}
+            key={index}
             style={{
-              background: category?.color
-                ? `linear-gradient(to right, ${category.color} 0%, ${category.color} 80%, ${category.color}80 150%)`
-                : "",
+              backgroundColor:
+                isCollapsed || !isCollapsed || isIncome || isHovered
+                  ? category.color
+                  : "",
             }}
+            onClick={() => handleCellClick(category, index)}
+            onMouseMove={() => setHoveredCategory(category)}
           >
-            {(isCollapsed && category?.name) || ""}
-          </td>
+            {total > 0 ? total.toFixed(2) : "-"}
+          </TableCell>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-          {category?.totals.map((total, index) => (
-            <TableCell
-              monthIndex={index}
-              className={`${styles.cell} ${
-                total <= 0 ? styles.emptyCell : ""
-              } ${isIncome || isHovered ? styles.expandedRowCell : ""}`}
-              key={index}
-              style={{
-                backgroundColor:
-                  isCollapsed || !isCollapsed || isIncome || isHovered
-                    ? category.color
-                    : "",
-              }}
-              onClick={() => handleCellClick(category, index)}
-              onMouseMove={() => setHoveredCategory(category)}
-            >
-              {total > 0 ? total.toFixed(2) : "-"}
-            </TableCell>
-          ))}
-        </tr>
-      </>
-    );
-  }
-);
-
-const DroppableExpensesRow = withDroppable(CategoryRow);
-
-CategoryRow.displayName = "CategoryRow";
-export default DroppableExpensesRow;
+export default CategoryRow;
