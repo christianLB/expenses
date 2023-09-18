@@ -5,8 +5,6 @@ import TableHeader from "./TableHeader";
 import CategoryRow, { CategoryData, GroupData } from "./CategoryRow";
 import tableStyles from "./tableStyles.js";
 import useCollapsedState from "../../hooks/useCollapsedState";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
@@ -39,7 +37,6 @@ export interface TableContextProps {
   handleSelectAll: (group: any) => void;
   selectedExpenses: string[];
   setHoveredCategory: (category: CategoryData) => void;
-  handleDrop: (draggedExpense: string, targetExpense: string, type) => void;
   categories: any;
 }
 
@@ -65,67 +62,11 @@ const DataTable: React.FC<DataTableProps> = () => {
     //categoryGroupExpenses: data,
     groupedExpensesByCategory: categories,
     colors,
-    updateExpenseHandler,
     categories: originalCategories,
-    groups,
-    expenses,
+    updateCategoryHandler,
     fetchExpenses,
+    fetchCategories,
   } = useExpensesContext();
-
-  const handleDrop = async (
-    expenseId: string,
-    targetId: string,
-    targetType: string
-  ) => {
-    const expense = expenses.find((exp) => exp.id === expenseId);
-
-    if (!expense) return;
-
-    const originalCategory = expense.category
-      ? originalCategories.find((cat) => cat.id === expense.category.id)
-      : { id: 0 };
-    const originalGroup = expense.group
-      ? groups.find((grp) => grp._id === expense.group)
-      : { id: 0 };
-
-    let updatedCategory = originalCategory;
-    let updatedGroup = originalGroup;
-
-    if (targetType === "category") {
-      const targetCategory = originalCategories.find(
-        (cat) => cat.id === targetId
-      );
-
-      if (targetCategory && targetCategory.id !== originalCategory?.id) {
-        updatedCategory = targetCategory;
-        updatedGroup = null;
-      }
-    }
-
-    if (targetType === "group") {
-      const targetGroup = groups.find((grp) => grp.id === targetId);
-      if (
-        targetGroup &&
-        (!originalGroup || targetGroup.id !== originalGroup.id)
-      ) {
-        updatedGroup = targetGroup;
-      }
-    }
-
-    if (
-      (updatedCategory && updatedCategory.id !== originalCategory.id) ||
-      (updatedGroup && (!originalGroup || updatedGroup.id !== originalGroup.id))
-    ) {
-      await updateExpenseHandler({
-        id: expense.id,
-        body: {
-          ...(updatedCategory ? { category: updatedCategory.id } : {}),
-          ...(updatedGroup ? { group: updatedGroup.id } : {}),
-        },
-      });
-      fetchExpenses();
-    }
-  };
 
   const handleCellClick = (parentRow, monthIndex) => {
     const isCollapsed = !collapsedKeys.has(parentRow.id);
@@ -141,62 +82,102 @@ const DataTable: React.FC<DataTableProps> = () => {
   const summaryCategory = categories.find(
     (category) => category.id === "summary"
   );
+  const uncategorizedCategory = categories.find(
+    (category) => category.id === "0"
+  );
+  const incomeCategory = categories.find(
+    (category) => category.id === "income"
+  );
 
-  const displayCategories = categories.filter((category) => {
+  const sortableCategories = categories.filter((category) => {
     // Filter out the balance category as it will be rendered separately
-    if (category.id === "balance") return false;
-    if (category.id === "summary") return false;
+    const hiddenCategories = [
+      incomeCategory,
+      balanceCategory,
+      summaryCategory,
+      uncategorizedCategory,
+    ];
+    if (hiddenCategories.includes(category)) return false;
 
     // Filter out the uncategorized category if it's empty
-    if (category.id === "0" && category.totals[12] <= 0) return false;
+    if (category === uncategorizedCategory && category.totals[12] <= 0)
+      return false;
 
     return true;
   });
 
+  const handleSortChange = async ({ sortedList }) => {
+    // sortedList ya está ordenada, sólo tenemos que actualizar los campos 'order'
+    for (let i = 0; i < sortedList.length; i++) {
+      const item = sortedList[i];
+      const newOrder = i; // El nuevo orden simplemente es el índice en la lista ordenada
+
+      // Actualizar el orden en el servidor usando updateCategoryHandler
+      await updateCategoryHandler({
+        id: item.id, // Asume que cada ítem tiene un id
+        body: {
+          order: newOrder,
+        },
+      });
+    }
+
+    // Recargar la lista de gastos, si es necesario
+    await fetchCategories();
+    fetchExpenses();
+  };
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <TableContext.Provider
-        value={{
-          collapsedKeys,
-          toggleItemCollapse,
-          colors,
-          handleDrop,
-          isAllSelected,
-          selectedMonth,
-          handleSelectAll,
-          handleCellClick,
-          handleSelectExpense,
-          isDragging,
-          selectedExpenses,
-          setIsDragging,
-          setHoveredCategory,
-          hoveredCategory,
-          categories,
-        }}
-      >
-        <div className={`${tableStyles.table} w-full`}>
-          <TableHeader />
-          <SortableList items={displayCategories} ItemComponent={CategoryRow} />
-          {/* <ExpandablePanel
+    <TableContext.Provider
+      value={{
+        collapsedKeys,
+        toggleItemCollapse,
+        colors,
+        isAllSelected,
+        selectedMonth,
+        handleSelectAll,
+        handleCellClick,
+        handleSelectExpense,
+        isDragging,
+        selectedExpenses,
+        setIsDragging,
+        setHoveredCategory,
+        hoveredCategory,
+        categories,
+      }}
+    >
+      <div className={`${tableStyles.table} w-full`}>
+        <TableHeader />
+        <CategoryRow {...{ ...incomeCategory }} sortable={false} />
+        <SortableList
+          items={sortableCategories}
+          ItemComponent={CategoryRow}
+          onSort={handleSortChange}
+        />
+        {/* <ExpandablePanel
             show={true}
             dependencies={[selectedMonth]}
           ></ExpandablePanel> */}
-          {summaryCategory?.totals && (
-            <SummaryRow
-              category={summaryCategory}
-              color={colors[colors.length - 1]}
-              onClick={() => toggleExpanded(!expanded)}
-            />
-          )}
-          {balanceCategory?.totals && (
-            <BalanceRow
-              category={balanceCategory}
-              color={colors[colors.length - 1]}
-            />
-          )}
-        </div>
-      </TableContext.Provider>
-    </DndProvider>
+        <CategoryRow
+          {...{
+            ...uncategorizedCategory,
+            sortable: false,
+          }}
+        />
+        {summaryCategory?.totals && (
+          <SummaryRow
+            category={summaryCategory}
+            color={colors[colors.length - 1]}
+            onClick={() => toggleExpanded(!expanded)}
+          />
+        )}
+        {balanceCategory?.totals && (
+          <BalanceRow
+            category={balanceCategory}
+            color={colors[colors.length - 1]}
+          />
+        )}
+      </div>
+    </TableContext.Provider>
   );
 };
 

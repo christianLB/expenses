@@ -85,8 +85,8 @@ const CategoryDetail = ({ category }) => {
       show={!isCollapsed}
       dependencies={[
         selectedMonth,
-        category.expenses.length,
-        category.groups.length,
+        category?.expenses?.length,
+        category?.groups?.length,
       ]}
       defaultConfig={{
         backgroundColor: category.color,
@@ -109,7 +109,9 @@ const CategoryDetail = ({ category }) => {
           <div>
             <h1 className="text-2xl font-bold">Total de {month}</h1>
             <h1 className="text-2xl font-bold text-right">
-              {category.totals[selectedMonth].toFixed(2)}
+              {category?.totals &&
+                category?.totals[selectedMonth] &&
+                category?.totals[selectedMonth].toFixed(2)}
             </h1>
             {/* Future Chart Here */}
           </div>
@@ -117,7 +119,7 @@ const CategoryDetail = ({ category }) => {
 
         {/* Bottom Panel */}
         <div className="w-full p-4 text-white">
-          {category.groups.map((group: GroupData) => {
+          {category?.groups?.map((group: GroupData) => {
             // Filtrar los gastos según el mes seleccionado
             const filteredExpenses = group.expenses.filter((expense) => {
               return new Date(expense.date).getMonth() === selectedMonth;

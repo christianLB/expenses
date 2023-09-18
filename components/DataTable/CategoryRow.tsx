@@ -7,11 +7,11 @@ import CategoryDetail from "./CategoryDetail";
 import nextStyles from "../../styles/Expenses.module.css";
 
 export interface CategoryData {
-  id: string;
-  name: string;
-  color: string;
-  groups: Array<GroupData>;
-  totals: Array<number>;
+  id?: string;
+  name?: string;
+  color?: string;
+  groups?: Array<GroupData>;
+  totals?: Array<number>;
 }
 
 export interface GroupData {
@@ -22,11 +22,12 @@ export interface GroupData {
 }
 
 interface CategoryRowProps extends CategoryData {
-  key: number;
+  key?: number;
   category?: CategoryData;
-  index: number;
-  sortableProps: any;
-  dragListeners: any;
+  //index: number;
+  sortableProps?: any;
+  dragListeners?: any;
+  sortable: boolean;
 }
 
 const CategoryRow = (props: CategoryRowProps) => {
@@ -37,7 +38,7 @@ const CategoryRow = (props: CategoryRowProps) => {
     hoveredCategory,
   } = useContext<TableContextProps>(TableContext);
 
-  const { sortableProps, dragListeners, ...category } = props;
+  const { sortableProps, dragListeners, sortable = true, ...category } = props;
   const isCollapsed = !collapsedKeys.has(category?.id);
 
   const isIncome = category?.name === "Income";
@@ -61,7 +62,7 @@ const CategoryRow = (props: CategoryRowProps) => {
           {(isCollapsed && category?.name) || ""}
         </div>
 
-        {category?.totals.map((total, index) => (
+        {category?.totals?.map((total, index) => (
           <TableCell
             monthIndex={index}
             className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""} ${

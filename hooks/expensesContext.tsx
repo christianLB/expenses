@@ -43,7 +43,11 @@ export const ExpensesProvider = ({ children }) => {
     collection: "expense-group",
     fetchOnInit: true,
   });
-  const { arrayData: categories } = usePayloadCollection({
+  const {
+    fetchAll: fetchCategories,
+    arrayData: categories,
+    update: updateCategoryHandler,
+  } = usePayloadCollection({
     collection: "expense-category",
     fetchOnInit: true,
   });
@@ -83,8 +87,10 @@ export const ExpensesProvider = ({ children }) => {
     deleteExpenseHandler,
     updateExpenseHandler,
     fetchExpenses,
+    fetchCategories,
     fetchIncomes,
     findExpensesByQueryHandler,
+    updateCategoryHandler,
     queryResults,
     currentYear,
     expenses,
