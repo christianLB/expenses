@@ -1,11 +1,12 @@
 // GroupRow.tsx
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 
 import ExpandablePanel from "../ExpandablePanel";
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
+import ColorPicker from "react-best-gradient-color-picker";
 interface GroupData {
   id: string;
   name: string;
@@ -29,7 +30,15 @@ const CategoryDetail = ({ category }) => {
     handleSelectAll,
     categories,
   } = useContext<TableContextProps>(TableContext);
-  const { updateExpenseHandler, fetchExpenses, groups } = useExpensesContext();
+  const {
+    updateExpenseHandler,
+    fetchExpenses,
+    groups,
+    updateCategoryHandler,
+    fetchCategories,
+  } = useExpensesContext();
+  const [userColor, setUserColor] = useState(category?.color);
+  const [showPicker, togglePicker] = useState<boolean>(false);
 
   const isCollapsed = !collapsedKeys.has(category.id);
   const month = new Date(0, selectedMonth).toLocaleDateString("default", {
@@ -80,6 +89,22 @@ const CategoryDetail = ({ category }) => {
     fetchExpenses();
   };
 
+  const updateColorHandler = async () => {
+    await updateCategoryHandler({
+      id: category.id, // Asume que cada ítem tiene un id
+      body: {
+        color: userColor,
+      },
+    });
+    //await fetchCategories();
+  };
+
+  useEffect(() => {
+    if (!showPicker) {
+      if (userColor !== category.color) updateColorHandler();
+    }
+  }, [showPicker, category.color]);
+
   return (
     <ExpandablePanel
       show={!isCollapsed}
@@ -89,7 +114,7 @@ const CategoryDetail = ({ category }) => {
         category?.groups?.length,
       ]}
       defaultConfig={{
-        backgroundColor: category.color,
+        backgroundColor: userColor,
         filter: "brightness(110%)",
       }}
     >
@@ -98,16 +123,43 @@ const CategoryDetail = ({ category }) => {
         <div
           className="flex justify-between w-full p-4"
           style={{
-            background: `linear-gradient(to right, ${category.color}, ${category.color}, white)`,
+            background: `linear-gradient(to right, ${userColor}, ${userColor}, white)`,
             borderBottom: `1px solid rgba(255,255,255,0.3)`,
           }}
         >
           <div>
-            <h1 className="text-white text-3xl font-bold">{category.name}</h1>
-            <h2 className="text-white text-2xl"></h2>
+            <h1
+              className="text-white text-3xl font-bold cursor-pointer"
+              onClick={() => togglePicker(!showPicker)}
+            >
+              {category.name}
+            </h1>
+            <ExpandablePanel show={showPicker}>
+              <ColorPicker
+                value={userColor}
+                onChange={setUserColor}
+                hideInputs
+                hideOpacity
+                //hideHue
+                hidePresets
+                hideEyeDrop
+                hideAdvancedSliders
+                hideColorGuide
+                hideGradientControls
+                hideColorTypeBtns
+                hideControls
+                hideInputType
+                hideGradientType
+                hideGradientAngle
+                hideGradientStop
+                width={100}
+                height={100}
+              />
+            </ExpandablePanel>
           </div>
+          <h2 className="text-white text-2xl">{month}</h2>
+
           <div>
-            <h1 className="text-2xl font-bold">Total de {month}</h1>
             <h1 className="text-2xl font-bold text-right">
               {category?.totals &&
                 category?.totals[selectedMonth] &&

@@ -1,5 +1,5 @@
 // CategoryRow.tsx
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
@@ -40,23 +40,22 @@ const CategoryRow = (props: CategoryRowProps) => {
 
   const { sortableProps, dragListeners, sortable = true, ...category } = props;
   const isCollapsed = !collapsedKeys.has(category?.id);
-
   const isIncome = category?.name === "Income";
   const isHovered = category?.id === hoveredCategory?.id;
 
   return (
-    <div className={`text-gray:600`} {...sortableProps}>
+    <div className={`text-gray:600 relative`} {...sortableProps}>
       <CategoryDetail category={category} />
       <div className={`${nextStyles.gridtable}`}>
         <div
           {...dragListeners}
           className={`cursor-grabbing text-white text-base ${styles.cell} ${
             !isCollapsed || isIncome || isHovered ? styles.expandedRowCell : ""
-          } select-none`}
+          } select-none flex`}
           style={{
-            background: category?.color
-              ? `linear-gradient(to right, ${category.color} 0%, ${category.color} 80%, ${category.color}80 150%)`
-              : "",
+            background: category?.color,
+            //? `linear-gradient(to right, ${category.color} 0%, rgba(${category.color}, 0.8) 80%, rgba(${category.color}, 0.5) 150%)`
+            //: "",
           }}
         >
           {(isCollapsed && category?.name) || ""}
