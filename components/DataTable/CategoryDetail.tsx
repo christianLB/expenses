@@ -32,16 +32,23 @@ const CategoryDetail = ({ category }) => {
     categories,
   } = useContext<TableContextProps>(TableContext);
   const {
-    updateExpenseHandler,
-    fetchExpenses,
-    groups,
-    updateCategoryHandler,
-    updateGroupHandler,
-    fetchCategories,
-    createGroupHandler,
-    fetchGroups,
-    createCategoryHandler,
+    expensesCollection: {
+      fetchAll: fetchExpenses,
+      update: updateExpenseHandler,
+    },
+    groupsCollection: {
+      fetchAll: fetchGroups,
+      create: createGroupHandler,
+      arrayData: groups,
+      update: updateGroupHandler,
+    },
+    categoriesCollection: {
+      create: createCategoryHandler,
+      fetchAll: fetchCategories,
+      update: updateCategoryHandler,
+    },
   } = useExpensesContext();
+
   const [userColor, setUserColor] = useState(category?.color);
   const [showPicker, togglePicker] = useState<boolean>(false);
 

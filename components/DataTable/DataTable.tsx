@@ -62,10 +62,11 @@ const DataTable: React.FC<DataTableProps> = () => {
     //categoryGroupExpenses: data,
     groupedExpensesByCategory: categories,
     colors,
-    categories: originalCategories,
-    updateCategoryHandler,
-    fetchExpenses,
-    fetchCategories,
+    categoriesCollection: {
+      update: updateCategoryHandler,
+      fetchAll: fetchCategories,
+    },
+    expensesCollection: { fetchAll: fetchExpenses },
   } = useExpensesContext();
 
   const handleCellClick = (parentRow, monthIndex) => {

@@ -67,16 +67,17 @@ export default function Expenses() {
         <LoginBtn />
       </div>
       <main className="flex-1 p-4 md:p-8">
-        <div className={"absolute top-5 left-5 flex flex-row gap-5"}>
-          {gmailLoading && (
-            <>
-              <Spinner /> Comprobando nuevos movimientos.
-            </>
-          )}
-          {gmailResponse?.length > 0 && (
-            <>Se registraron {gmailResponse.length} nuevos movimientos.</>
-          )}
-        </div>
+        {gmailLoading && (
+          <TopMessage>
+            <Spinner /> Comprobando nuevos movimientos.
+          </TopMessage>
+        )}
+        {gmailResponse?.length > 0 && (
+          <TopMessage>
+            Se registraron {gmailResponse.length} nuevos movimientos.
+          </TopMessage>
+        )}
+
         <div className="max-w-8xl mx-auto">
           <VStack spacing={6} w="100%">
             <Box
@@ -92,3 +93,15 @@ export default function Expenses() {
     </div>
   );
 }
+
+const TopMessage = ({ children }) => {
+  return (
+    <div
+      className={
+        "absolute top-5 left-5 flex flex-row gap-5 z-50 bg-white w-1/4 p-5 rounded border-2 border-gray-900"
+      }
+    >
+      {children}
+    </div>
+  );
+};
