@@ -25,59 +25,6 @@ export const ExpensesProvider = ({ children }) => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const query = generateYearlyQuery(currentYear);
 
-  // const {
-  //   arrayData: expenses,
-  //   create: createExpenseHandler,
-  //   fetchAll: fetchExpenses,
-  //   findByQuery: findExpensesByQueryHandler,
-  //   deleteItem: deleteExpenseHandler,
-  //   update: updateExpenseHandler,
-  //   queryResults,
-  // } = usePayloadCollection({
-  //   collection: "expenses",
-  //   fetchOnInit: true,
-  //   clearOnStart: false,
-  //   query,
-  // });
-  // const {
-  //   fetchAll: fetchGroups,
-  //   arrayData: groups,
-  //   create: createGroupHandler,
-  //   update: updateGroupHandler,
-  // } = usePayloadCollection({
-  //   collection: "expense-group",
-  //   fetchOnInit: true,
-  // });
-  // const {
-  //   fetchAll: fetchCategories,
-  //   arrayData: categories,
-  //   create: createCategoryHandler,
-  //   update: updateCategoryHandler,
-  // } = usePayloadCollection({
-  //   collection: "expense-category",
-  //   fetchOnInit: true,
-  // });
-  // const { arrayData: clients } = usePayloadCollection({
-  //   collection: "clients",
-  //   fetchOnInit: true,
-  // });
-  // const {
-  //   arrayData: incomes,
-  //   create: createIncomeHandler,
-  //   fetchAll: fetchIncomes,
-  // } = usePayloadCollection({ collection: "incomes", fetchOnInit: true, query });
-
-  // const {
-  //   //request: gmail,
-  //   loading: gmailLoading,
-  //   response: gmailResponse,
-  // } = useApi("./api/gmail", {
-  //   method: "POST",
-  //   fetchOnInit: true,
-  //   body: { label: "BBVA/gastos" },
-  //   onFinish: () => fetchExpenses(),
-  // });
-
   const expensesCollection = usePayloadCollection({
     collection: "expenses",
     fetchOnInit: true,
@@ -123,6 +70,7 @@ export const ExpensesProvider = ({ children }) => {
   const value = {
     colors,
     setCurrentYear,
+    currentYear,
     expensesCollection,
     groupsCollection,
     categoriesCollection,
@@ -131,38 +79,6 @@ export const ExpensesProvider = ({ children }) => {
     gmailApi,
     groupedExpensesByCategory,
   };
-
-  // const value = {
-  //   colors,
-  //   setCurrentYear,
-  //   createIncomeHandler,
-  //   createExpenseHandler,
-  //   deleteExpenseHandler,
-  //   updateExpenseHandler,
-  //   fetchExpenses,
-  //   fetchCategories,
-  //   fetchIncomes,
-  //   findExpensesByQueryHandler,
-  //   updateCategoryHandler,
-  //   createGroupHandler,
-  //   createCategoryHandler,
-  //   updateGroupHandler,
-  //   fetchGroups,
-  //   queryResults,
-  //   currentYear,
-  //   expenses,
-  //   incomes,
-  //   groups,
-  //   categories,
-  //   clients,
-  //   groupedExpensesByCategory,
-  //   gmailLoading,
-  //   gmailResponse,
-  //   // categoryGroupExpenses:
-  //   //   expenses && categories && groups && incomes
-  //   //     ? generateSummaryData(expenses, categories, groups, incomes)
-  //   //     : {},
-  // };
 
   return (
     <ExpensesContext.Provider value={value}>

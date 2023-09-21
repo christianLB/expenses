@@ -20,8 +20,12 @@ export default function Expenses() {
   const tableRef = useRef();
   const { data: session } = useSession();
 
-  const { currentYear, setCurrentYear, gmailLoading, gmailResponse } =
-    useExpensesContext();
+  const {
+    currentYear,
+    setCurrentYear,
+    gmailApi: { loading: gmailLoading },
+    gmailResponse,
+  } = useExpensesContext();
 
   if (!session)
     return (
@@ -43,41 +47,47 @@ export default function Expenses() {
           "fixed flex flex-row bg-gray-200 p-2 w-full justify-between z-50"
         }
       >
-        <Box
-          display="flex"
-          alignItems="center"
-          p={2}
-          borderWidth={1}
-          borderRadius="lg"
-          borderColor={"blackAlpha.300"}
-        >
-          <Text marginRight="0.5rem">Year:</Text>
-          <NumberInput
-            defaultValue={currentYear}
-            onChange={(valueString) => setCurrentYear(parseInt(valueString))}
-            className="mb-2 md:mb-0"
+        <div className="flex items-center gap-5">
+          <Box
+            display="flex"
+            alignItems="center"
+            p={2}
+            borderWidth={1}
+            borderRadius="lg"
+            borderColor={"blackAlpha.300"}
           >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </Box>
+            <Text marginRight="0.5rem">Year:</Text>
+            <NumberInput
+              defaultValue={currentYear}
+              onChange={(valueString) => setCurrentYear(parseInt(valueString))}
+              className="mb-2 md:mb-0 text-black"
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </Box>
+          {gmailLoading && (
+            <span className="flex items-center gap-5">
+              <Spinner /> Comprobando nuevos movimientos.
+            </span>
+          )}
+          {!gmailLoading && (
+            <span className="flex items-center gap-5">
+              {gmailResponse?.length > 0 && (
+                <>Se registraron {gmailResponse?.length} nuevos movimientos.</>
+              )}
+              {!gmailResponse?.length && (
+                <>No se registran nuevos movimientos.</>
+              )}
+            </span>
+          )}
+        </div>
         <LoginBtn />
       </div>
       <main className="flex-1 p-4 md:p-8">
-        {gmailLoading && (
-          <TopMessage>
-            <Spinner /> Comprobando nuevos movimientos.
-          </TopMessage>
-        )}
-        {gmailResponse?.length > 0 && (
-          <TopMessage>
-            Se registraron {gmailResponse.length} nuevos movimientos.
-          </TopMessage>
-        )}
-
         <div className="max-w-8xl mx-auto">
           <VStack spacing={6} w="100%">
             <Box
@@ -93,15 +103,3 @@ export default function Expenses() {
     </div>
   );
 }
-
-const TopMessage = ({ children }) => {
-  return (
-    <div
-      className={
-        "absolute top-5 left-5 flex flex-row gap-5 z-50 bg-white w-1/4 p-5 rounded border-2 border-gray-900"
-      }
-    >
-      {children}
-    </div>
-  );
-};
