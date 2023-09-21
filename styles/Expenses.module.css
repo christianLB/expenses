@@ -78,7 +78,7 @@
 
 .expensesblock {
   display: grid;
-  grid-template-rows: 44px auto;
+  grid-template-rows: 50px 25px;
 }
 
 .gridRow {
