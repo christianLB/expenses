@@ -39,13 +39,19 @@ export const ExpensesProvider = ({ children }) => {
     clearOnStart: false,
     query,
   });
-  const { arrayData: groups } = usePayloadCollection({
+  const {
+    fetchAll: fetchGroups,
+    arrayData: groups,
+    create: createGroupHandler,
+    update: updateGroupHandler,
+  } = usePayloadCollection({
     collection: "expense-group",
     fetchOnInit: true,
   });
   const {
     fetchAll: fetchCategories,
     arrayData: categories,
+    create: createCategoryHandler,
     update: updateCategoryHandler,
   } = usePayloadCollection({
     collection: "expense-category",
@@ -91,6 +97,10 @@ export const ExpensesProvider = ({ children }) => {
     fetchIncomes,
     findExpensesByQueryHandler,
     updateCategoryHandler,
+    createGroupHandler,
+    createCategoryHandler,
+    updateGroupHandler,
+    fetchGroups,
     queryResults,
     currentYear,
     expenses,

@@ -4,6 +4,7 @@ import { TableContext, TableContextProps } from "./DataTable";
 import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
 import CategoryDetail from "./CategoryDetail";
+
 import nextStyles from "../../styles/Expenses.module.css";
 
 export interface CategoryData {
@@ -44,7 +45,7 @@ const CategoryRow = (props: CategoryRowProps) => {
   const isHovered = category?.id === hoveredCategory?.id;
 
   return (
-    <div className={`text-gray:600 relative`} {...sortableProps}>
+    <div className={`text-gray:600`} {...sortableProps}>
       <CategoryDetail category={category} />
       <div className={`${nextStyles.gridtable}`}>
         <div

@@ -6,6 +6,7 @@ import ExpandablePanel from "../ExpandablePanel";
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
+import { Editable, EditableInput, EditablePreview } from "@chakra-ui/react";
 import ColorPicker from "react-best-gradient-color-picker";
 interface GroupData {
   id: string;
@@ -35,7 +36,11 @@ const CategoryDetail = ({ category }) => {
     fetchExpenses,
     groups,
     updateCategoryHandler,
+    updateGroupHandler,
     fetchCategories,
+    createGroupHandler,
+    fetchGroups,
+    createCategoryHandler,
   } = useExpensesContext();
   const [userColor, setUserColor] = useState(category?.color);
   const [showPicker, togglePicker] = useState<boolean>(false);
@@ -48,7 +53,7 @@ const CategoryDetail = ({ category }) => {
   const { selected: selectedCategory, SelectComponent: CategoriesSelect } =
     useSelect({ options: categories });
   const { selected: selectedGroup, SelectComponent: GroupsSelect } = useSelect({
-    options: groups,
+    options: [{ id: 0, name: "Nuevo Grupo" }, ...groups],
   });
 
   const isAnySelected = (groupExpensesIds) => {
@@ -70,22 +75,44 @@ const CategoryDetail = ({ category }) => {
   };
 
   const handleApply = async () => {
-    // Tus gastos seleccionados
     const selectedGroupExpenses = category.groups.flatMap((group) =>
       group.expenses.filter((expense) => selectedExpenses.includes(expense.id))
     );
 
-    // Actualizar cada gasto seleccionado
-    for (const expense of selectedGroupExpenses) {
-      await updateExpenseHandler({
-        id: expense.id,
+    let groupId = selectedGroup;
+    let categoryId = selectedCategory;
+
+    if (selectedGroup === "0") {
+      const { doc: newGroup } = await createGroupHandler({
         body: {
-          ...(selectedCategory ? { category: selectedCategory } : {}),
-          ...(selectedGroup ? { group: selectedGroup } : {}),
+          name: `${category.name}/Group ${groups.length + 1}`,
         },
       });
-      handleSelectExpense(expense.id);
+      groupId = newGroup.id;
     }
+
+    if (selectedCategory === "0") {
+      const { doc: newCategory } = await createCategoryHandler({
+        body: {
+          name: `Category ${categories.length + 1}`,
+        },
+      });
+      categoryId = newCategory.id;
+    }
+
+    const updatePromises = selectedGroupExpenses.map((expense) => {
+      return updateExpenseHandler({
+        id: expense.id,
+        body: {
+          ...(categoryId ? { category: categoryId } : {}),
+          group: groupId,
+        },
+      }).then(() => handleSelectExpense(expense.id));
+    });
+
+    await Promise.all(updatePromises);
+    await fetchGroups();
+    await fetchCategories();
     fetchExpenses();
   };
 
@@ -97,6 +124,27 @@ const CategoryDetail = ({ category }) => {
       },
     });
     //await fetchCategories();
+  };
+
+  const updateCategoryNameHandler = async (name) => {
+    await updateCategoryHandler({
+      id: category.id, // Asume que cada ítem tiene un id
+      body: {
+        name,
+      },
+    });
+    await fetchCategories();
+  };
+
+  const updateGroupNameHandler = async (group, name) => {
+    await updateGroupHandler({
+      id: group.id, // Asume que cada ítem tiene un id
+      body: {
+        name,
+      },
+    });
+    await fetchExpenses();
+    await fetchGroups();
   };
 
   useEffect(() => {
@@ -132,8 +180,16 @@ const CategoryDetail = ({ category }) => {
               className="text-white text-3xl font-bold cursor-pointer"
               onClick={() => togglePicker(!showPicker)}
             >
-              {category.name}
+              <Editable
+                defaultValue={category.name}
+                submitOnBlur={true}
+                onSubmit={updateCategoryNameHandler}
+              >
+                <EditablePreview />
+                <EditableInput />
+              </Editable>
             </h1>
+
             <ExpandablePanel show={showPicker}>
               <ColorPicker
                 value={userColor}
@@ -204,7 +260,14 @@ const CategoryDetail = ({ category }) => {
                         type="checkbox"
                         onChange={() => handleSelectAll(groupExpensesIds)}
                       />
-                      {group.name}
+                      <Editable
+                        defaultValue={group.name}
+                        submitOnBlur={true}
+                        onSubmit={(name) => updateGroupNameHandler(group, name)}
+                      >
+                        <EditablePreview />
+                        <EditableInput />
+                      </Editable>
                     </span>
                     <span className={`${headerStyles} gap-5`}>
                       {isAnySelected(groupExpensesIds) && (
