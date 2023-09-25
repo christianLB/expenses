@@ -160,18 +160,19 @@ const CategoryDetail = ({ category }) => {
     }
   }, [showPicker, category.color]);
 
+  const expandStyle = "";
+
   return (
-    <ExpandablePanel
-      show={!isCollapsed}
-      dependencies={[
-        selectedMonth,
-        category?.expenses?.length,
-        category?.groups?.length,
-      ]}
-      defaultConfig={{
-        backgroundColor: userColor,
-        filter: "brightness(110%)",
-      }}
+    <div
+      className={`transition-all duration-1000 ${
+        !isCollapsed
+          ? "h-auto bg-red-600 opacity-100"
+          : "h-0 opacity-0 bg-red-200"
+      }`}
+      // style={{
+      //   // backgroundColor: userColor,
+      //   filter: "brightness(110%)",
+      // }}
     >
       <div className="w-full h-full">
         {/* Top Panel */}
@@ -298,38 +299,39 @@ const CategoryDetail = ({ category }) => {
                       {group.totals[selectedMonth].toFixed(2)}
                     </span>
                   </div>
-                  {/* <ExpandablePanel
-                        show={expandedGroups.has(group.id)}
-                        dependencies={[selectedMonth]}
-                      > */}
-                  {sortedExpenses.map((expense, index) => (
-                    <div key={expense.id} className={nextStyles.gridRow}>
-                      <span className={"pl-5"}>
-                        <input
-                          className={"mr-2"}
-                          type="checkbox"
-                          checked={selectedExpenses.includes(expense.id)}
-                          onChange={() => handleSelectExpense(expense.id)}
-                        />
-                        <span>
-                          {new Date(expense.date).toLocaleDateString(
-                            "default",
-                            { day: "2-digit", month: "short" }
-                          )}
+                  <div
+                    className={`transition-all ease-bounce duration-300 overflow-hidden ${
+                      !expandedGroups.has(group.id) ? "h-auto" : "h-0"
+                    }`}
+                  >
+                    {sortedExpenses.map((expense, index) => (
+                      <div key={expense.id} className={nextStyles.gridRow}>
+                        <span className={"pl-5"}>
+                          <input
+                            className={"mr-2"}
+                            type="checkbox"
+                            checked={selectedExpenses.includes(expense.id)}
+                            onChange={() => handleSelectExpense(expense.id)}
+                          />
+                          <span>
+                            {new Date(expense.date).toLocaleDateString(
+                              "default",
+                              { day: "2-digit", month: "short" }
+                            )}
+                          </span>
                         </span>
-                      </span>
-                      <span>{expense.name}</span>
-                      <span className="text-right">{expense.amount}</span>
-                    </div>
-                  ))}
-                  {/* </ExpandablePanel> */}
+                        <span>{expense.name}</span>
+                        <span className="text-right">{expense.amount}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )
             );
           })}
         </div>
       </div>
-    </ExpandablePanel>
+    </div>
   );
 };
 
