@@ -6,12 +6,9 @@ import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
 import {
-  ButtonGroup,
   Editable,
   EditableInput,
   EditablePreview,
-  Flex,
-  IconButton,
   Input,
   useEditableControls,
 } from "@chakra-ui/react";
@@ -146,7 +143,6 @@ const CategoryDetail = ({ category }) => {
   };
 
   const updateCategoryNameHandler = async (name) => {
-    console.log("hola");
     await updateCategoryHandler({
       id: category.id, // Asume que cada ítem tiene un id
       body: {
@@ -224,7 +220,7 @@ const CategoryDetail = ({ category }) => {
 
   return (
     <div
-      className={`transition-all duration-300 ease-bounce ${
+      className={`transition-height duration-200 overflow-hidden ${
         !isCollapsed ? "opacity-100" : "opacity-0"
       }`}
       style={{
@@ -236,7 +232,7 @@ const CategoryDetail = ({ category }) => {
       <div
         className="w-full"
         ref={contentRef}
-        style={{ height: "fit-content" }}
+        //style={{ height: "fit-content" }}
       >
         {/* Top Panel */}
         <div
