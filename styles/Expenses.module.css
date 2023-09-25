@@ -76,11 +76,6 @@
   margin-bottom: 15px;
 }
 
-.expensesblock {
-  display: grid;
-  grid-template-rows: 50px 25px;
-}
-
 .gridRow {
   display: grid;
   grid-template-columns: 25% 50% 25%;

@@ -1,13 +1,24 @@
 // GroupRow.tsx
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 
-import ExpandablePanel from "../ExpandablePanel";
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
-import { Editable, EditableInput, EditablePreview } from "@chakra-ui/react";
+import {
+  ButtonGroup,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex,
+  IconButton,
+  Input,
+  useEditableControls,
+} from "@chakra-ui/react";
+import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
+
 import ColorPicker from "react-best-gradient-color-picker";
+import { useResizeObserver } from "../../hooks/useResizeObserver";
 interface GroupData {
   id: string;
   name: string;
@@ -49,9 +60,10 @@ const CategoryDetail = ({ category }) => {
     },
   } = useExpensesContext();
 
+  const contentRef = useRef(null);
+  const contentOberver: DOMRect = useResizeObserver(contentRef);
   const [userColor, setUserColor] = useState(category?.color);
   const [showPicker, togglePicker] = useState<boolean>(false);
-
   const isCollapsed = !collapsedKeys.has(category.id);
   const month = new Date(0, selectedMonth).toLocaleDateString("default", {
     month: "long",
@@ -134,12 +146,15 @@ const CategoryDetail = ({ category }) => {
   };
 
   const updateCategoryNameHandler = async (name) => {
+    console.log("hola");
     await updateCategoryHandler({
       id: category.id, // Asume que cada ítem tiene un id
       body: {
         name,
+        color: userColor,
       },
     });
+    await fetchExpenses();
     await fetchCategories();
   };
 
@@ -160,21 +175,69 @@ const CategoryDetail = ({ category }) => {
     }
   }, [showPicker, category.color]);
 
-  const expandStyle = "";
+  function EditableControls() {
+    const {
+      isEditing,
+      getSubmitButtonProps,
+      getCancelButtonProps,
+      getEditButtonProps,
+    } = useEditableControls();
+
+    return isEditing ? (
+      <div
+        className={
+          "transition-all duration-100 mt-5 overflow-hidden flex items-center gap-5"
+        }
+        style={{
+          height: isEditing ? 150 : 0,
+        }}
+      >
+        <ColorPicker
+          value={userColor}
+          onChange={setUserColor}
+          hideInputs
+          hideOpacity
+          //hideHue
+          hidePresets
+          hideEyeDrop
+          hideAdvancedSliders
+          hideColorGuide
+          hideGradientControls
+          hideColorTypeBtns
+          hideControls
+          hideInputType
+          hideGradientType
+          hideGradientAngle
+          hideGradientStop
+          width={160}
+          height={100}
+        />
+        <div className={"flex gap-2"}>
+          <CheckIcon w={4} h={4} {...getSubmitButtonProps()} />
+          <CloseIcon w={4} h={4} {...getCancelButtonProps()} />
+        </div>
+      </div>
+    ) : (
+      <EditIcon w={6} h={6} className={"ml-2"} {...getEditButtonProps()} />
+    );
+  }
 
   return (
     <div
-      className={`transition-all duration-1000 ${
-        !isCollapsed
-          ? "h-auto bg-red-600 opacity-100"
-          : "h-0 opacity-0 bg-red-200"
+      className={`transition-all duration-300 ease-bounce ${
+        !isCollapsed ? "opacity-100" : "opacity-0"
       }`}
-      // style={{
-      //   // backgroundColor: userColor,
-      //   filter: "brightness(110%)",
-      // }}
+      style={{
+        height: isCollapsed ? 0 : `${contentOberver.height}px`,
+        filter: "brightness(110%)",
+        backgroundColor: userColor,
+      }}
     >
-      <div className="w-full h-full">
+      <div
+        className="w-full"
+        ref={contentRef}
+        style={{ height: "fit-content" }}
+      >
         {/* Top Panel */}
         <div
           className="flex justify-between w-full p-4"
@@ -184,42 +247,18 @@ const CategoryDetail = ({ category }) => {
           }}
         >
           <div>
-            <h1
-              className="text-white text-3xl font-bold cursor-pointer"
-              onClick={() => togglePicker(!showPicker)}
-            >
+            <h1 className="text-white text-3xl font-bold cursor-pointer flex gap-2 items-center">
               <Editable
                 defaultValue={category.name}
-                submitOnBlur={true}
+                submitOnBlur={false}
                 onSubmit={updateCategoryNameHandler}
+                isPreviewFocusable={false}
               >
                 <EditablePreview />
-                <EditableInput />
+                <Input as={EditableInput} />
+                <EditableControls />
               </Editable>
             </h1>
-
-            <ExpandablePanel show={showPicker}>
-              <ColorPicker
-                value={userColor}
-                onChange={setUserColor}
-                hideInputs
-                hideOpacity
-                //hideHue
-                hidePresets
-                hideEyeDrop
-                hideAdvancedSliders
-                hideColorGuide
-                hideGradientControls
-                hideColorTypeBtns
-                hideControls
-                hideInputType
-                hideGradientType
-                hideGradientAngle
-                hideGradientStop
-                width={100}
-                height={100}
-              />
-            </ExpandablePanel>
           </div>
           <h2 className="text-white text-2xl">{month}</h2>
 
@@ -252,10 +291,7 @@ const CategoryDetail = ({ category }) => {
 
             return (
               filteredExpenses.length > 0 && (
-                <div
-                  key={group.id}
-                  className={`${nextStyles.expensesblock} font-semibold`}
-                >
+                <div key={group.id} className={`font-semibold pb-2`}>
                   {/*group header*/}
                   <div
                     className={`${nextStyles.gridRow} cusror-pointer`}
@@ -301,7 +337,7 @@ const CategoryDetail = ({ category }) => {
                   </div>
                   <div
                     className={`transition-all ease-bounce duration-300 overflow-hidden ${
-                      !expandedGroups.has(group.id) ? "h-auto" : "h-0"
+                      expandedGroups.has(group.id) ? "h-auto" : "h-0"
                     }`}
                   >
                     {sortedExpenses.map((expense, index) => (
