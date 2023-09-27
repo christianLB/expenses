@@ -1,5 +1,5 @@
 // Table.tsx
-import React, { createContext, useState } from "react";
+import React, { createContext, useRef, useState } from "react";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import TableHeader from "./TableHeader";
 import CategoryRow, { CategoryData, GroupData } from "./CategoryRow";
@@ -9,6 +9,7 @@ import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
+import { useResizeObserver } from "../../hooks/useResizeObserver";
 
 interface DataTableProps {
   data?: {
@@ -48,6 +49,9 @@ const DataTable: React.FC<DataTableProps> = () => {
   const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
   const [isDragging, setIsDragging] = useState(false);
   const [expanded, toggleExpanded] = useState(false);
+
+  const contentRef = useRef(null);
+  const contentOberver: DOMRect = useResizeObserver(contentRef);
 
   const {
     list: selectedExpenses,
@@ -125,6 +129,8 @@ const DataTable: React.FC<DataTableProps> = () => {
     fetchExpenses();
   };
 
+  const [isCollapsed, toggleCollapse] = useState(true);
+
   return (
     <TableContext.Provider
       value={{
@@ -147,30 +153,39 @@ const DataTable: React.FC<DataTableProps> = () => {
       <div className={`${tableStyles.table} w-full`}>
         <TableHeader />
         <CategoryRow {...{ ...incomeCategory }} sortable={false} />
-        <SortableList
-          items={sortableCategories}
-          ItemComponent={CategoryRow}
-          onSort={handleSortChange}
-        />
-        {/* <ExpandablePanel
-            show={true}
-            dependencies={[selectedMonth]}
-          ></ExpandablePanel> */}
-        {!!uncategorizedCategory?.expenses?.length && (
-          <CategoryRow
-            {...{
-              ...uncategorizedCategory,
-              sortable: false,
-            }}
-          />
-        )}
-        {summaryCategory?.totals && (
-          <SummaryRow
-            category={summaryCategory}
-            color={colors[colors.length - 1]}
-            onClick={() => toggleExpanded(!expanded)}
-          />
-        )}
+        <div
+          className={`transition-height duration-200 overflow-hidden ${
+            !isCollapsed ? "opacity-100" : "opacity-0"
+          }`}
+          style={{
+            height: isCollapsed ? 0 : `${contentOberver.height}px`,
+          }}
+        >
+          <div ref={contentRef}>
+            <SortableList
+              items={sortableCategories}
+              ItemComponent={CategoryRow}
+              onSort={handleSortChange}
+            />
+            {!!uncategorizedCategory?.expenses?.length && (
+              <CategoryRow
+                {...{
+                  ...uncategorizedCategory,
+                  sortable: false,
+                }}
+              />
+            )}
+          </div>
+        </div>
+        <div onClick={() => toggleCollapse(!isCollapsed)}>
+          {summaryCategory?.totals && (
+            <SummaryRow
+              category={summaryCategory}
+              color={colors[colors.length - 1]}
+              onClick={() => toggleExpanded(!expanded)}
+            />
+          )}
+        </div>
         {balanceCategory?.totals && (
           <BalanceRow
             category={balanceCategory}
