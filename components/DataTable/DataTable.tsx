@@ -9,8 +9,6 @@ import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
-import { group } from "console";
-import ExpandablePanel from "../ExpandablePanel";
 
 interface DataTableProps {
   data?: {
@@ -158,12 +156,14 @@ const DataTable: React.FC<DataTableProps> = () => {
             show={true}
             dependencies={[selectedMonth]}
           ></ExpandablePanel> */}
-        <CategoryRow
-          {...{
-            ...uncategorizedCategory,
-            sortable: false,
-          }}
-        />
+        {!!uncategorizedCategory?.expenses?.length && (
+          <CategoryRow
+            {...{
+              ...uncategorizedCategory,
+              sortable: false,
+            }}
+          />
+        )}
         {summaryCategory?.totals && (
           <SummaryRow
             category={summaryCategory}

@@ -60,7 +60,6 @@ const CategoryDetail = ({ category }) => {
   const contentRef = useRef(null);
   const contentOberver: DOMRect = useResizeObserver(contentRef);
   const [userColor, setUserColor] = useState(category?.color);
-  const [showPicker, togglePicker] = useState<boolean>(false);
   const isCollapsed = !collapsedKeys.has(category.id);
   const month = new Date(0, selectedMonth).toLocaleDateString("default", {
     month: "long",
@@ -132,16 +131,6 @@ const CategoryDetail = ({ category }) => {
     fetchExpenses();
   };
 
-  const updateColorHandler = async () => {
-    await updateCategoryHandler({
-      id: category.id, // Asume que cada ítem tiene un id
-      body: {
-        color: userColor,
-      },
-    });
-    //await fetchCategories();
-  };
-
   const updateCategoryNameHandler = async (name) => {
     await updateCategoryHandler({
       id: category.id, // Asume que cada ítem tiene un id
@@ -164,12 +153,6 @@ const CategoryDetail = ({ category }) => {
     await fetchExpenses();
     await fetchGroups();
   };
-
-  useEffect(() => {
-    if (!showPicker) {
-      if (userColor !== category.color) updateColorHandler();
-    }
-  }, [showPicker, category.color]);
 
   function EditableControls() {
     const {
@@ -214,7 +197,11 @@ const CategoryDetail = ({ category }) => {
         </div>
       </div>
     ) : (
-      <EditIcon w={6} h={6} className={"ml-2"} {...getEditButtonProps()} />
+      <>
+        {category.id !== "0" && (
+          <EditIcon w={6} h={6} className={"ml-2"} {...getEditButtonProps()} />
+        )}
+      </>
     );
   }
 

@@ -25,7 +25,6 @@ export interface GroupData {
 interface CategoryRowProps extends CategoryData {
   key?: number;
   category?: CategoryData;
-  //index: number;
   sortableProps?: any;
   dragListeners?: any;
   sortable: boolean;
