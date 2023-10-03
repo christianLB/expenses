@@ -87,18 +87,8 @@ export default function Expenses() {
         </div>
         <LoginBtn />
       </div>
-      <main className="flex-1 p-4 md:p-8">
-        <div className="max-w-8xl mx-auto">
-          <VStack spacing={6} w="100%">
-            <Box
-              ref={tableRef}
-              borderWidth={1}
-              borderRadius="lg"
-              //overflow="hidden"
-            ></Box>
-            <Table />
-          </VStack>
-        </div>
+      <main className="flex flex-1 p-4 md:p-8 pt-5 items-center">
+        <Table />
       </main>
     </div>
   );
