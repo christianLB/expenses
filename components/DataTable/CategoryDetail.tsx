@@ -270,53 +270,57 @@ const CategoryDetail = ({ category }) => {
             const groupExpensesIds = group.expenses.map((e) => e.id);
 
             const headerStyles =
-              "flex items-center mt-2 mb-1 bg-white opacity-30 text-black";
+              "flex flex-row items-center mt-2 mb-1 bg-white opacity-30 text-black";
 
             return (
               filteredExpenses.length > 0 && (
                 <div key={group.id} className={`font-semibold pb-2`}>
                   {/*group header*/}
-                  <div
-                    className={`${nextStyles.gridRow} cusror-pointer`}
-                    onClick={() => toggleGroupExpansion(group.id)} // Añade el evento aquí
-                  >
-                    <span className={`${headerStyles} text-xl pl-5`}>
-                      <input
-                        checked={isAllSelected(groupExpensesIds)}
-                        className="mr-2"
-                        type="checkbox"
-                        onChange={() => handleSelectAll(groupExpensesIds)}
-                      />
-                      <Editable
-                        defaultValue={group.name}
-                        submitOnBlur={true}
-                        onSubmit={(name) => updateGroupNameHandler(group, name)}
-                      >
-                        <EditablePreview />
-                        <EditableInput />
-                      </Editable>
-                    </span>
-                    <span className={`${headerStyles} gap-5`}>
-                      {isAnySelected(groupExpensesIds) && (
-                        <>
-                          <span>{CategoriesSelect}</span>
-                          <span>{GroupsSelect}</span>
-                          <span>
-                            <button
-                              className={`text-sm w-full border px-2`}
-                              onClick={handleApply}
-                            >
-                              Apply
-                            </button>
-                          </span>
-                        </>
-                      )}
-                    </span>
-                    <span
-                      className={`${headerStyles} justify-end text-right pr-2 text-lg`}
+                  <div className={`${headerStyles}`}>
+                    <input
+                      checked={isAllSelected(groupExpensesIds)}
+                      className="ml-2 cursor-pointer"
+                      type="checkbox"
+                      onChange={(e) => handleSelectAll(groupExpensesIds)}
+                    />
+                    <div
+                      className={"flex flex-1 items-center"}
+                      onClick={() => toggleGroupExpansion(group.id)}
                     >
-                      {group.totals[selectedMonth].toFixed(2)}
-                    </span>
+                      <span className={`flex w-1/4 text-xl pl-5`}>
+                        <Editable
+                          defaultValue={group.name}
+                          submitOnBlur={true}
+                          onSubmit={(name) =>
+                            updateGroupNameHandler(group, name)
+                          }
+                        >
+                          <EditablePreview />
+                          <EditableInput />
+                        </Editable>
+                      </span>
+                      <span className={`flex flex-1 gap-5 h-full`}>
+                        {isAnySelected(groupExpensesIds) && (
+                          <>
+                            <span>{CategoriesSelect}</span>
+                            <span>{GroupsSelect}</span>
+                            <span>
+                              <button
+                                className={`text-sm w-full border px-2`}
+                                onClick={handleApply}
+                              >
+                                Apply
+                              </button>
+                            </span>
+                          </>
+                        )}
+                      </span>
+                      <span
+                        className={`flex w-1/3 justify-end text-right pr-2 text-lg`}
+                      >
+                        {group.totals[selectedMonth].toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                   <div
                     className={`transition-all ease-bounce duration-300 overflow-hidden ${
@@ -327,7 +331,7 @@ const CategoryDetail = ({ category }) => {
                       <div key={expense.id} className={nextStyles.gridRow}>
                         <span className={"pl-5"}>
                           <input
-                            className={"mr-2"}
+                            className={"mr-2 cursor-pointer"}
                             type="checkbox"
                             checked={selectedExpenses.includes(expense.id)}
                             onChange={() => handleSelectExpense(expense.id)}
