@@ -9,7 +9,7 @@ import {
   NumberDecrementStepper,
   Box,
   Text,
-  VStack,
+  //VStack,
   Spinner,
 } from "@chakra-ui/react";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";

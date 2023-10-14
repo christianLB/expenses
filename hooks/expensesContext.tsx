@@ -55,7 +55,7 @@ export const ExpensesProvider = ({ children }) => {
 
   const gmailApi = useApi("./api/gmail", {
     method: "POST",
-    fetchOnInit: true,
+    fetchOnInit: false,
     body: { label: "BBVA/gastos" },
     //onFinish: () => fetchExpenses(),
   });
