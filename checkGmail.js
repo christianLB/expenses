@@ -22,10 +22,10 @@ oauth2Client.setCredentials({
 const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
 async function checkGmail() {
-  console.log(`Checking Gmail...`);
+  const label = 'BBVA/gastos'
+  console.log(`Checking Gmail ${label}...`);
 
   try {
-    const label = "your-label-here"; // Añade tu etiqueta aquí
     const messages = await listMessages(
       gmail,
       `label:${label} is:unread`,
@@ -62,8 +62,7 @@ async function checkGmail() {
       const plural = outMessages.length > 1;
       // Llama a sendEmail al final de tu proceso
       await sendEmail(
-        `Se ${plural ? "ha" : "han"} registrado ${outMessages.length} nuevo${
-          plural ? "s" : ""
+        `Se ${plural ? "ha" : "han"} registrado ${outMessages.length} nuevo${plural ? "s" : ""
         } movimiento${plural ? "s" : ""}`,
         ""
       );
