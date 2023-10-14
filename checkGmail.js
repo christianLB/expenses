@@ -1,4 +1,5 @@
 // checkGmail.js
+require('dotenv').config();  // Asegúrate de que esta línea esté al principio de tu archivo
 const { google } = require('googleapis');
 const fetch = require('node-fetch');  // Asegúrate de tener node-fetch instalado
 
