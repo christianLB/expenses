@@ -36,6 +36,7 @@
     "next": "^12.1.4",
     "next-auth": "^4.22.1",
     "nextjs-openai": "^6.0.2",
+    "node-cron": "^3.0.2",
     "nvm": "^0.0.4",
     "openai": "^3.2.1",
     "openai-streams": "^5.1.0",
