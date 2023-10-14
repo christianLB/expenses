@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3001",
-    "lint": "next lint"
+    "start": "concurrently \"node cronJob.js\" \"next start -p 3001\"",
+    "lint": "next lint",
+    "cron": "node cronJob.js"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -24,6 +25,7 @@
     "@types/react": "^18.0.26",
     "axios": "^1.3.6",
     "chart.js": "^4.2.1",
+    "concurrently": "^8.2.1",
     "cross-env": "^7.0.3",
     "dnd-kit": "^0.0.0",
     "dotenv": "^16.0.3",
