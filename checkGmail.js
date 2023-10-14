@@ -1,82 +1,64 @@
-import { google } from "googleapis";
-import { authOptions } from "/pages/api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
+// checkGmail.js
+const { google } = require('googleapis');
+const fetch = require('node-fetch');  // Asegúrate de tener node-fetch instalado
 
 const API_URL = process.env.API_URL;
+const GMAIL_CLIENT_ID = process.env.GMAIL_CLIENT_ID;
+const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
+const GMAIL_REDIRECT_URI = process.env.GMAIL_REDIRECT_URI;
+const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;  // Añade tu refresh token aquí
 
-export default async function handler(req, res) {
-  console.log(`checking gmail for ${req.body.label}`);
-  const session = await getServerSession(req, res, authOptions);
+const oauth2Client = new google.auth.OAuth2(
+  GMAIL_CLIENT_ID,
+  GMAIL_CLIENT_SECRET,
+  GMAIL_REDIRECT_URI
+);
 
-  if (!session) {
-    res.status(401).json({ message: "You must be logged in." });
-    return;
-  }
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GMAIL_CLIENT_ID,
-    process.env.GMAIL_CLIENT_SECRET,
-    process.env.GMAIL_REDIRECT_URI
-  );
+oauth2Client.setCredentials({
+  refresh_token: GMAIL_REFRESH_TOKEN,
+});
 
-  oauth2Client.setCredentials({
-    access_token: session.accessToken,
-    refresh_token: session.refreshToken,
-  });
+const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-  const gmail = google.gmail({ version: "v1", auth: oauth2Client });
+async function checkGmail() {
+  console.log(`Checking Gmail...`);
 
-  if (req.method === "POST") {
-    const label = req.body.label; // Assume that the label is in the body of the POST request
+  try {
+    const label = 'your-label-here';  // Añade tu etiqueta aquí
+    const messages = await listMessages(gmail, `label:${label} is:unread`, 'me');
+    const outMessages = [];
 
-    try {
-      const messages = await listMessages(
-        gmail,
-        `label:${label} is:unread`,
-        session.user.email
-      );
-      const outMessages = [];
-      for (let msg of messages) {
-        const message = await getMessage(gmail, msg.id, session.user.email);
-        const attachments = await getAttachments(
-          gmail,
-          msg.id,
-          session.user.email
-        );
-        message.attachments = attachments;
+    for (let msg of messages) {
+      const message = await getMessage(gmail, msg.id, 'me');
+      const attachments = await getAttachments(gmail, msg.id, 'me');
+      message.attachments = attachments;
 
-        // Parse the expense from the message
-        const expense = message.attachments[0].text;
-        //Insert the expense into the database
-        const response = await fetch(`${API_URL}/addExpense`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(expense),
-        });
+      const expense = message.attachments[0].text;
+      const response = await fetch(`${API_URL}/addExpense`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(expense),
+      });
 
-        // Check if the request was successful
-        if (response.ok) {
-          // Mark the message as read
-          outMessages.push(expense);
-          await markAsRead(gmail, msg.id, session.user.email);
-        } else {
-          const resp = await response.text();
-          if (resp.includes("Duplicate expense record not saved")) {
-            // If the expense is a duplicate, mark the message as read
-            await markAsRead(gmail, msg.id, session.user.email);
-          }
-          console.error("Failed to insert expense into database:", resp);
+      if (response.ok) {
+        outMessages.push(expense);
+        await markAsRead(gmail, msg.id, 'me');
+      } else {
+        const resp = await response.text();
+        if (resp.includes('Duplicate expense record not saved')) {
+          await markAsRead(gmail, msg.id, 'me');
         }
+        console.error('Failed to insert expense into database:', resp);
       }
-
-      res.status(200).send(outMessages);
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).send("An error occurred while processing messages");
     }
-  } else {
-    res.status(405).send("Method not allowed");
+
+    console.log('Processed messages:', outMessages);
+
+  } catch (error) {
+    console.error('Error:', error);
   }
 }
+
 
 async function markAsRead(gmail, messageId, sesionEmail) {
   await gmail.users.messages.modify({
@@ -201,3 +183,6 @@ async function getAttachments(gmail, messageId, sesionEmail) {
   // Filter out any undefined values (attachments without an attachmentId)
   return attachments.filter(Boolean);
 }
+
+// Exporta la función checkGmail para usarla en otro lugar
+module.exports = checkGmail;
