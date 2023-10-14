@@ -53,12 +53,12 @@ export const ExpensesProvider = ({ children }) => {
     query,
   });
 
-  const gmailApi = useApi("./api/gmail", {
-    method: "POST",
-    fetchOnInit: false,
-    body: { label: "BBVA/gastos" },
-    //onFinish: () => fetchExpenses(),
-  });
+  // const gmailApi = useApi("./api/gmail", {
+  //   method: "POST",
+  //   fetchOnInit: false,
+  //   body: { label: "BBVA/gastos" },
+  //   //onFinish: () => fetchExpenses(),
+  // });
 
   const { groupedExpensesByCategory } = useExpensesTable(
     expensesCollection.arrayData,
@@ -76,7 +76,7 @@ export const ExpensesProvider = ({ children }) => {
     categoriesCollection,
     clientsCollection,
     incomesCollection,
-    gmailApi,
+    //gmailApi,
     groupedExpensesByCategory,
   };
 

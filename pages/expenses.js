@@ -23,8 +23,8 @@ export default function Expenses() {
   const {
     currentYear,
     setCurrentYear,
-    gmailApi: { loading: gmailLoading },
-    gmailResponse,
+    //gmailApi: { loading: gmailLoading },
+    //gmailResponse,
   } = useExpensesContext();
 
   if (!session)
@@ -69,7 +69,7 @@ export default function Expenses() {
               </NumberInputStepper>
             </NumberInput>
           </Box>
-          {gmailLoading && (
+          {/* {gmailLoading && (
             <span className="flex items-center gap-5">
               <Spinner /> Comprobando nuevos movimientos.
             </span>
@@ -83,7 +83,7 @@ export default function Expenses() {
                 <>No se registran nuevos movimientos.</>
               )}
             </span>
-          )}
+          )} */}
         </div>
         <LoginBtn />
       </div>
