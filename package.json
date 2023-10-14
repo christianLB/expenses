@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev -p 3001",
     "build": "next build",
-    "start": "concurrently \"node cronJob.js\" \"next start -p 3001\"",
+    "start": "concurrently \"node cron.js\" \"next start -p 3001\"",
     "lint": "next lint",
-    "cron": "node cronJob.js"
+    "cron": "node cron.js"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
