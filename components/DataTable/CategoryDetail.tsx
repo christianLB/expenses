@@ -15,7 +15,7 @@ import {
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 import ColorPicker from "react-best-gradient-color-picker";
-import { useResizeObserver } from "../../hooks/useResizeObserver";
+import useExpandables from "../../hooks/useExpandables";
 interface GroupData {
   id: string;
   name: string;
@@ -58,7 +58,7 @@ const CategoryDetail = ({ category }) => {
   } = useExpensesContext();
 
   const contentRef = useRef(null);
-  const contentOberver: DOMRect = useResizeObserver(contentRef);
+  //const contentOberver: DOMRect = useResizeObserver(contentRef);
   const [userColor, setUserColor] = useState(category?.color);
   const isCollapsed = !collapsedKeys.has(category.id);
   const month = new Date(0, selectedMonth).toLocaleDateString("default", {
@@ -77,6 +77,7 @@ const CategoryDetail = ({ category }) => {
 
   // Añade un estado para manejar qué grupos están expandidos
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const { getExpandableProps, toggleExpand } = useExpandables();
 
   // Función para manejar el click en el header del grupo
   const toggleGroupExpansion = (groupId: string) => {
@@ -205,22 +206,17 @@ const CategoryDetail = ({ category }) => {
     );
   }
 
+  const expandableProps = getExpandableProps(category.id, !isCollapsed);
+
   return (
     <div
-      className={`transition-height duration-200 overflow-hidden ${
-        !isCollapsed ? "opacity-100" : "opacity-0"
-      }`}
       style={{
-        height: isCollapsed ? 0 : `${contentOberver.height}px`,
         filter: "brightness(110%)",
         backgroundColor: userColor,
+        ...expandableProps.style,
       }}
     >
-      <div
-        className="w-full"
-        ref={contentRef}
-        //style={{ height: "fit-content" }}
-      >
+      <div className="w-full" ref={contentRef}>
         {/* Top Panel */}
         <div
           className="flex justify-between w-full p-4"
@@ -323,9 +319,10 @@ const CategoryDetail = ({ category }) => {
                     </div>
                   </div>
                   <div
-                    className={`transition-all ease-bounce duration-300 overflow-hidden ${
-                      expandedGroups.has(group.id) ? "h-auto" : "h-0"
-                    }`}
+                    {...getExpandableProps(
+                      group.id,
+                      expandedGroups.has(group.id)
+                    )}
                   >
                     {sortedExpenses.map((expense, index) => (
                       <div key={expense.id} className={nextStyles.gridRow}>

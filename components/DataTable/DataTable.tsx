@@ -9,7 +9,7 @@ import BalanceRow from "./BalanceRow";
 import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
-import { useResizeObserver } from "../../hooks/useResizeObserver";
+import useExpandables from "../../hooks/useExpandables";
 
 interface DataTableProps {
   data?: {
@@ -51,7 +51,6 @@ const DataTable: React.FC<DataTableProps> = () => {
   const [expanded, toggleExpanded] = useState(false);
 
   const contentRef = useRef(null);
-  const contentOberver: DOMRect = useResizeObserver(contentRef);
 
   const {
     list: selectedExpenses,
@@ -130,6 +129,7 @@ const DataTable: React.FC<DataTableProps> = () => {
   };
 
   const [isCollapsed, toggleCollapse] = useState(true);
+  const { getExpandableProps } = useExpandables();
 
   return (
     <TableContext.Provider
@@ -153,14 +153,7 @@ const DataTable: React.FC<DataTableProps> = () => {
       <div className={`${tableStyles.table} w-full`}>
         <TableHeader />
         <CategoryRow {...{ ...incomeCategory }} sortable={false} />
-        <div
-          className={`transition-height duration-200 overflow-hidden ${
-            !isCollapsed ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            height: isCollapsed ? 0 : `${contentOberver.height}px`,
-          }}
-        >
+        <div {...getExpandableProps("datatable", !isCollapsed, "10000px")}>
           <div ref={contentRef}>
             <SortableList
               items={sortableCategories}
