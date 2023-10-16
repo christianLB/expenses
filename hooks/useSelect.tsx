@@ -7,14 +7,21 @@ const useSelect = ({
   className = "",
   valueKey = "id",
   labelKey = "name",
+  preventDefault = false,
+  stopPropagation = false,
 }) => {
   const [selected, setSelected] = useState();
   const SelectComponent = (
     <Select
       placeholder={placeHolder}
       size="xs"
-      onChange={(e: any) => setSelected(e.target.value)}
-      className={className}
+      onChange={(e: any) => {
+        setSelected(e.target.value);
+      }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
     >
       {options?.map((option) => {
         return (

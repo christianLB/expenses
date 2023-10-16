@@ -1,7 +1,6 @@
 // GroupRow.tsx
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
-
 import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
@@ -58,7 +57,6 @@ const CategoryDetail = ({ category }) => {
   } = useExpensesContext();
 
   const contentRef = useRef(null);
-  //const contentOberver: DOMRect = useResizeObserver(contentRef);
   const [userColor, setUserColor] = useState(category?.color);
   const isCollapsed = !collapsedKeys.has(category.id);
   const month = new Date(0, selectedMonth).toLocaleDateString("default", {
@@ -281,7 +279,7 @@ const CategoryDetail = ({ category }) => {
                     />
                     <div
                       className={"flex flex-1 items-center"}
-                      onClick={() => toggleGroupExpansion(group.id)}
+                      onClick={(e) => toggleGroupExpansion(group.id)}
                     >
                       <span className={`flex w-1/4 text-xl pl-5`}>
                         <Editable
@@ -303,7 +301,11 @@ const CategoryDetail = ({ category }) => {
                             <span>
                               <button
                                 className={`text-sm w-full border px-2`}
-                                onClick={handleApply}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleApply();
+                                }}
                               >
                                 Apply
                               </button>
@@ -323,24 +325,35 @@ const CategoryDetail = ({ category }) => {
                       group.id,
                       expandedGroups.has(group.id)
                     )}
+                    onClick={() => {}}
                   >
                     {sortedExpenses.map((expense, index) => (
-                      <div key={expense.id} className={nextStyles.gridRow}>
-                        <span className={"pl-5"}>
-                          <input
-                            className={"mr-2 cursor-pointer"}
-                            type="checkbox"
-                            checked={selectedExpenses.includes(expense.id)}
-                            onChange={() => handleSelectExpense(expense.id)}
-                          />
-                          <span>
-                            {new Date(expense.date).toLocaleDateString(
-                              "default",
-                              { day: "2-digit", month: "short" }
-                            )}
+                      <div
+                        key={expense.id}
+                        className={`flex justify-between hover:bg-[rgba(255,255,255,0.2)] transition-all cursor-pointer mb-1 pr-1 ${
+                          selectedExpenses.includes(expense.id)
+                            ? "bg-[rgba(255,255,255,0.2)]"
+                            : ""
+                        }`}
+                        onClick={() => handleSelectExpense(expense.id)}
+                      >
+                        <span className={"flex gap-5"}>
+                          <span className={"pl-5"}>
+                            {/* <input
+                              className={"mr-2 cursor-pointer"}
+                              type="checkbox"
+                              checked={selectedExpenses.includes(expense.id)}
+                              onChange={() => handleSelectExpense(expense.id)}
+                            /> */}
+                            <span>
+                              {new Date(expense.date).toLocaleDateString(
+                                "default",
+                                { day: "2-digit", month: "short" }
+                              )}
+                            </span>
                           </span>
+                          <span>{expense.name}</span>
                         </span>
-                        <span>{expense.name}</span>
                         <span className="text-right">{expense.amount}</span>
                       </div>
                     ))}
