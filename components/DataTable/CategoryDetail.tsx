@@ -330,31 +330,30 @@ const CategoryDetail = ({ category }) => {
                     {sortedExpenses.map((expense, index) => (
                       <div
                         key={expense.id}
-                        className={`flex justify-between hover:bg-[rgba(255,255,255,0.2)] transition-all cursor-pointer mb-1 pr-1 ${
+                        className={`flex flex-col justify-between hover:bg-[rgba(255,255,255,0.2)] transition-all cursor-pointer mb-1 pr-1 ${
                           selectedExpenses.includes(expense.id)
                             ? "bg-[rgba(255,255,255,0.2)]"
                             : ""
                         }`}
                         onClick={() => handleSelectExpense(expense.id)}
                       >
-                        <span className={"flex gap-5"}>
-                          <span className={"pl-5"}>
-                            {/* <input
-                              className={"mr-2 cursor-pointer"}
-                              type="checkbox"
-                              checked={selectedExpenses.includes(expense.id)}
-                              onChange={() => handleSelectExpense(expense.id)}
-                            /> */}
-                            <span>
-                              {new Date(expense.date).toLocaleDateString(
-                                "default",
-                                { day: "2-digit", month: "short" }
-                              )}
+                        <div className={"flex"}>
+                          <span className={"flex gap-5"}>
+                            <span className={"pl-5"}>
+                              <span>
+                                {new Date(expense.date).toLocaleDateString(
+                                  "default",
+                                  { day: "2-digit", month: "short" }
+                                )}
+                              </span>
                             </span>
+                            <span>{expense.name}</span>
                           </span>
-                          <span>{expense.name}</span>
-                        </span>
-                        <span className="text-right">{expense.amount}</span>
+                          <span className="text-right">{expense.amount}</span>
+                        </div>
+                        <div>
+                          <textarea></textarea>
+                        </div>
                       </div>
                     ))}
                   </div>
