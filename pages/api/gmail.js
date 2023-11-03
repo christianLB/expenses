@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     refresh_token: session.refreshToken,
   });
 
-  //console.log(session.refreshToken);
+  console.log(session.refreshToken);
 
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
