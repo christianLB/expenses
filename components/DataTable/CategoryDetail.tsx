@@ -153,6 +153,15 @@ const CategoryDetail = ({ category }) => {
     await fetchGroups();
   };
 
+  const updatExpenseDetailHandler = (e: any, expenseId: string) => {
+    updateExpenseHandler({
+      id: expenseId,
+      body: {
+        notes: e.target.value,
+      },
+    });
+  };
+
   function EditableControls() {
     const {
       isEditing,
@@ -335,7 +344,10 @@ const CategoryDetail = ({ category }) => {
                             ? "bg-[rgba(255,255,255,0.2)]"
                             : ""
                         }`}
-                        onClick={() => handleSelectExpense(expense.id)}
+                        onClick={() => {
+                          toggleGroupExpansion(expense.id);
+                          handleSelectExpense(expense.id);
+                        }}
                       >
                         <div className={"flex"}>
                           <span className={"flex gap-5"}>
@@ -351,8 +363,21 @@ const CategoryDetail = ({ category }) => {
                           </span>
                           <span className="text-right">{expense.amount}</span>
                         </div>
-                        <div>
-                          <textarea></textarea>
+                        <div
+                          className={"text-black ml-5"}
+                          {...getExpandableProps(
+                            expense.id,
+                            expandedGroups.has(expense.id)
+                          )}
+                        >
+                          <textarea
+                            defaultValue={expense.notes}
+                            className={"p2 w-1/2"}
+                            style={{ minHeight: "100px" }}
+                            onBlur={(e) =>
+                              updatExpenseDetailHandler(e, expense.id)
+                            }
+                          ></textarea>
                         </div>
                       </div>
                     ))}
