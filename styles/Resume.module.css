@@ -1,47 +1,173 @@
-/* components/CV.module.css */
+/* Resume.module.css */
 
-.a4 {
-  display: flex;
-  flex-direction: row;
+.cvContainer {
+  --color-dark-bg: #2c3e50;
+  --color-light-gray: #95a5a6;
+  --color-dark-gray: #6f6f6f;
+  --color-light-blue: #0ca0cd;
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  gap: 20px;
   width: 210mm;
-  min-height: 297mm;
-  padding: 20mm;
-  margin: auto;
+  height: 297mm;
+  margin: 0;
+  padding-right: 20mm;
   background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  page-break-after: always;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente similar a la imagen */
+  page-break-after: always; /* Asegurar que cada CV esté en su página al imprimir */
 }
 
-.column {
-  flex: 1;
+.icons {
+  color: var(--color-light-blue);
 }
 
-#left-column {
-  /* Estilos para la columna izquierda */
+.leftColumn {
+  padding: 20px;
+  padding-top: 180px;
+  background-color: var(--color-dark-bg);
+  color: white;
+  font-weight: bold;
 }
 
-#right-column {
-  /* Estilos para la columna derecha */
+.leftColumn .sectionTitle {
+  color: white;
+  margin-bottom: 40px;
 }
 
-.printButton {
-  display: block;
-  margin: 10mm auto;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+/* Títulos de secciones */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--color-dark-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.15rem;
 }
 
-/* Estilos para la impresión */
+/* Subtítulos o cabezales dentro de las secciones */
+.subTitle {
+  font-size: 15px;
+  line-height: 15px;
+  font-weight: bold;
+  color: var(--color-light-blue);
+  text-transform: uppercase;
+}
+
+/* Texto normal */
+.text {
+  font-size: 13px;
+}
+
+.textGray {
+  color: var(--color-dark-gray);
+}
+
+/* Tamaño de la foto del perfil */
+.profilePhoto {
+  width: 80%;
+  border-radius: 50%;
+  margin: 0 auto 20px; /* Centrado y con margen inferior */
+}
+
+ul.skills {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+  font-size: 0.7rem;
+}
+
+ul.skills li {
+  display: flex;
+  align-items: center;
+  line-height: 25px;
+}
+.skill {
+  margin-left: 10px;
+}
+
+.title {
+  color: var(--color-light-gray);
+}
+
+.profilePhoto {
+  width: 100%; /* Ajusta el ancho de la foto */
+  border-radius: 50%; /* Si deseas una foto redonda */
+  margin-bottom: 20px; /* Espacio debajo de la foto */
+}
+
+.contactInfo,
+.educationSection,
+.skillsSection {
+  margin-bottom: 40px; /* Espacio entre secciones */
+}
+
+.contactInfo {
+  font-size: 0.7rem;
+  line-height: 30px;
+}
+.contactInfo p {
+  display: flex;
+  align-items: center;
+}
+.contactInfo p span {
+  margin-left: 10px;
+}
+
+.rightColumn {
+  padding: 20px;
+  padding-top: 170px;
+}
+
+.header {
+  margin-bottom: 20px; /* Espacio debajo del header */
+}
+
+.abstract {
+  margin-bottom: 20px; /* Espacio debajo del abstract */
+  line-height: 1rem;
+}
+
+.employmentHistory {
+  margin-top: 40px;
+}
+.employmentHistory .sectionTitle {
+  margin-bottom: 40px;
+}
+
+.name {
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+.job {
+  margin-bottom: 40px; /* Espacio entre trabajos */
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 1rem;
+}
+
+.link {
+  display: flex;
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 20px;
+}
+
+/* Estilos adicionales para cuando se imprime */
 @media print {
-  .a4 {
+  .cvContainer {
     box-shadow: none;
-    width: 100%;
-    min-height: 0;
-    page-break-after: auto;
+    padding: 10mm; /* Menos padding para ahorrar espacio al imprimir */
   }
 
-  .printButton {
-    display: none;
+  .leftColumn {
+    background-color: white;
+    color: black;
+  }
+
+  .sectionTitle,
+  .text {
+    color: black;
   }
 }
