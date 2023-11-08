@@ -37,7 +37,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Developer at Alemán de Buenos Aires Hospital",
+    title: "Developer at Hospital Alemán de Buenos Aires",
     website: "http://www.hospitalaleman.org",
     dateRange: "2015 2016",
     details: [
@@ -214,7 +214,7 @@ const CV = () => (
 
         {employmentData.map((job, index) => (
           <div key={index} className={styles.job}>
-            <p className={`${styles.text} ${styles.textGray} font-bold`}>
+            <p className={`${styles.text} ${styles.textGray} ${styles.lineHeight} font-bold`}>
               {job.dateRange}
             </p>
             <div>
