@@ -21,7 +21,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Javascript Developer at Deutsche Bank / GFT IT Consulting",
+    title: "Developer at Deutsche Bank / GFT",
     website: "http://www.gft.com",
     dateRange: "2017 2019",
     details: [
@@ -29,7 +29,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Javascript Developer at Tekii S.R.L",
+    title: "Developer at Tekii S.R.L",
     website: "http://www.tekii.srl",
     dateRange: "2016 2017",
     details: [
@@ -37,7 +37,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Javascript Developer at Alemán de Buenos Aires Hospital",
+    title: "Developer at Alemán de Buenos Aires Hospital",
     website: "http://www.hospitalaleman.org",
     dateRange: "2015 2016",
     details: [
@@ -46,7 +46,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Front-End Web Developer / UI Designer at Web.com",
+    title: "Developer / UI Designer at Web.com",
     website: "http://www.web.com",
     dateRange: "2013 2015",
     details: [
@@ -55,7 +55,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Front-End & Back-end Web Developer at Avatar",
+    title: "Developer at Avatar",
     website: "http://www.avatarla.com",
     dateRange: "2009 2012",
     details: [
@@ -65,7 +65,7 @@ const employmentData = [
     ],
   },
   {
-    title: "ASP.NET Back-End developer at E-volution",
+    title: "Developer at E-volution",
     website: "http://www.e-volution.com",
     dateRange: "2008 2009",
     details: [
@@ -75,7 +75,7 @@ const employmentData = [
     ],
   },
   {
-    title: "ASP.NET / PHP Developer at Webar Interactive",
+    title: "Developer at Webar Interactive",
     website: "http://www.webar.com",
     dateRange: "2007 2008",
     details: [
@@ -84,7 +84,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Web developer at Paginar.Net",
+    title: "Developer at Paginar.Net",
     website: "http://www.paginar.net",
     dateRange: "2005 2007",
     details: [
@@ -95,7 +95,7 @@ const employmentData = [
     ],
   },
   {
-    title: "Web Developer at Aquiles S.R.L",
+    title: "Developer at Aquiles S.R.L",
     website: "http://www.achilles.com/es/aquiles-Argentina",
     dateRange: "2004 2005",
     details: [
