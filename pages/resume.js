@@ -112,7 +112,12 @@ const CV = () => (
     <header
       className={`${styles.header} absolute flex items-center bg-white ml-5 mt-5`}
     >
-      <Image src={profilePic} width={150} height={150} />
+      <Image
+        alt={"Profile picture"}
+        src={profilePic}
+        width={150}
+        height={150}
+      />
       <div className={"flex flex-col"}>
         <h1 className={`${styles.name} ml-5 mb-0`}>
           Christian Alejandro Agüero Chao
@@ -121,7 +126,7 @@ const CV = () => (
         <p
           className={`${styles.text} ${styles.textGray} font-bold ml-5 self-start`}
         >
-          // Software engineer
+          ^ Software engineer
         </p>
       </div>
     </header>
@@ -190,14 +195,14 @@ const CV = () => (
       <div className={styles.abstract}>
         <p className={`${styles.text} ${styles.textGray}`}>
           <i>
-            "My drive is to address real-world challenges with efficient,
+            &quot;My drive is to address real-world challenges with efficient,
             innovative solutions. My foundation in web technologies aids in
             delivering practical, user-centric approaches to my projects. I have
             extensive experience in creating dynamic, responsive web
             applications, always with an eye on optimizing both user experience
             and performance. Beyond coding, my enthusiasm for teamwork, arts,
             and exploration fuels fresh, creative insights in my technical
-            endeavors."
+            endeavors.&quot;
           </i>
         </p>
       </div>
