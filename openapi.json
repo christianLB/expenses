@@ -1,0 +1,248 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Anaxi API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://www.anaxi.net"
+    }
+  ],
+  "paths": {
+    "/api/addIncome": {
+      "post": {
+        "summary": "Agrega un nuevo ingreso",
+        "description": "Este endpoint recibe detalles de un ingreso y lo agrega",
+        "operationId": "addIncome",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Income"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ingreso agregado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inv\u00e1lida debido a datos de entrada incorrectos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/addExpense": {
+      "post": {
+        "summary": "Agrega un nuevo gasto",
+        "description": "Este endpoint recibe detalles de un gasto y lo agrega al sistema.",
+        "operationId": "addExpense",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Expense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gasto o ingreso agregado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inv\u00e1lida debido a datos de entrada incorrectos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/tableData": {
+      "get": {
+        "summary": "Listado de gastos agrupados por categoría y grupos.",
+        "description": "Gastos ingresos del año en curso agrupados por categoría y grupos con totales calculados.",
+        "operationId": "tableData",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inv\u00e1lida debido a datos de entrada incorrectos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    },
+    "/api/categoriesGroup": {
+      "get": {
+        "summary": "Listado de categorías y grupos disponibles.",
+        "description": "Gastos y categorías con id y etiquetas para categorizar gastos",
+        "operationId": "categoriesGroup",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inv\u00e1lida debido a datos de entrada incorrectos"
+          },
+          "500": {
+            "description": "Error interno del servidor"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Income": {
+        "type": "object",
+        "required": [
+          "name",
+          "amount",
+          "date",
+          "account",
+          "valueDate",
+          "currency"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Descripci\u00f3n y observaciones del gasto"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor absoluto del importe con dos decimales",
+            "example": 65.9
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha del gasto"
+          },
+          "account": {
+            "type": "string",
+            "description": "Cuenta asociada al gasto"
+          },
+          "valueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha valor del gasto"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Moneda del importe"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notas adicionales"
+          }
+        }
+      },
+      "IncomeResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["income inserted"],
+            "description": "Estado de la operaci\u00f3n"
+          }
+        }
+      },
+      "Expense": {
+        "type": "object",
+        "required": [
+          "name",
+          "amount",
+          "date",
+          "account",
+          "valueDate",
+          "currency"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Descripci\u00f3n y observaciones del gasto"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor absoluto del importe con dos decimales",
+            "example": 65.9
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha del gasto"
+          },
+          "account": {
+            "type": "string",
+            "description": "Cuenta asociada al gasto"
+          },
+          "valueDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha valor del gasto"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Moneda del importe"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Notas adicionales"
+          }
+        }
+      },
+      "ExpenseResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["expense inserted"],
+            "description": "Estado de la operaci\u00f3n"
+          }
+        }
+      }
+    }
+  }
+}
