@@ -27,45 +27,36 @@ export const ExpensesProvider = ({ children }) => {
 
   const expensesCollection = usePayloadCollection({
     collection: "expenses",
-    fetchOnInit: true,
+    fetchOnInit: false,
     clearOnStart: false,
     query,
   });
 
   const groupsCollection = usePayloadCollection({
     collection: "expense-group",
-    fetchOnInit: true,
+    fetchOnInit: false,
   });
 
   const categoriesCollection = usePayloadCollection({
     collection: "expense-category",
-    fetchOnInit: true,
+    fetchOnInit: false,
   });
 
   const clientsCollection = usePayloadCollection({
     collection: "clients",
-    fetchOnInit: true,
+    fetchOnInit: false,
   });
 
   const incomesCollection = usePayloadCollection({
     collection: "incomes",
-    fetchOnInit: true,
+    fetchOnInit: false,
     query,
   });
 
-  // const gmailApi = useApi("./api/gmail", {
-  //   method: "POST",
-  //   fetchOnInit: false,
-  //   body: { label: "BBVA/gastos" },
-  //   //onFinish: () => fetchExpenses(),
-  // });
-
-  const { groupedExpensesByCategory } = useExpensesTable(
-    expensesCollection.arrayData,
-    categoriesCollection.arrayData,
-    groupsCollection.arrayData,
-    incomesCollection.arrayData
-  );
+  const { data, loading } = useApi("./api/tableData", {
+    method: "POST",
+    fetchOnInit: true,
+  });
 
   const value = {
     colors,
@@ -77,7 +68,7 @@ export const ExpensesProvider = ({ children }) => {
     clientsCollection,
     incomesCollection,
     //gmailApi,
-    groupedExpensesByCategory,
+    groupedExpensesByCategory: data?.data?.categories || [],
   };
 
   return (
