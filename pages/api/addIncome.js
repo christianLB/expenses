@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
+  const auth = { Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}` }
   // The incoming income data
   const incomingIncome = req.body; // Assuming this is coming in the request body
 
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
 
   const postResponse = await fetch(`${CMS_URL}/incomes`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...auth },
     body: JSON.stringify(incomingIncome),
   });
   const data = await postResponse.json();
