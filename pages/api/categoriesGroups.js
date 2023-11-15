@@ -9,12 +9,11 @@ export default async function handler(req, res) {
 
     // Realizar todas las peticiones en paralelo
     const headers = {
-      method: 'GET',
       Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`
     }
     const [groups, categories] = await Promise.all([
-      fetch(groupsUrl, ...headers).then(r => r.json()),
-      fetch(categoriesUrl, ...headers).then(r => r.json()),
+      fetch(groupsUrl, { method: 'GET', headers }).then(r => r.json()),
+      fetch(categoriesUrl, { method: 'GET', headers }).then(r => r.json()),
     ]);
 
     return res.status(200).json({ categories, groups });
