@@ -1,6 +1,7 @@
-import qs from 'qs';
-import { generateYearlyQuery } from '../../parseUtils'
-import _ from 'lodash'
+import qs from "qs";
+import { getSession } from "next-auth/react";
+import { generateYearlyQuery } from "../../parseUtils";
+import _ from "lodash";
 
 const getTotals = (expenses = []) => {
   return expenses?.reduce((acc, expense) => {
@@ -101,6 +102,14 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
 
 // Main
 export default async function handler(req, res) {
+  const session = await getSession({ req });
+  const apiKeyHeader = req.headers["x-api-key"];
+
+  if (!(session || apiKeyHeader === process.env.UI_API_KEY)) {
+    // Si no hay sesión y el API Key es inválido, devuelve un error de autenticación
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
   const currentYear = new Date().getFullYear(); // Obtiene el año actual
   const query = generateYearlyQuery(currentYear);
@@ -117,22 +126,26 @@ export default async function handler(req, res) {
     // Realizar todas las peticiones en paralelo
     const headers = {
       Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
-    }
+    };
 
     const [expenses, groups, categories, clients, incomes] = await Promise.all([
-      fetch(expensesUrl, { method: 'GET', headers }).then(r => r.json()),
-      fetch(groupsUrl, { method: 'GET', headers }).then(r => r.json()),
-      fetch(categoriesUrl, { method: 'GET', headers }).then(r => r.json()),
-      fetch(clientsUrl, { method: 'GET', headers }).then(r => r.json()),
-      fetch(incomesUrl, { method: 'GET', headers }).then(r => r.json())
+      fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
+      fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
+      fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
+      fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
+      fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
     ]);
 
     // Agrupar y combinar los datos.
-    const data = groupExpensesByCategory(expenses.docs, categories.docs, groups.docs, incomes.docs)
+    const data = groupExpensesByCategory(
+      expenses.docs,
+      categories.docs,
+      groups.docs,
+      incomes.docs
+    );
 
     return res.status(200).json({ data });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 }
-
