@@ -2,7 +2,7 @@ import qs from "qs";
 
 export default async function handler(req, res) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const auth = { Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}` }
+  const headers = { Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}` }
   // The incoming expense data
   const incomingExpense = req.body; // Assuming this is coming in the request body
 
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     `${CMS_URL}/expenses?query=${buildQueryString(query)}`,
     {
       method: "GET",
-      ...auth
+      headers
     }
   );
 
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...auth
+      Authorization: headers.Authorization
     },
     body: JSON.stringify(incomingExpense),
   });

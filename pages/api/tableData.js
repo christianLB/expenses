@@ -116,16 +116,15 @@ export default async function handler(req, res) {
 
     // Realizar todas las peticiones en paralelo
     const headers = {
-      method: 'GET',
       Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
     }
 
     const [expenses, groups, categories, clients, incomes] = await Promise.all([
-      fetch(expensesUrl, ...headers).then(r => r.json()),
-      fetch(groupsUrl, ...header).then(r => r.json()),
-      fetch(categoriesUrl, ...header).then(r => r.json()),
-      fetch(clientsUrl, ...header).then(r => r.json()),
-      fetch(incomesUrl, ...header).then(r => r.json())
+      fetch(expensesUrl, { method: 'GET', headers }).then(r => r.json()),
+      fetch(groupsUrl, { method: 'GET', headers }).then(r => r.json()),
+      fetch(categoriesUrl, { method: 'GET', headers }).then(r => r.json()),
+      fetch(clientsUrl, { method: 'GET', headers }).then(r => r.json()),
+      fetch(incomesUrl, { method: 'GET', headers }).then(r => r.json())
     ]);
 
     // Agrupar y combinar los datos.
