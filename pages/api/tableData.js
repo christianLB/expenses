@@ -104,7 +104,7 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
 export default async function handler(req, res) {
   const session = await getSession({ req });
   const apiKeyHeader = req.headers["x-api-key"];
-
+  console.log("session", session);
   if (!session) {
     if (apiKeyHeader !== process.env.UI_API_KEY) {
       // Si no hay sesión y el API Key es inválido, devuelve un error de autenticación
