@@ -5,7 +5,16 @@ import { Button } from "@chakra-ui/react";
 export default function Component() {
   const { data: session } = useSession();
   const signedIn = !!session;
-  const action: () => void = signedIn ? signOut : signIn;
+
+  const handleSignIn = () => {
+    if (signedIn) {
+      signOut();
+    } else {
+      signIn("google", {
+        callbackUrl: "/expenses", // Redirige a '/expenses' después del inicio de sesión
+      });
+    }
+  };
 
   return (
     <div
@@ -14,11 +23,9 @@ export default function Component() {
       }`}
     >
       {session?.user?.email}
-      <Button className={"ml-2"} onClick={() => action()}>
-        Sign {signedIn ? "out" : "in"}
+      <Button className={"ml-2"} onClick={handleSignIn}>
+        {signedIn ? "Sign out" : "Sign in"}
       </Button>
     </div>
   );
-
-  return;
 }

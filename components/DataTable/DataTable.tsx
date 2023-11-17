@@ -43,7 +43,7 @@ export const TableContext = createContext<TableContextProps | undefined>(
   undefined
 );
 //main component
-const DataTable: React.FC<DataTableProps> = () => {
+const DataTable: React.FC<DataTableProps> = ({ data: categories = [] }) => {
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
@@ -61,7 +61,7 @@ const DataTable: React.FC<DataTableProps> = () => {
 
   const {
     //categoryGroupExpenses: data,
-    groupedExpensesByCategory: categories,
+    //groupedExpensesByCategory: categories,
     colors,
     categoriesCollection: {
       update: updateCategoryHandler,

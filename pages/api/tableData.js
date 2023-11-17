@@ -100,52 +100,57 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
   };
 };
 
-// Main
-export default async function handler(req, res) {
-  const session = await getSession({ req });
-  const apiKeyHeader = req.headers["x-api-key"];
-  console.log("session", session);
-  if (!session) {
-    if (apiKeyHeader !== process.env.UI_API_KEY) {
-      // Si no hay sesión y el API Key es inválido, devuelve un error de autenticación
-      return res.status(401).json({ error: "No autorizado" });
-    }
-  }
-
+// Esta función puede ser invocada directamente para obtener los datos.
+export async function getTableData() {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = new Date().getFullYear(); // Obtiene el año actual
+  const currentYear = new Date().getFullYear();
   const query = generateYearlyQuery(currentYear);
   const queryString = qs.stringify({ where: query });
+  const headers = {
+    Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
+  };
+
+  // Tus URLs se mantienen igual...
+  const expensesUrl = `${CMS_URL}/expenses?${queryString}&limit=0`;
+  const groupsUrl = `${CMS_URL}/expense-group?limit=0`;
+  const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
+  const clientsUrl = `${CMS_URL}/clients?limit=0`;
+  const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0`;
+
+  // Tus llamadas fetch se mantienen igual...
+  const [expenses, groups, categories, clients, incomes] = await Promise.all([
+    fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
+  ]);
+
+  // Agrupa y combina los datos como antes
+  const data = groupExpensesByCategory(
+    expenses.docs,
+    categories.docs,
+    groups.docs,
+    incomes.docs
+  );
+
+  return data;
+}
+
+// Este es tu manejador de API existente.
+export default async function handler(req, res) {
+  const session = await getSession({ req });
+  if (!session) {
+    // Verifica que el valor del encabezado 'x-api-key' sea igual al valor esperado.
+    if (req.headers['x-api-key'] !== '2c22b145-9811-4f07-9dd3-435c3d7aa00b') {
+      // Si no es igual, devuelve un error de no autorizado.
+      return res.status(401).json({ error: "No autorizado" });
+    }
+    // Si es igual, continúa con la lógica (la cual no está definida aquí).
+  }
 
   try {
-    // Preparar las URLs para cada petición
-    const expensesUrl = `${CMS_URL}/expenses?${queryString}&limit=0`;
-    const groupsUrl = `${CMS_URL}/expense-group?limit=0`;
-    const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
-    const clientsUrl = `${CMS_URL}/clients?limit=0`;
-    const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0`;
-
-    // Realizar todas las peticiones en paralelo
-    const headers = {
-      Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
-    };
-
-    const [expenses, groups, categories, clients, incomes] = await Promise.all([
-      fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
-      fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
-      fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
-      fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
-      fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
-    ]);
-
-    // Agrupar y combinar los datos.
-    const data = groupExpensesByCategory(
-      expenses.docs,
-      categories.docs,
-      groups.docs,
-      incomes.docs
-    );
-
+    const data = await getTableData(); // Usa la función refactorizada.
     return res.status(200).json({ data });
   } catch (error) {
     return res.status(500).json({ error: error.message });

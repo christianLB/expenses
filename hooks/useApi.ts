@@ -59,10 +59,10 @@ function useApi(
     stream = false,
     clearOnStart = true,
     startOn = false,
-    onStart = () => {},
-    onFinish = () => {},
-    onFail = () => {},
-    onSuccess = () => {},
+    onStart = () => { },
+    onFinish = () => { },
+    onFail = () => { },
+    onSuccess = () => { },
   }: IUseApiProps = {}
 ): useApiReturn {
   const POST = method === "POST";
@@ -105,14 +105,15 @@ function useApi(
       return fetch(_url, {
         method,
         ...(method.toLocaleLowerCase() === "post" ||
-        method.toLocaleLowerCase() === "put"
+          method.toLocaleLowerCase() === "put"
           ? {
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(param.body || requestBody),
-            }
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(param.body || requestBody),
+          }
           : {}),
+        credentials: 'include'
       });
     });
     return await Promise.all(requests)
@@ -140,7 +141,7 @@ function useApi(
 
   useEffect(() => {
     //triggers when startOn flag turns to true.
-    //startOn && doFetch(endpoint, urlParams);
+    !!startOn && request();
   }, [startOn]);
 
   useEffect(() => {

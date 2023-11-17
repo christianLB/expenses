@@ -3,6 +3,7 @@ import { generateYearlyQuery } from "../parseUtils";
 import useExpensesTable from "./useExpensesTable";
 import usePayloadCollection from "./usePayloadCollection";
 import useApi from "./useApi";
+import { useSession } from "next-auth/react";
 
 const ExpensesContext = createContext<any>({});
 
@@ -22,40 +23,31 @@ const colors = [
 ];
 
 export const ExpensesProvider = ({ children }) => {
+  const { data: session, status } = useSession();
+
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const query = generateYearlyQuery(currentYear);
+  const isAuthenticated = status === "authenticated";
 
-  const expensesCollection = usePayloadCollection({
-    collection: "expenses",
-    fetchOnInit: false,
-    clearOnStart: false,
-    query,
-  });
+  // Función para inicializar las colecciones con usePayloadCollection
+  const initializeCollection = (collectionName, hasQuery = false) =>
+    usePayloadCollection({
+      collection: collectionName,
+      fetchOnInit: false,
+      clearOnStart: false,
+      ...(hasQuery && { query }), // Agregar query solo si es necesario
+    });
 
-  const groupsCollection = usePayloadCollection({
-    collection: "expense-group",
-    fetchOnInit: false,
-  });
-
-  const categoriesCollection = usePayloadCollection({
-    collection: "expense-category",
-    fetchOnInit: false,
-  });
-
-  const clientsCollection = usePayloadCollection({
-    collection: "clients",
-    fetchOnInit: false,
-  });
-
-  const incomesCollection = usePayloadCollection({
-    collection: "incomes",
-    fetchOnInit: false,
-    query,
-  });
+  // Inicializar colecciones usando la función
+  const expensesCollection = initializeCollection("expenses", true);
+  const groupsCollection = initializeCollection("expense-group");
+  const categoriesCollection = initializeCollection("expense-category");
+  const clientsCollection = initializeCollection("clients");
+  const incomesCollection = initializeCollection("incomes", true);
 
   const { data, loading } = useApi("./api/tableData", {
     method: "POST",
-    fetchOnInit: true,
+    startOn: false, // isAuthenticated, // Solicitar datos solo cuando el usuario esté autenticado
   });
 
   const value = {
@@ -67,6 +59,7 @@ export const ExpensesProvider = ({ children }) => {
     categoriesCollection,
     clientsCollection,
     incomesCollection,
+    loading,
     //gmailApi,
     groupedExpensesByCategory: data?.data?.categories || [],
   };
