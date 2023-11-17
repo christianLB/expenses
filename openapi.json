@@ -105,7 +105,7 @@
         }
       }
     },
-    "/api/categoriesGroup": {
+    "/api/categoriesGroups": {
       "get": {
         "summary": "Listado de categorías y grupos disponibles.",
         "description": "Gastos y categorías con id y etiquetas para categorizar gastos",
