@@ -1,7 +1,7 @@
 import qs from "qs";
-import { getSession } from "next-auth/react";
 import { generateYearlyQuery } from "../../parseUtils";
 import _ from "lodash";
+import authorizeRequest from '../../utils/authorizeRequest';
 
 const getTotals = (expenses = []) => {
   return expenses?.reduce((acc, expense) => {
@@ -137,22 +137,16 @@ export async function getTableData() {
   return data;
 }
 
-// Este es tu manejador de API existente.
 export default async function handler(req, res) {
-  const session = await getSession({ req });
-  if (!session) {
-    // Verifica que el valor del encabezado 'x-api-key' sea igual al valor esperado.
-    if (req.headers['x-api-key'] !== process.env.UI_API_KEY) {
-      // Si no es igual, devuelve un error de no autorizado.
-      return res.status(401).json({ error: "No autorizado" });
-    }
-    // Si es igual, continúa con la lógica (la cual no está definida aquí).
-  }
-
   try {
+    // Esto arrojará un error si la solicitud no está autorizada
+    await authorizeRequest(req);
+
     const data = await getTableData(); // Usa la función refactorizada.
     return res.status(200).json({ data });
+
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    // Manejar solicitudes no autorizadas
+    res.status(401).json({ error: error.message });
   }
 }
