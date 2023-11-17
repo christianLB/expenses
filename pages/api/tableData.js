@@ -142,7 +142,7 @@ export default async function handler(req, res) {
   const session = await getSession({ req });
   if (!session) {
     // Verifica que el valor del encabezado 'x-api-key' sea igual al valor esperado.
-    if (req.headers['x-api-key'] !== '2c22b145-9811-4f07-9dd3-435c3d7aa00b') {
+    if (req.headers['x-api-key'] !== process.env.UI_API_KEY) {
       // Si no es igual, devuelve un error de no autorizado.
       return res.status(401).json({ error: "No autorizado" });
     }
