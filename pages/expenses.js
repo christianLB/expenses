@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import Head from "next/head";
 import Table from "../components/DataTable/DataTable.tsx";
 import {
@@ -14,6 +13,8 @@ import {
 } from "@chakra-ui/react";
 import { useExpensesContext } from "../hooks/expensesContext.tsx";
 import LoginBtn from "../components/loginbtn.tsx";
+
+import FileUploader from "../components/FileUploader";
 import { getSession } from "next-auth/react";
 import { getTableData } from "./api/tableData"; // Ajusta la ruta de importación según sea necesario
 
@@ -86,7 +87,8 @@ export default function Expenses({ tableData }) {
         </div>
         <LoginBtn />
       </div>
-      <main className="flex flex-1 p-4 md:p-8 pt-5 items-center">
+      <main className="flex flex-1 flex-col p-4 md:p-8 pt-5 items-center mt-20">
+        <FileUploader />
         <Table data={tableData} />
       </main>
     </div>
