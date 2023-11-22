@@ -157,7 +157,7 @@
           "date": {
             "type": "string",
             "format": "date",
-            "description": "Fecha del gasto"
+            "description": "Fecha del gasto en formato MM-DD-YYYY"
           },
           "account": {
             "type": "string",
@@ -190,14 +190,7 @@
       },
       "Expense": {
         "type": "object",
-        "required": [
-          "name",
-          "amount",
-          "date",
-          "account",
-          "valueDate",
-          "currency"
-        ],
+        "required": ["name", "amount", "date", "valueDate", "currency"],
         "properties": {
           "name": {
             "type": "string",
@@ -212,7 +205,7 @@
           "date": {
             "type": "string",
             "format": "date",
-            "description": "Fecha del gasto"
+            "description": "Fecha del gasto en formato MM-DD-YYYY"
           },
           "account": {
             "type": "string",
@@ -221,7 +214,7 @@
           "valueDate": {
             "type": "string",
             "format": "date",
-            "description": "Fecha valor del gasto"
+            "description": "Fecha valor del gasto en formato MM-DD-YYYY"
           },
           "currency": {
             "type": "string",
@@ -230,6 +223,14 @@
           "notes": {
             "type": "string",
             "description": "Notas adicionales"
+          },
+          "category": {
+            "type": "string",
+            "description": "id de la categoría del gasto"
+          },
+          "group": {
+            "type": "string",
+            "description": "id del grupo de gasto."
           }
         }
       },
