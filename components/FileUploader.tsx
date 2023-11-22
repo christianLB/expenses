@@ -13,7 +13,8 @@ const FileUploader = () => {
 
     // Realizar la solicitud POST a tu API
     axios
-      .post("/api/addExpenseWithFile", formData, {
+      .post("/api/addExpenseWithMedia", formData, {
+        withCredentials: true, // Ensure this is set
         headers: {
           "Content-Type": "multipart/form-data",
         },
