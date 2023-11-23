@@ -3,24 +3,36 @@ import multer from 'multer';
 import FormData from 'form-data';
 import axios from 'axios';
 import fs from 'fs';
+import path from 'path';
 
-const upload = multer({ dest: "tmp/" }).single("file");
+const storage = multer.diskStorage({
+  destination: 'tmp/',
+  filename: (req, file, cb) => {
+    // Extrae la extensión del archivo original
+    const ext = path.extname(file.originalname);
+    // Construye el nombre del archivo usando el ID de campo y la extensión
+    // Esto asegura que la extensión del archivo se conserve
+    const filename = `${file.fieldname}-${Date.now()}${ext}`;
+    cb(null, filename);
+  },
+});
+
+const upload = multer({ storage }).single("file");
 
 export async function uploadToCMS(req, res, next) {
   upload(req, res, async (err) => {
-    console.log('hola')
     if (err instanceof multer.MulterError) {
-      console.log('hola 2')
       return res.status(500).json({ error: err.message });
     } else if (err) {
-      console.log('hola 3', err)
       return res.status(500).json({ error: err.message });
     }
-    console.log('hola 4')
     // Aquí la lógica para enviar el archivo a CMS
     const formData = new FormData();
     formData.append("file", fs.createReadStream(req.file.path));
     formData.append("filename", req.file.originalname);
+    // Incluir mimeType y size si están disponibles
+    formData.append("mimeType", req.file.mimetype);
+    formData.append("size", req.file.size);
 
     const CMS_URL = `${process.env.NEXT_PUBLIC_CMS_API_URL}/media`;
     try {

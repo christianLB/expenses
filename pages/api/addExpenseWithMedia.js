@@ -8,7 +8,7 @@ export default function handler(req, res) {
     uploadToCMS(req, res, async () => {
       try {
         const mediaData = req.fileData;
-        console.log(mediaData)
+        //console.log(mediaData)
         const newExpense = {
           name: 'nuevo movimiento (doc adjunto)',
           amount: 0.0,
@@ -21,7 +21,7 @@ export default function handler(req, res) {
         };
 
         const expensesResponse = await createExpense(newExpense);
-        console.log('expensesResponse', expensesResponse)
+        //console.log('expensesResponse', expensesResponse)
         res.status(200).json(expensesResponse.data);
       } catch (error) {
         res.status(500).json({
