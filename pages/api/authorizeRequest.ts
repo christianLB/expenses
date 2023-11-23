@@ -3,10 +3,7 @@ import { authOptions } from "./auth/[...nextauth]";
 
 export const authorizeRequest = async (req, res) => {
   const session = await getServerSession(req, res, authOptions);
-  console.log("tuvijea");
-  //if (!session && req.headers['x-api-key'] !== process.env.UI_API_KEY) {
-  //console.log("CHEEE SESSION", session);
-  if (!session) {
+  if (!session && req.headers['x-api-key'] !== process.env.UI_API_KEY) {
     // Si no hay sesión y la clave API no es válida, arroja un error
     throw new Error("No autorizado");
   }
