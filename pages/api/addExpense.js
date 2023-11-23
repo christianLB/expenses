@@ -13,62 +13,66 @@ const buildQueryString = (query) => {
 };
 
 export const checkForDuplicateExpense = async (incomingExpense) => {
-  const query = {
-    amount: {
-      equals: incomingExpense.amount,
-    },
-    and: [
-      {
-        name: {
-          equals: incomingExpense.name,
-        },
-        date: {
-          equals: incomingExpense.date,
-        },
+  try {
+    const query = {
+      amount: {
+        equals: incomingExpense.amount,
       },
-    ],
-  };
+      and: [
+        {
+          name: {
+            equals: incomingExpense.name,
+          },
+          date: {
+            equals: incomingExpense.date,
+          },
+        },
+      ],
+    };
 
-  const getResponse = await fetch(
-    `${CMS_URL}/expenses?query=${buildQueryString(query)}`,
-    {
+    const response = await fetch(`${CMS_URL}/expenses?query=${buildQueryString(query)}`, {
       method: "GET",
       headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching expenses: ${response.statusText}`);
     }
-  );
 
-  const matchingExpenses = await getResponse.json();
-
-  return matchingExpenses.totalDocs > 0;
+    const matchingExpenses = await response.json();
+    return matchingExpenses.totalDocs > 0;
+  } catch (error) {
+    console.error(error); // Log para el desarrollador
+    throw new Error('There was an error checking for duplicate expenses.'); // Mensaje de error para el usuario
+  }
 };
 
 export const createExpense = async (incomingExpense) => {
-  const isEmpty = !incomingExpense.name || !incomingExpense.amount.toString();
+  try {
+    const isEmpty = !incomingExpense.name || !incomingExpense.amount.toString();
 
-  if (isEmpty) {
-    throw new Error("Name and amount fields are required. Record not saved.");
+    if (isEmpty) {
+      throw new Error("Name and amount fields are required. Record not saved.");
+    }
+
+    // Crear el nuevo gasto
+    const postResponse = await fetch(`${CMS_URL}/expenses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: headers.Authorization,
+      },
+      body: JSON.stringify(incomingExpense),
+    });
+    const data = await postResponse.json();
+    return data;
+  } catch (error) {
+    console.error(error); // Log para el desarrollador
+    throw new Error('Failed to create the expense record.'); // Mensaje de error para el usuario
   }
-
-  // Crear el nuevo gasto
-  const postResponse = await fetch(`${CMS_URL}/expenses`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: headers.Authorization,
-    },
-    body: JSON.stringify(incomingExpense),
-  });
-
-  if (!postResponse.ok) {
-    throw new Error("Failed to create expense record.");
-  }
-
-  const data = await postResponse.json();
-  return data;
 };
 
 export default async function handler(req, res) {
-  const incomingExpense = req.body;
   try {
     await authorizeRequest(req);
     const isDuplicate = await checkForDuplicateExpense(incomingExpense);
@@ -81,7 +85,10 @@ export default async function handler(req, res) {
 
     const data = await createExpense(incomingExpense);
     res.status(200).json({ data });
+    // ...tu lógica de la función handler...
   } catch (error) {
-    res.status(error.status || 500).json({ error: error.message });
+    console.error(error); // Log completo para el desarrollador
+    // Decide si quieres devolver el mensaje de error completo o uno genérico
+    res.status(error.status || 500).json({ error: error.message || 'An internal server error occurred' });
   }
 }
