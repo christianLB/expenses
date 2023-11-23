@@ -1,4 +1,4 @@
-import authorizeRequest from '../../utils/authorizeRequest';
+import authorizeRequest from './authorizeRequest';
 
 // Main
 export default async function handler(req, res) {
