@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--inspect' next dev -p 3001",
     "build": "next build",
-    "start": "concurrently \"node cron.js\" \"next start -p 3001\"",
+    "start": "next start -p 3001",
     "lint": "next lint",
     "cron": "node cron.js"
   },
