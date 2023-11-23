@@ -1,8 +1,10 @@
 import qs from "qs";
-import authorizeRequest from '../../utils/authorizeRequest';
+import authorizeRequest from "./authorizeRequest";
 
 const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-const headers = { Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}` };
+const headers = {
+  Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
+};
 
 const buildQueryString = (query) => {
   if (!query) return "";
@@ -27,10 +29,13 @@ export const checkForDuplicateExpense = async (incomingExpense) => {
     ],
   };
 
-  const getResponse = await fetch(`${CMS_URL}/expenses?query=${buildQueryString(query)}`, {
-    method: "GET",
-    headers,
-  });
+  const getResponse = await fetch(
+    `${CMS_URL}/expenses?query=${buildQueryString(query)}`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
 
   const matchingExpenses = await getResponse.json();
 
@@ -69,13 +74,14 @@ export default async function handler(req, res) {
     const isDuplicate = await checkForDuplicateExpense(incomingExpense);
 
     if (isDuplicate) {
-      return res.status(400).json({ message: "Duplicate expense record not saved." });
+      return res
+        .status(400)
+        .json({ message: "Duplicate expense record not saved." });
     }
 
     const data = await createExpense(incomingExpense);
     res.status(200).json({ data });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(error.status || 500).json({ error: error.message });
   }
 }

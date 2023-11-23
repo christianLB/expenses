@@ -1,7 +1,7 @@
 import qs from "qs";
 import { generateYearlyQuery } from "../../parseUtils";
 import _ from "lodash";
-import authorizeRequest from '../../utils/authorizeRequest';
+import authorizeRequest from "./authorizeRequest";
 
 const getTotals = (expenses = []) => {
   return expenses?.reduce((acc, expense) => {
@@ -144,7 +144,6 @@ export default async function handler(req, res) {
 
     const data = await getTableData(); // Usa la función refactorizada.
     return res.status(200).json({ data });
-
   } catch (error) {
     // Manejar solicitudes no autorizadas
     res.status(401).json({ error: error.message });
