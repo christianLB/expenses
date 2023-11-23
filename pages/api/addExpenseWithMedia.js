@@ -12,6 +12,7 @@ export default function handler(req, res) {
         const newExpense = {
           name: 'nuevo movimiento (doc adjunto)',
           amount: 0.0,
+          date: new Date(),
           archivos: [
             {
               id: mediaData.doc.id, // Asegúrate de que el campo 'id' se asocie con un objeto
