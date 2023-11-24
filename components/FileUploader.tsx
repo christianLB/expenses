@@ -1,30 +1,41 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
-import { useExpensesContext } from "../hooks/expensesContext";
 
 const FileUploader = () => {
-  const { expensesCollection } = useExpensesContext();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const onDrop = useCallback((acceptedFiles) => {
-    // Crear un FormData para enviar el archivo
-    const formData = new FormData();
-    formData.append("file", acceptedFiles[0]); // Asumiendo que solo cargas un archivo
+    setIsUploading(true);
+    setUploadError(false);
+    setErrorMessage("");
+    setSuccessMessage("");
 
-    // Realizar la solicitud POST a tu API
+    const formData = new FormData();
+    formData.append("file", acceptedFiles[0]);
+
     axios
       .post("/api/addExpenseWithMedia", formData, {
-        //withCredentials: true, // Ensure this is set
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
         console.log("Archivo cargado:", response.data);
-        // Aquí puedes hacer algo con la respuesta, como actualizar tu contexto o estado
+        setSuccessMessage("Archivo cargado con éxito.");
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 3000);
+        setIsUploading(false);
       })
       .catch((error) => {
         console.error("Error al cargar archivo:", error);
+        setUploadError(true);
+        setErrorMessage("Error al cargar el archivo.");
+        setIsUploading(false);
       });
   }, []);
 
@@ -34,16 +45,44 @@ const FileUploader = () => {
     <div
       {...getRootProps()}
       style={{
-        border: `2px dashed ${!isDragActive ? "#EAEAEA" : "#0087F7"}`,
+        border: `2px dashed ${
+          uploadError ? "red" : !isDragActive ? "#EAEAEA" : "#0087F7"
+        }`,
         padding: "20px",
         textAlign: "center",
+        position: "relative",
+        height: "100px", // Alto fijo
       }}
       className={"w-1/4"}
     >
       <input {...getInputProps()} />
-      {isDragActive ? <p>Suelta para agregar</p> : <p>Arrastra para agregar</p>}
+      {isUploading && <Spinner />}
+      {!isUploading && !uploadError && (
+        <>
+          {isDragActive ? (
+            <p>Suelta para agregar</p>
+          ) : (
+            <p>Arrastra para agregar</p>
+          )}
+          {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+        </>
+      )}
+      {uploadError && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };
+
+const Spinner = () => (
+  <div
+    style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    }}
+  >
+    <div className="loader">Cargando...</div>
+  </div>
+);
 
 export default FileUploader;
