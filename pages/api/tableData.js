@@ -140,7 +140,7 @@ export async function getTableData() {
 export default async function handler(req, res) {
   try {
     // Esto arrojará un error si la solicitud no está autorizada
-    await authorizeRequest(req);
+    await authorizeRequest(req, res);
 
     const data = await getTableData(); // Usa la función refactorizada.
     return res.status(200).json({ data });
