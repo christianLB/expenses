@@ -30,8 +30,8 @@ export const filterByMonth = (transactions: any, month: number): any[] => {
 };
 
 export const generateYearlyQuery = (year) => {
-  const startDate = `${year}-01-01T00:00:00.000Z`;
-  const endDate = `${year + 1}-01-01T00:00:00.000Z`;
+  const startDate = new Date(year, 0, 1); // 1 de enero del año indicado
+  const endDate = new Date(year + 1, 0, 1); // 1 de enero del año siguiente
 
   return {
     date: {
