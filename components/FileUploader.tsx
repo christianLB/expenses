@@ -60,7 +60,7 @@ const FileUploader = () => {
       {!isUploading && !uploadError && (
         <>
           {isDragActive ? (
-            <p>Suelta para agregar.</p>
+            <p>Suelta para agregar...</p>
           ) : (
             <p>Arrastra para agregar.</p>
           )}
