@@ -1,5 +1,4 @@
 import qs from "qs";
-import { generateYearlyQuery } from "../../parseUtils";
 import _ from "lodash";
 import authorizeRequest from "./authorizeRequest";
 
@@ -97,6 +96,24 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
 
   return {
     categories: groupedExpenses,
+  };
+};
+
+const generateYearlyQuery = (year) => {
+  const startDate = new Date(year, 0, 1); // 1 de enero del año indicado
+  const endDate = new Date(year + 1, 0, 1); // 1 de enero del año siguiente
+
+  return {
+    date: {
+      greater_than_equal: startDate,
+    },
+    and: [
+      {
+        date: {
+          less_than_equal: endDate,
+        },
+      },
+    ],
   };
 };
 
