@@ -60,9 +60,9 @@ const FileUploader = () => {
       {!isUploading && !uploadError && (
         <>
           {isDragActive ? (
-            <p>Suelta para agregar</p>
+            <p>Suelta para agregar.</p>
           ) : (
-            <p>Arrastra para agregar</p>
+            <p>Arrastra para agregar.</p>
           )}
           {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         </>
