@@ -91,19 +91,19 @@ const DataTable: React.FC<DataTableProps> = ({
     (category) => category.id === "balance"
   );
   //@ts-ignore
-  const summaryCategory = categories.find(
+  const summaryCategory = categories?.find(
     (category) => category.id === "summary"
   );
   //@ts-ignore
-  const uncategorizedCategory = categories.find(
+  const uncategorizedCategory = categories?.find(
     (category) => category.id === "0"
   );
   //@ts-ignore
-  const incomeCategory = categories.find(
+  const incomeCategory = categories?.find(
     (category) => category.id === "income"
   );
   //@ts-ignore
-  const sortableCategories = categories.filter((category) => {
+  const sortableCategories = categories?.filter((category) => {
     // Filter out the balance category as it will be rendered separately
     const hiddenCategories = [
       incomeCategory,

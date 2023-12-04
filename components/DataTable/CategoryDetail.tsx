@@ -361,7 +361,9 @@ const CategoryDetail = ({ category }) => {
                             </span>
                             <span>{expense.name}</span>
                           </span>
-                          <span className="text-right">{expense.amount}</span>
+                          <span className="self-end text-right flex-1">
+                            {expense.amount}
+                          </span>
                         </div>
                         <div
                           className={"text-black ml-5"}
