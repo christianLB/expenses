@@ -50,22 +50,30 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
     const groupedExpensesByGroup = groups.concat(noGroup).map((group) => {
       const groupExpenses = expensesByGroup(categoryExpenses)[group.id] || [];
       const totals = getTotals(groupExpenses);
-      return {
-        id: group.id,
-        name: group.name,
-        expenses: groupExpenses,
-        totals,
-      };
-    });
+
+      // Filtra los grupos con total de gastos igual a cero
+      if (totals.some(total => total > 0)) {
+        return {
+          id: group.id,
+          name: group.name,
+          expenses: groupExpenses,
+          totals,
+        };
+      }
+      return null;
+    }).filter(group => group !== null); // Elimina los grupos nulos (sin gastos)
 
     const totals = getTotals(categoryExpenses);
-    return {
-      ...category,
-      groups: groupedExpensesByGroup,
-      expenses: categoryExpenses,
-      totals,
-    };
-  });
+    if (totals.some(total => total > 0)) {
+      return {
+        ...category,
+        groups: groupedExpensesByGroup,
+        expenses: categoryExpenses,
+        totals,
+      };
+    }
+    return null;
+  }).filter(category => category !== null); // Elimina las categorías nulas (sin gastos)
 
   // Prepend the incomeCategory to the categoryObjects array
   const groupedExpenses = [incomeCategory].concat(categoryObjects);
