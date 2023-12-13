@@ -21,9 +21,9 @@ export default function handler(req, res) {
           ],
         };
 
-        const expensesResponse = await createExpense(newExpense);
+        await createExpense(newExpense);
         //console.log('expensesResponse', expensesResponse)
-        res.status(200).json(expensesResponse.data);
+        res.status(200).json({ message: 'procesado con éxito' });
       } catch (error) {
         res.status(500).json({
           error: error.message || "An error occurred during the operation.",
