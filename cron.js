@@ -3,7 +3,7 @@ const cron = require('node-cron');
 const axios = require('axios');
 
 // URL de tu endpoint
-const endpointURL = `${process.env.API_URL}/checkMail`;
+const endpointURL = `https://www.anaxi.net/api/checkMail`;
 
 // Programa la tarea para que se ejecute cada minuto
 cron.schedule('*/1 * * * *', () => {
