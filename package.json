@@ -26,6 +26,7 @@
     "@types/react": "^18.0.26",
     "axios": "^1.6.2",
     "chart.js": "^4.2.1",
+    "chatgpt": "^5.2.5",
     "concurrently": "^8.2.1",
     "cross-env": "^7.0.3",
     "dnd-kit": "^0.0.0",
