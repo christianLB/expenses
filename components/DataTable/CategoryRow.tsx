@@ -4,6 +4,7 @@ import { TableContext, TableContextProps } from "./DataTable";
 import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
 import CategoryDetail from "./CategoryDetail";
+import { Table, Text } from "@mantine/core";
 
 import nextStyles from "../../styles/Expenses.module.css";
 
@@ -42,31 +43,26 @@ const CategoryRow = (props: CategoryRowProps) => {
   const isCollapsed = !collapsedKeys.has(category?.id);
   const isIncome = category?.name === "Income";
   const isHovered = category?.id === hoveredCategory?.id;
-
+  {
+  }
   return (
-    <div className={`text-gray:600`} {...sortableProps}>
+    <>
       <CategoryDetail category={category} />
-      <div className={`${nextStyles.gridtable}`}>
-        <div
-          {...dragListeners}
-          className={`cursor-grabbing text-white text-base ${styles.cell} ${
-            !isCollapsed || isIncome || isHovered ? styles.expandedRowCell : ""
-          } select-none flex`}
+      <Table.Tr>
+        <Table.Td
           style={{
-            background: category?.color,
-            //? `linear-gradient(to right, ${category.color} 0%, rgba(${category.color}, 0.8) 80%, rgba(${category.color}, 0.5) 150%)`
-            //: "",
+            //background: category?.color,
+            borderBottom: "1px solid #ccc",
           }}
         >
-          {(isCollapsed && category?.name) || ""}
-        </div>
+          <Text fw="700" c="gray.8">
+            {(isCollapsed && category?.name) || ""}
+          </Text>
+        </Table.Td>
 
         {category?.totals?.map((total, index) => (
           <TableCell
             monthIndex={index}
-            className={`${styles.cell} ${total <= 0 ? styles.emptyCell : ""} ${
-              isIncome || isHovered ? styles.expandedRowCell : ""
-            }`}
             key={index}
             style={{
               backgroundColor:
@@ -80,8 +76,8 @@ const CategoryRow = (props: CategoryRowProps) => {
             {total > 0 ? total.toFixed(2) : "-"}
           </TableCell>
         ))}
-      </div>
-    </div>
+      </Table.Tr>
+    </>
   );
 };
 

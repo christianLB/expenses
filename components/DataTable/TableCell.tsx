@@ -2,11 +2,12 @@
 import React, { useContext } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
 import nextStyles from "../../styles/Expenses.module.css";
+import { Table } from "@mantine/core";
 
 const TableCell = ({
   children = "",
   style = {},
-  className,
+  className = "",
   monthIndex = -1,
   onClick = () => {},
   onMouseMove = () => {},
@@ -14,7 +15,7 @@ const TableCell = ({
   const { selectedMonth } = useContext<TableContextProps>(TableContext);
 
   return (
-    <div
+    <Table.Td
       className={`${className} ${
         monthIndex === selectedMonth ? nextStyles.blinking : ""
       } select-none`}
@@ -25,7 +26,7 @@ const TableCell = ({
       onMouseMove={onMouseMove}
     >
       {children}
-    </div>
+    </Table.Td>
   );
 };
 export default TableCell;

@@ -10,6 +10,8 @@ import SummaryRow from "./SummaryRow";
 import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
 import useExpandables from "../../hooks/useExpandables";
+import { Table } from "@mantine/core";
+import Table2 from "../DataTable2/DataTable2";
 
 interface DataTableProps {
   data?: {
@@ -142,7 +144,6 @@ const DataTable: React.FC<DataTableProps> = ({
 
   const [isCollapsed, toggleCollapse] = useState(true);
   const { getExpandableProps } = useExpandables();
-
   return (
     <TableContext.Provider
       value={{
@@ -162,42 +163,31 @@ const DataTable: React.FC<DataTableProps> = ({
         categories,
       }}
     >
-      <div className={`${tableStyles.table} w-full`}>
+      <Table withRowBorders={false} c={"gray.1"}>
         <TableHeader />
         <CategoryRow {...{ ...incomeCategory }} sortable={false} />
-        <div {...getExpandableProps("datatable", !isCollapsed, "10000px")}>
-          <div ref={contentRef}>
-            <SortableList
-              items={sortableCategories}
-              ItemComponent={CategoryRow}
-              onSort={handleSortChange}
-            />
-            {!!uncategorizedCategory?.expenses?.length && (
-              <CategoryRow
-                {...{
-                  ...uncategorizedCategory,
-                  sortable: false,
-                }}
-              />
-            )}
-          </div>
-        </div>
-        <div onClick={() => toggleCollapse(!isCollapsed)}>
-          {summaryCategory?.totals && (
-            <SummaryRow
-              category={summaryCategory}
-              color={colors[colors.length - 1]}
-              onClick={() => toggleExpanded(!expanded)}
-            />
-          )}
-        </div>
-        {balanceCategory?.totals && (
-          <BalanceRow
-            category={balanceCategory}
-            color={colors[colors.length - 1]}
+        {sortableCategories.map((category) => (
+          <CategoryRow sortable={false} {...category} />
+        ))}
+        {!!uncategorizedCategory?.expenses?.length && (
+          <CategoryRow
+            {...{
+              ...uncategorizedCategory,
+              sortable: false,
+            }}
           />
         )}
-      </div>
+        <CategoryRow
+          sortable={false}
+          {...summaryCategory}
+          color={colors[colors.length - 1]}
+        />
+        <CategoryRow
+          sortable={false}
+          {...balanceCategory}
+          color={colors[colors.length - 1]}
+        />
+      </Table>
     </TableContext.Provider>
   );
 };

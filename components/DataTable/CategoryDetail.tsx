@@ -5,6 +5,7 @@ import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
 import {
+  Collapse,
   Editable,
   EditableInput,
   EditablePreview,
@@ -15,6 +16,8 @@ import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 import ColorPicker from "react-best-gradient-color-picker";
 import useExpandables from "../../hooks/useExpandables";
+import { Group, Paper, Table, Text, rem } from "@mantine/core";
+
 interface GroupData {
   id: string;
   name: string;
@@ -216,181 +219,176 @@ const CategoryDetail = ({ category }) => {
   const expandableProps = getExpandableProps(category.id, !isCollapsed);
 
   return (
-    <div
-      style={{
-        filter: "brightness(110%)",
-        backgroundColor: userColor,
-        ...expandableProps.style,
-      }}
-    >
-      <div className="w-full" ref={contentRef}>
-        {/* Top Panel */}
-        <div
-          className="flex justify-between w-full p-4"
-          style={{
-            background: `linear-gradient(to right, ${userColor}, ${userColor}, white)`,
-            borderBottom: `1px solid rgba(255,255,255,0.3)`,
-          }}
-        >
-          <div>
-            <h1 className="text-white text-3xl font-bold cursor-pointer flex gap-2 items-center">
-              <Editable
-                defaultValue={category.name}
-                submitOnBlur={false}
-                onSubmit={updateCategoryNameHandler}
-                isPreviewFocusable={false}
-              >
-                <EditablePreview />
-                <Input as={EditableInput} />
-                <EditableControls />
-              </Editable>
-            </h1>
-          </div>
-          <h2 className="text-white text-2xl">{month}</h2>
+    <Table.Tr p="0">
+      <Table.Td
+        colSpan={14}
+        ref={contentRef}
+        p="0"
+        style={{
+          filter: "brightness(110%)",
+          backgroundColor: userColor,
+          ...expandableProps.style,
+        }}
+      >
+        <Collapse in={!isCollapsed}>
+          <Paper
+            style={{
+              background: userColor,
+              borderBottom: `1px solid rgba(255,255,255,0.3)`,
+            }}
+            p="xs"
+          >
+            <Group justify={"center"} align="center" flex={1}>
+              <Text size={rem(14)}>{month}</Text>
+            </Group>
+            <Group justify={"space-between"} mb="xs" flex={1}>
+              <Text size={rem(32)}>{category.name}</Text>
+              <Text size={rem(32)}>
+                {category?.totals[selectedMonth].toFixed(2)}
+              </Text>
+            </Group>
 
-          <div>
-            <h1 className="text-2xl font-bold text-right">
-              {category?.totals &&
-                category?.totals[selectedMonth] &&
-                category?.totals[selectedMonth].toFixed(2)}
-            </h1>
-            {/* Future Chart Here */}
-          </div>
-        </div>
+            {category?.groups?.map((group: GroupData) => {
+              return (
+                <Group bg={"gray.8"} mb="xs" p="xs" opacity={0.5}>
+                  {group.name}
+                </Group>
+              );
+            })}
+            {/* <Paper bg={"transparent"} p="xs">
+              {category?.groups?.map((group: GroupData) => {
+                // Filtrar los gastos según el mes seleccionado
+                const filteredExpenses = group.expenses.filter((expense) => {
+                  return new Date(expense.date).getMonth() === selectedMonth;
+                });
 
-        {/* Bottom Panel */}
-        <div className="w-full p-4 text-white">
-          {category?.groups?.map((group: GroupData) => {
-            // Filtrar los gastos según el mes seleccionado
-            const filteredExpenses = group.expenses.filter((expense) => {
-              return new Date(expense.date).getMonth() === selectedMonth;
-            });
+                const sortedExpenses = filteredExpenses.sort(
+                  (a, b) =>
+                    new Date(a.date).getTime() - new Date(b.date).getTime()
+                );
 
-            const sortedExpenses = filteredExpenses.sort(
-              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-            );
+                const groupExpensesIds = group.expenses.map((e) => e.id);
 
-            const groupExpensesIds = group.expenses.map((e) => e.id);
+                const headerStyles =
+                  "flex flex-row items-center mt-2 mb-1 bg-white opacity-30 text-black";
 
-            const headerStyles =
-              "flex flex-row items-center mt-2 mb-1 bg-white opacity-30 text-black";
-
-            return (
-              filteredExpenses.length > 0 && (
-                <div key={group.id} className={`font-semibold pb-2`}>
-                  {/*group header*/}
-                  <div className={`${headerStyles}`}>
-                    <input
-                      checked={isAllSelected(groupExpensesIds)}
-                      className="ml-2 cursor-pointer"
-                      type="checkbox"
-                      onChange={(e) => handleSelectAll(groupExpensesIds)}
-                    />
-                    <div
-                      className={"flex flex-1 items-center"}
-                      onClick={(e) => toggleGroupExpansion(group.id)}
-                    >
-                      <span className={`flex w-1/4 text-xl pl-5`}>
-                        <Editable
-                          defaultValue={group.name}
-                          submitOnBlur={true}
-                          onSubmit={(name) =>
-                            updateGroupNameHandler(group, name)
-                          }
-                        >
-                          <EditablePreview />
-                          <EditableInput />
-                        </Editable>
-                      </span>
-                      <span className={`flex flex-1 gap-5 h-full`}>
-                        {isAnySelected(groupExpensesIds) && (
-                          <>
-                            <span>{CategoriesSelect}</span>
-                            <span>{GroupsSelect}</span>
-                            <span>
-                              <button
-                                className={`text-sm w-full border px-2`}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  handleApply();
-                                }}
-                              >
-                                Apply
-                              </button>
-                            </span>
-                          </>
-                        )}
-                      </span>
-                      <span
-                        className={`flex w-1/3 justify-end text-right pr-2 text-lg`}
-                      >
-                        {group.totals[selectedMonth].toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    {...getExpandableProps(
-                      group.id,
-                      expandedGroups.has(group.id)
-                    )}
-                    onClick={() => {}}
-                  >
-                    {sortedExpenses.map((expense, index) => (
-                      <div
-                        key={expense.id}
-                        className={`flex flex-col justify-between hover:bg-[rgba(255,255,255,0.2)] transition-all cursor-pointer mb-1 pr-1 ${
-                          selectedExpenses.includes(expense.id)
-                            ? "bg-[rgba(255,255,255,0.2)]"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          toggleGroupExpansion(expense.id);
-                          handleSelectExpense(expense.id);
-                        }}
-                      >
-                        <div className={"flex"}>
-                          <span className={"flex gap-5"}>
-                            <span className={"pl-5"}>
-                              <span>
-                                {new Date(expense.date).toLocaleDateString(
-                                  "default",
-                                  { day: "2-digit", month: "short" }
-                                )}
-                              </span>
-                            </span>
-                            <span>{expense.name}</span>
-                          </span>
-                          <span className="self-end text-right flex-1">
-                            {expense.amount}
-                          </span>
-                        </div>
+                return (
+                  filteredExpenses.length > 0 && (
+                    <div key={group.id} className={`font-semibold pb-2`}>
+                      <div className={`${headerStyles}`}>
+                        <input
+                          checked={isAllSelected(groupExpensesIds)}
+                          className="ml-2 cursor-pointer"
+                          type="checkbox"
+                          onChange={(e) => handleSelectAll(groupExpensesIds)}
+                        />
                         <div
-                          className={"text-black ml-5"}
-                          {...getExpandableProps(
-                            expense.id,
-                            expandedGroups.has(expense.id)
-                          )}
+                          className={"flex flex-1 items-center"}
+                          onClick={(e) => toggleGroupExpansion(group.id)}
                         >
-                          <textarea
-                            defaultValue={expense.notes}
-                            className={"p2 w-1/2"}
-                            style={{ minHeight: "100px" }}
-                            onBlur={(e) =>
-                              updatExpenseDetailHandler(e, expense.id)
-                            }
-                          ></textarea>
+                          <span className={`flex w-1/4 text-xl pl-5`}>
+                            <Editable
+                              defaultValue={group.name}
+                              submitOnBlur={true}
+                              onSubmit={(name) =>
+                                updateGroupNameHandler(group, name)
+                              }
+                            >
+                              <EditablePreview />
+                              <EditableInput />
+                            </Editable>
+                          </span>
+                          <span className={`flex flex-1 gap-5 h-full`}>
+                            {isAnySelected(groupExpensesIds) && (
+                              <>
+                                <span>{CategoriesSelect}</span>
+                                <span>{GroupsSelect}</span>
+                                <span>
+                                  <button
+                                    className={`text-sm w-full border px-2`}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleApply();
+                                    }}
+                                  >
+                                    Apply
+                                  </button>
+                                </span>
+                              </>
+                            )}
+                          </span>
+                          <span
+                            className={`flex w-1/3 justify-end text-right pr-2 text-lg`}
+                          >
+                            {group.totals[selectedMonth].toFixed(2)}
+                          </span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            );
-          })}
-        </div>
-      </div>
-    </div>
+                      <div
+                        {...getExpandableProps(
+                          group.id,
+                          expandedGroups.has(group.id)
+                        )}
+                        onClick={() => {}}
+                      >
+                        {sortedExpenses.map((expense, index) => (
+                          <div
+                            key={expense.id}
+                            className={`flex flex-col justify-between hover:bg-[rgba(255,255,255,0.2)] transition-all cursor-pointer mb-1 pr-1 ${
+                              selectedExpenses.includes(expense.id)
+                                ? "bg-[rgba(255,255,255,0.2)]"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              toggleGroupExpansion(expense.id);
+                              handleSelectExpense(expense.id);
+                            }}
+                          >
+                            <div className={"flex"}>
+                              <span className={"flex gap-5"}>
+                                <span className={"pl-5"}>
+                                  <span>
+                                    {new Date(expense.date).toLocaleDateString(
+                                      "default",
+                                      { day: "2-digit", month: "short" }
+                                    )}
+                                  </span>
+                                </span>
+                                <span>{expense.name}</span>
+                              </span>
+                              <span className="self-end text-right flex-1">
+                                {expense.amount}
+                              </span>
+                            </div>
+                            <div
+                              className={"text-black ml-5"}
+                              {...getExpandableProps(
+                                expense.id,
+                                expandedGroups.has(expense.id)
+                              )}
+                            >
+                              <textarea
+                                defaultValue={expense.notes}
+                                className={"p2 w-1/2"}
+                                style={{ minHeight: "100px" }}
+                                onBlur={(e) =>
+                                  updatExpenseDetailHandler(e, expense.id)
+                                }
+                              ></textarea>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                );
+              })}
+            </Paper> */}
+          </Paper>
+        </Collapse>
+      </Table.Td>
+    </Table.Tr>
   );
 };
 

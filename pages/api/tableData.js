@@ -17,13 +17,32 @@ const calculateBalance = (incomeTotals, summaryTotals) => {
   );
 };
 
-const groupExpensesByCategory = (expenses, categories, groups, income) => {
+const groupExpensesByCategory = (expenses, categories, groups, clients, income) => {
+  console.log(income)
   const uncategorized = {
     id: "0",
     name: "Uncategorized",
     color: "#da9898",
   };
   const noGroup = { id: "0", name: "No Group" };
+  const noClient = { id: "0", name: "No Client" };
+
+  // Esta función ahora agrupará los ingresos por cliente
+  const incomeByClient = (income) =>
+    _(income)
+      .groupBy((inc) => (inc?.client && inc.client.id) || "0")
+      .value();
+
+  // Añadir la categoría de ingresos al principio
+  const incomeTotals = getTotals(income);
+  const incomeCategory = {
+    id: "income",
+    name: "Income",
+    groups: [],
+    expenses: income,
+    color: "#72afff",
+    totals: incomeTotals,
+  };
 
   const expensesByCategory = _(expenses)
     .groupBy((expense) => (expense?.category && expense?.category?.id) || "0")
@@ -34,16 +53,21 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
       .groupBy((expense) => (expense?.group && expense.group.id) || "0")
       .value();
 
-  // Add income category at the top
-  const incomeTotals = getTotals(income);
-  const incomeCategory = {
-    id: "income",
-    name: "Income",
-    groups: [],
-    expenses: income,
-    color: "#72afff",
-    totals: incomeTotals,
-  };
+  // Agrupar ingresos por cliente
+  const groupedIncomeByClient = clients.concat(noClient).map((client) => {
+    const clientIncomes = incomeByClient(income)[client.id] || [];
+    const totals = getTotals(clientIncomes);
+
+    if (totals.some(total => total > 0)) {
+      return {
+        id: client.id,
+        name: client.name || "No Client",
+        expenses: clientIncomes,
+        totals,
+      };
+    }
+    return null;
+  }).filter(client => client !== null); // Eliminar clientes nulos
 
   const categoryObjects = categories.concat(uncategorized).map((category) => {
     const categoryExpenses = expensesByCategory[category.id] || [];
@@ -76,6 +100,8 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
   }).filter(category => category !== null); // Elimina las categorías nulas (sin gastos)
 
   // Prepend the incomeCategory to the categoryObjects array
+  // Actualizar la categoría de ingresos con la nueva agrupación por cliente
+  incomeCategory.groups = groupedIncomeByClient;
   const groupedExpenses = [incomeCategory].concat(categoryObjects);
 
   // Add summary category
@@ -101,7 +127,7 @@ const groupExpensesByCategory = (expenses, categories, groups, income) => {
     totals: balanceTotals,
   };
   groupedExpenses.push(balanceCategory);
-
+  console.log(groupedExpenses)
   return {
     categories: groupedExpenses,
   };
@@ -128,7 +154,7 @@ const generateYearlyQuery = (year) => {
 // Esta función puede ser invocada directamente para obtener los datos.
 export async function getTableData() {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() - 1;
   const query = generateYearlyQuery(currentYear);
   const queryString = qs.stringify({ where: query });
   const headers = {
@@ -156,6 +182,7 @@ export async function getTableData() {
     expenses.docs,
     categories.docs,
     groups.docs,
+    clients.docs,
     incomes.docs
   );
 

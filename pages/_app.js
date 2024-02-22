@@ -1,16 +1,19 @@
 import "../styles/globals.css";
-import { ChakraProvider } from "@chakra-ui/react";
+import '@mantine/core/styles.css';
 import { ExpensesProvider } from "../hooks/expensesContext.tsx";
 import { SessionProvider } from "next-auth/react";
+import { MantineProvider } from "@mantine/core";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
-      <ExpensesProvider>
-        <ChakraProvider>
+      <MantineProvider>
+        <ExpensesProvider>
+          {/* <ChakraProvider> */}
           <Component {...pageProps} />
-        </ChakraProvider>
-      </ExpensesProvider>
+          {/* </ChakraProvider> */}
+        </ExpensesProvider>
+      </MantineProvider>
     </SessionProvider>
   );
 }
