@@ -39,9 +39,11 @@ function DataTable({ data }) {
     <table {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr key={headerGroup.id} {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th key={column.name} {...column.getHeaderProps()}>
+                {column.render("Header")}
+              </th>
             ))}
           </tr>
         ))}
@@ -54,7 +56,9 @@ function DataTable({ data }) {
             <React.Fragment key={row.id}>
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  <td key={cell.name} {...cell.getCellProps()}>
+                    {cell.render("Cell")}
+                  </td>
                 ))}
               </tr>
               {/*

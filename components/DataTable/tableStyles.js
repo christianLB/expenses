@@ -37,4 +37,5 @@ const combinedStyles = {
   highlighted: `${baseStyles.highlighted}`,
 };
 
-export default { ...baseStyles, ...combinedStyles };
+const styles = { ...baseStyles, ...combinedStyles };
+export default styles;

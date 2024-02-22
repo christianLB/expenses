@@ -250,7 +250,13 @@ const CategoryDetail = ({ category }) => {
 
             {category?.groups?.map((group: GroupData) => {
               return (
-                <Group bg={"gray.8"} mb="xs" p="xs" opacity={0.5}>
+                <Group
+                  key={group.id}
+                  bg={"gray.8"}
+                  mb="xs"
+                  p="xs"
+                  opacity={0.5}
+                >
                   {group.name}
                 </Group>
               );

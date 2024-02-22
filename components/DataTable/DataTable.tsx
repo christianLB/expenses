@@ -167,7 +167,7 @@ const DataTable: React.FC<DataTableProps> = ({
         <TableHeader />
         <CategoryRow {...{ ...incomeCategory }} sortable={false} />
         {sortableCategories.map((category) => (
-          <CategoryRow sortable={false} {...category} />
+          <CategoryRow key={category.id} sortable={false} {...category} />
         ))}
         {!!uncategorizedCategory?.expenses?.length && (
           <CategoryRow
