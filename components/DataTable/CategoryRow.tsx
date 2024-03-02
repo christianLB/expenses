@@ -51,7 +51,7 @@ const CategoryRow = (props: CategoryRowProps) => {
       <Table.Tr>
         <Table.Td
           style={{
-            //background: category?.color,
+            background: !isCollapsed ? category?.color : "",
             borderBottom: "1px solid #ccc",
           }}
         >

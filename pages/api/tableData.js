@@ -134,8 +134,8 @@ const groupExpensesByCategory = (expenses, categories, groups, clients, income) 
 };
 
 const generateYearlyQuery = (year) => {
-  const startDate = new Date(year, 0, 1); // 1 de enero del año indicado
-  const endDate = new Date(year + 1, 0, 1); // 1 de enero del año siguiente
+  const startDate = new Date(Date.UTC(year, 0, 1)); // 1 de enero del año indicado en UTC
+  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // 1 de enero del año siguiente en UTC
 
   return {
     date: {
@@ -150,6 +150,7 @@ const generateYearlyQuery = (year) => {
     ],
   };
 };
+
 
 // Esta función puede ser invocada directamente para obtener los datos.
 export async function getTableData() {

@@ -33,7 +33,6 @@ function DataTable({ data }) {
     visibleColumns,
     state: { expanded },
   } = useTable({ columns, data }, useExpanded); // useExpanded para manejar las expansiones
-  console.log(data);
   // Renderiza la tabla con filas expandibles
   return (
     <table {...getTableProps()}>
