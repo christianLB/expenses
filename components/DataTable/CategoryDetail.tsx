@@ -283,7 +283,11 @@ const CategoryDetail = ({ category }) => {
                     >
                       {monthExpenses.map((expense) => {
                         return (
-                          <Group w={"100%"} justify="space-between">
+                          <Group
+                            w={"100%"}
+                            justify="space-between"
+                            key={group.id}
+                          >
                             <Group gap="md">
                               <Text w={100}>
                                 {new Date(expense.date).toLocaleDateString(
