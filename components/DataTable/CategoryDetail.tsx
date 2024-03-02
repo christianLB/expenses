@@ -16,7 +16,7 @@ import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 import ColorPicker from "react-best-gradient-color-picker";
 import useExpandables from "../../hooks/useExpandables";
-import { Group, Paper, Table, Text, rem } from "@mantine/core";
+import { Group, Stack, Paper, Table, Text, rem } from "@mantine/core";
 
 interface GroupData {
   id: string;
@@ -249,6 +249,13 @@ const CategoryDetail = ({ category }) => {
             </Group>
 
             {category?.groups?.map((group: GroupData) => {
+              // Filtrar los gastos según el mes seleccionado
+              const monthExpenses = group.expenses.filter((expense) => {
+                return new Date(expense.date).getMonth() === selectedMonth;
+              });
+
+              if (!monthExpenses.length) return null;
+
               return (
                 <Group
                   key={group.id}
@@ -257,7 +264,43 @@ const CategoryDetail = ({ category }) => {
                   p="xs"
                   opacity={0.5}
                 >
-                  {group.name}
+                  <Group
+                    w={"100%"}
+                    onClick={() => toggleGroupExpansion(group.id)}
+                  >
+                    {group.name}
+                  </Group>
+                  <Collapse
+                    in={expandedGroups.has(group.id)}
+                    style={{ width: "100%" }}
+                  >
+                    <Stack
+                      w={"100%"}
+                      pt={"xs"}
+                      justify="space-between"
+                      gap={"xs"}
+                      style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
+                    >
+                      {monthExpenses.map((expense) => {
+                        return (
+                          <Group w={"100%"} justify="space-between">
+                            <Group gap="md">
+                              <Text w={100}>
+                                {new Date(expense.date).toLocaleDateString(
+                                  "default",
+                                  { day: "2-digit", month: "short" }
+                                )}
+                              </Text>
+                              <Text>{expense.name}</Text>
+                            </Group>
+                            <Group>
+                              <Text>{expense.amount}</Text>
+                            </Group>
+                          </Group>
+                        );
+                      })}
+                    </Stack>
+                  </Collapse>
                 </Group>
               );
             })}

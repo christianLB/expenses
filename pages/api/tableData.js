@@ -188,7 +188,7 @@ export async function getTableData(req, year) {
   };
 
   // Tus URLs se mantienen igual...
-  const expensesUrl = `${CMS_URL}/expenses?${queryString}&limit=0`;
+  const expensesUrl = `${CMS_URL}/expenses?${queryString}&limit=0&sort=date`;
   const groupsUrl = `${CMS_URL}/expense-group?limit=0`;
   const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
   const clientsUrl = `${CMS_URL}/clients?limit=0`;
