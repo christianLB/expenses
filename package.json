@@ -25,6 +25,7 @@
     "@mantine/dates": "^7.5.1",
     "@mantine/hooks": "^7.5.1",
     "@prisma/client": "^4.8.0",
+    "@tabler/icons-react": "^2.47.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
     "axios": "^1.6.2",

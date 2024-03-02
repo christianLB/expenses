@@ -16,7 +16,8 @@ import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 import ColorPicker from "react-best-gradient-color-picker";
 import useExpandables from "../../hooks/useExpandables";
-import { Group, Stack, Paper, Table, Text, rem } from "@mantine/core";
+import { Group, Stack, Paper, Table, Text, rem, Checkbox } from "@mantine/core";
+import { IconPencil, IconTrash, IconChevronDown } from "@tabler/icons-react";
 
 interface GroupData {
   id: string;
@@ -255,6 +256,7 @@ const CategoryDetail = ({ category }) => {
               });
 
               if (!monthExpenses.length) return null;
+              const groupIsExpanded = expandedGroups.has(group.id);
 
               return (
                 <Group
@@ -268,12 +270,15 @@ const CategoryDetail = ({ category }) => {
                     w={"100%"}
                     onClick={() => toggleGroupExpansion(group.id)}
                   >
+                    {groupIsExpanded ? (
+                      <Checkbox w={20} h={20} />
+                    ) : (
+                      <IconChevronDown width={20} height={20} />
+                    )}
+
                     {group.name}
                   </Group>
-                  <Collapse
-                    in={expandedGroups.has(group.id)}
-                    style={{ width: "100%" }}
-                  >
+                  <Collapse in={groupIsExpanded} style={{ width: "100%" }}>
                     <Stack
                       w={"100%"}
                       pt={"xs"}
@@ -289,6 +294,19 @@ const CategoryDetail = ({ category }) => {
                             key={group.id}
                           >
                             <Group gap="md">
+                              <Group gap="xs" mr="xl">
+                                <Checkbox w={20} h={20} />
+                                <IconPencil
+                                  width={20}
+                                  height={20}
+                                  cursor={"pointer"}
+                                />
+                                <IconTrash
+                                  width={20}
+                                  height={20}
+                                  cursor={"pointer"}
+                                />
+                              </Group>
                               <Text w={100}>
                                 {new Date(expense.date).toLocaleDateString(
                                   "default",
