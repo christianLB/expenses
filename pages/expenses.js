@@ -9,6 +9,8 @@ import { AppShell, Paper, Stack, Group } from "@mantine/core";
 
 export async function getServerSideProps(context) {
   const session = await getSession({ req: context.req });
+  const { query } = context;
+  const { year = new Date().getFullYear() } = query;
 
   if (!session) {
     return {
@@ -21,9 +23,9 @@ export async function getServerSideProps(context) {
 
   try {
     // Aquí invocas directamente la función que obtiene los datos
-    const tableData = await getTableData(context.req);
+    const tableData = await getTableData(context.req, year);
 
-    return { props: { session, tableData: tableData.categories } };
+    return { props: { session, tableData: tableData } };
   } catch (error) {
     // Manejar el error aquí...
     return { props: { session, tableData: null, error: error.message } };

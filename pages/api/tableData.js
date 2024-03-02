@@ -1,15 +1,25 @@
 import qs from "qs";
-import _ from "lodash";
+import _, { forEach } from "lodash";
 import authorizeRequest from "./authorizeRequest";
 
 const getTotals = (expenses = []) => {
-  return expenses?.reduce((acc, expense) => {
-    const month = new Date(expense.date).getMonth();
-    acc[month] += expense.amount;
-    acc[12] += expense.amount;
+  return expenses.reduce((acc, expense) => {
+    // Crear la fecha directamente desde el string ISO 8601
+    const date = new Date(expense.date);
+    const monthIndex = date.getUTCMonth(); // Obtiene el mes en UTC
+    // Asegurar que expense.amount es un número
+    const amount = Number(expense.amount) || 0;
+
+    // Sumar el monto al mes correspondiente y al total anual
+    acc[monthIndex] += amount; // Sumar al mes correspondiente
+    acc[12] += amount; // Sumar al total anual
+
     return acc;
   }, Array(13).fill(0));
 };
+
+
+
 
 const calculateBalance = (incomeTotals, summaryTotals) => {
   return incomeTotals.map(
@@ -17,8 +27,7 @@ const calculateBalance = (incomeTotals, summaryTotals) => {
   );
 };
 
-const groupExpensesByCategory = (expenses, categories, groups, clients, income) => {
-  console.log(income)
+const groupExpensesByCategory = (expenses, categories, groups, clients, income, firstExpense, lastExpense) => {
   const uncategorized = {
     id: "0",
     name: "Uncategorized",
@@ -127,24 +136,40 @@ const groupExpensesByCategory = (expenses, categories, groups, clients, income) 
     totals: balanceTotals,
   };
   groupedExpenses.push(balanceCategory);
-  console.log(groupedExpenses)
   return {
     categories: groupedExpenses,
+    years: getAvailableYears(firstExpense, lastExpense),
   };
 };
 
+const getAvailableYears = (firstExpense, lastExpense) => {
+  const startYear = new Date(firstExpense[0]?.date).getFullYear() ?? 0;
+  const endYear = new Date(lastExpense[0]?.date).getFullYear() ?? 0;
+  const years = [];
+
+  for (let year = startYear; year <= endYear; year++) {
+    years.push(year);
+  }
+  return years;
+}
+
 const generateYearlyQuery = (year) => {
-  const startDate = new Date(Date.UTC(year, 0, 1)); // 1 de enero del año indicado en UTC
-  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // 1 de enero del año siguiente en UTC
+  // Comenzar desde el final del día anterior al 1 de enero del año indicado en UTC
+  // Esto es para capturar cualquier registro que podría interpretarse como el día anterior
+  // debido a la zona horaria. Por ejemplo, para compensar hasta 24 horas, restamos un día (en milisegundos).
+  const startDate = new Date(Date.UTC(year, 0, 1) - (24 * 60 * 60 * 1000)); // Resta 24 horas para cubrir el día anterior
+
+  // El endDate es el inicio del próximo año, no necesita ajuste adicional
+  const endDate = new Date(Date.UTC(year + 1, 0, 1));
 
   return {
     date: {
-      greater_than_equal: startDate,
+      greater_than_equal: startDate.toISOString(),
     },
     and: [
       {
         date: {
-          less_than_equal: endDate,
+          less_than_equal: endDate.toISOString(), // Usamos less_than para excluir el inicio del próximo año
         },
       },
     ],
@@ -153,9 +178,9 @@ const generateYearlyQuery = (year) => {
 
 
 // Esta función puede ser invocada directamente para obtener los datos.
-export async function getTableData() {
+export async function getTableData(req, year) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = new Date().getFullYear() - 1;
+  const currentYear = year;
   const query = generateYearlyQuery(currentYear);
   const queryString = qs.stringify({ where: query });
   const headers = {
@@ -167,15 +192,19 @@ export async function getTableData() {
   const groupsUrl = `${CMS_URL}/expense-group?limit=0`;
   const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
   const clientsUrl = `${CMS_URL}/clients?limit=0`;
-  const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0`;
+  const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0&sort=-date`;
+  const firstExpenseUrl = `${CMS_URL}/expenses?limit=1&sort=date`;
+  const lastExpenseUrl = `${CMS_URL}/expenses?limit=1&sort=-date`;
 
   // Tus llamadas fetch se mantienen igual...
-  const [expenses, groups, categories, clients, incomes] = await Promise.all([
+  const [expenses, groups, categories, clients, incomes, firstExpense, lastExpense] = await Promise.all([
     fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(firstExpenseUrl, { method: "GET", headers }).then((r) => r.json()),
+    fetch(lastExpenseUrl, { method: "GET", headers }).then((r) => r.json()),
   ]);
 
   // Agrupa y combina los datos como antes
@@ -184,7 +213,9 @@ export async function getTableData() {
     categories.docs,
     groups.docs,
     clients.docs,
-    incomes.docs
+    incomes.docs,
+    firstExpense.docs,
+    lastExpense.docs
   );
 
   return data;

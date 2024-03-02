@@ -3,15 +3,11 @@ import React, { createContext, useRef, useState } from "react";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import TableHeader from "./TableHeader";
 import CategoryRow, { CategoryData, GroupData } from "./CategoryRow";
-import tableStyles from "./tableStyles.js";
 import useCollapsedState from "../../hooks/useCollapsedState";
-import BalanceRow from "./BalanceRow";
-import SummaryRow from "./SummaryRow";
-import SortableList from "../SortableList";
 import useToggleList from "../../hooks/useToggleList";
 import useExpandables from "../../hooks/useExpandables";
-import { Table } from "@mantine/core";
-import Table2 from "../DataTable2/DataTable2";
+import { Group, Table, Text } from "@mantine/core";
+import { useRouter } from "next/router";
 
 interface DataTableProps {
   data?: {
@@ -51,17 +47,21 @@ interface IProps {
   data: ICategory[];
 }
 //main component
-const DataTable: React.FC<DataTableProps> = ({
-  data: categories,
-}: DataTableProps) => {
+const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
+  const { categories, years } = data ?? {};
+
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [hoveredCategory, setHoveredCategory] = useState<CategoryData>();
   const [isDragging, setIsDragging] = useState(false);
   const [expanded, toggleExpanded] = useState(false);
-
+  const router = useRouter();
+  const setYear = (year: number) => {
+    router.push(`/expenses?year=${year}`);
+  };
   const contentRef = useRef(null);
 
+  const { year } = router.query;
   const {
     list: selectedExpenses,
     toggleItem: handleSelectExpense,
@@ -144,6 +144,7 @@ const DataTable: React.FC<DataTableProps> = ({
 
   const [isCollapsed, toggleCollapse] = useState(true);
   const { getExpandableProps } = useExpandables();
+  console.log(year);
   return (
     <TableContext.Provider
       value={{
@@ -188,6 +189,20 @@ const DataTable: React.FC<DataTableProps> = ({
           color={colors[colors.length - 1]}
         />
       </Table>
+      <Group gap="xs" justify="flex-end" align="stretch" w={"100%"}>
+        {years.map((_year) => {
+          return (
+            <Text
+              key={_year}
+              onClick={() => setYear(_year)}
+              fw={Number(year) === Number(_year) ? "700" : "400"}
+              style={{ cursor: "pointer", userSelect: "none" }}
+            >
+              {_year}
+            </Text>
+          );
+        })}
+      </Group>
     </TableContext.Provider>
   );
 };

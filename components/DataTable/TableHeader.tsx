@@ -27,7 +27,7 @@ const TableHeader: React.FC<TableHeaderProps> = () => {
     <Table.Tr>
       <Table.Td></Table.Td>
       {months.map((month, index) => (
-        <Table.Td className="text-center" key={index}>
+        <Table.Td className="text-center" key={index} c="gray">
           {month}
         </Table.Td>
       ))}
