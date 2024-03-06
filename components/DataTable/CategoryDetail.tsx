@@ -5,19 +5,32 @@ import useSelect from "../../hooks/useSelect";
 import { useExpensesContext } from "../../hooks/expensesContext";
 import nextStyles from "../../styles/Expenses.module.css";
 import {
+  Button,
   Collapse,
   Editable,
   EditableInput,
   EditablePreview,
   Input,
+  NumberInput,
   useEditableControls,
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
 
 import ColorPicker from "react-best-gradient-color-picker";
 import useExpandables from "../../hooks/useExpandables";
-import { Group, Stack, Paper, Table, Text, rem, Checkbox } from "@mantine/core";
+import {
+  Group,
+  Stack,
+  Paper,
+  Table,
+  Text,
+  rem,
+  Checkbox,
+  Modal,
+  TextInput,
+} from "@mantine/core";
 import { IconPencil, IconTrash, IconChevronDown } from "@tabler/icons-react";
+import ExpenseModal from "./ExpenseModal";
 
 interface GroupData {
   id: string;
@@ -218,6 +231,7 @@ const CategoryDetail = ({ category }) => {
   }
 
   const expandableProps = getExpandableProps(category.id, !isCollapsed);
+  const [editModalOpen, setIsEditModalOpen] = useState(false);
 
   return (
     <Table.Tr p="0">
@@ -250,6 +264,7 @@ const CategoryDetail = ({ category }) => {
             </Group>
 
             {category?.groups?.map((group: GroupData) => {
+              const groupExpensesIds = group.expenses.map((e) => e.id);
               // Filtrar los gastos según el mes seleccionado
               const monthExpenses = group.expenses.filter((expense) => {
                 return new Date(expense.date).getMonth() === selectedMonth;
@@ -271,7 +286,15 @@ const CategoryDetail = ({ category }) => {
                     onClick={() => toggleGroupExpansion(group.id)}
                   >
                     {groupIsExpanded ? (
-                      <Checkbox w={20} h={20} />
+                      <Checkbox
+                        w={20}
+                        h={20}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        checked={isAllSelected(groupExpensesIds)}
+                        onChange={(e) => handleSelectAll(groupExpensesIds)}
+                      />
                     ) : (
                       <IconChevronDown width={20} height={20} />
                     )}
@@ -294,12 +317,31 @@ const CategoryDetail = ({ category }) => {
                             key={group.id}
                           >
                             <Group gap="md">
+                              <ExpenseModal
+                                isOpen={editModalOpen}
+                                expenseData={expense}
+                                onClose={() => setIsEditModalOpen(false)}
+                                onSave={() => {}}
+                              />
                               <Group gap="xs" mr="xl">
-                                <Checkbox w={20} h={20} />
+                                <Checkbox
+                                  w={20}
+                                  h={20}
+                                  checked={selectedExpenses.includes(
+                                    expense.id
+                                  )}
+                                  onClick={() => {
+                                    handleSelectExpense(expense.id);
+                                  }}
+                                />
+
                                 <IconPencil
                                   width={20}
                                   height={20}
                                   cursor={"pointer"}
+                                  onClick={() => {
+                                    setIsEditModalOpen(true);
+                                  }}
                                 />
                                 <IconTrash
                                   width={20}
