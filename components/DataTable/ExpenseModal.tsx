@@ -27,6 +27,9 @@ const ExpenseModal = ({ expenseData, onSave, onClose, isOpen }) => {
     onClose();
   };
 
+  console.clear();
+  console.log(expenseData, formData);
+
   return (
     <Modal opened={isOpen} onClose={onClose} title="Editar gasto">
       <form onSubmit={handleSave}>
@@ -55,19 +58,23 @@ const ExpenseModal = ({ expenseData, onSave, onClose, isOpen }) => {
           required
         />
         {/* ... Other inputs for account, currency, etc. ... */}
+        <Select
+          label="Category"
+          value={formData.user}
+          onChange={(value) => handleInputChange("user", value)}
+          data={[]}
+        />
+        <Select
+          label="Group"
+          value={formData.user}
+          onChange={(value) => handleInputChange("user", value)}
+          data={[]}
+        />
         <Checkbox
           label="Needs Revision"
           checked={formData.needsRevision}
           onChange={(e) => handleInputChange("needsRevision", e.target.checked)}
         />
-        {/* Assuming 'user' is a select field with options */}
-        <Select
-          label="User"
-          value={formData.user}
-          onChange={(value) => handleInputChange("user", value)}
-          data={[]}
-        />
-        {/* Repeat for category, group, and any other fields you have */}
         <Group justify="right" mt="md">
           <Button type="submit">Guardar</Button>
         </Group>

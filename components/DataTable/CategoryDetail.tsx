@@ -231,7 +231,7 @@ const CategoryDetail = ({ category }) => {
   }
 
   const expandableProps = getExpandableProps(category.id, !isCollapsed);
-  const [editModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
 
   return (
     <Table.Tr p="0">
@@ -309,6 +309,12 @@ const CategoryDetail = ({ category }) => {
                       gap={"xs"}
                       style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
                     >
+                      <ExpenseModal
+                        isOpen={!!editingExpense}
+                        expenseData={editingExpense}
+                        onClose={() => setEditingExpense(null)}
+                        onSave={() => {}}
+                      />
                       {monthExpenses.map((expense) => {
                         return (
                           <Group
@@ -317,12 +323,6 @@ const CategoryDetail = ({ category }) => {
                             key={group.id}
                           >
                             <Group gap="md">
-                              <ExpenseModal
-                                isOpen={editModalOpen}
-                                expenseData={expense}
-                                onClose={() => setIsEditModalOpen(false)}
-                                onSave={() => {}}
-                              />
                               <Group gap="xs" mr="xl">
                                 <Checkbox
                                   w={20}
@@ -340,7 +340,7 @@ const CategoryDetail = ({ category }) => {
                                   height={20}
                                   cursor={"pointer"}
                                   onClick={() => {
-                                    setIsEditModalOpen(true);
+                                    setEditingExpense(expense);
                                   }}
                                 />
                                 <IconTrash

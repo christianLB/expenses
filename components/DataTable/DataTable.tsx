@@ -144,7 +144,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
 
   const [isCollapsed, toggleCollapse] = useState(true);
   const { getExpandableProps } = useExpandables();
-  console.log(year);
+
   return (
     <TableContext.Provider
       value={{
