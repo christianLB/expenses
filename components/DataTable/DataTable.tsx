@@ -48,7 +48,7 @@ interface IProps {
 }
 //main component
 const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
-  const { categories, years } = data ?? {};
+  const { categories, years, expenseCategories, expenseGroups } = data ?? {};
 
   const [collapsedKeys, toggleItemCollapse] = useCollapsedState({});
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -144,7 +144,6 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
 
   const [isCollapsed, toggleCollapse] = useState(true);
   const { getExpandableProps } = useExpandables();
-
   return (
     <TableContext.Provider
       value={{
@@ -168,10 +167,20 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
         <TableHeader />
         <CategoryRow {...{ ...incomeCategory }} sortable={false} />
         {sortableCategories.map((category) => (
-          <CategoryRow key={category.id} sortable={false} {...category} />
-        ))}
-        {!!uncategorizedCategory?.expenses?.length && (
           <CategoryRow
+            expenseCategories={expenseCategories}
+            expenseGroups={expenseGroups}
+            key={category.id}
+            sortable={false}
+            {...category}
+          />
+        ))}
+        {!!uncategorizedCategory?.groups.some(
+          (group) => group.expenses.length > 0
+        ) && (
+          <CategoryRow
+            expenseCategories={expenseCategories}
+            expenseGroups={expenseGroups}
             {...{
               ...uncategorizedCategory,
               sortable: false,
@@ -181,6 +190,8 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
         <CategoryRow
           sortable={false}
           {...summaryCategory}
+          expenseCategories={expenseCategories}
+          expenseGroups={expenseGroups}
           color={colors[colors.length - 1]}
         />
         <CategoryRow

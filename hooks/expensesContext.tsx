@@ -29,21 +29,33 @@ export const ExpensesProvider = ({ children }) => {
   const query = generateYearlyQuery(currentYear);
   const isAuthenticated = status === "authenticated";
 
-  // Función para inicializar las colecciones con usePayloadCollection
-  const initializeCollection = (collectionName, hasQuery = false) =>
-    usePayloadCollection({
-      collection: collectionName,
-      fetchOnInit: false,
-      clearOnStart: false,
-      ...(hasQuery && { query }), // Agregar query solo si es necesario
-    });
-
-  // Inicializar colecciones usando la función
-  const expensesCollection = initializeCollection("expenses", true);
-  const groupsCollection = initializeCollection("expense-group");
-  const categoriesCollection = initializeCollection("expense-category");
-  const clientsCollection = initializeCollection("clients");
-  const incomesCollection = initializeCollection("incomes", true);
+  const expensesCollection = usePayloadCollection({
+    collection: "expenses",
+    fetchOnInit: false,
+    clearOnStart: false,
+    ...(true && { query }),
+  });
+  const groupsCollection = usePayloadCollection({
+    collection: "expense-group",
+    fetchOnInit: false,
+    clearOnStart: false,
+  });
+  const categoriesCollection = usePayloadCollection({
+    collection: "expense-category",
+    fetchOnInit: false,
+    clearOnStart: false,
+  });
+  const clientsCollection = usePayloadCollection({
+    collection: "clients",
+    fetchOnInit: false,
+    clearOnStart: false,
+  });
+  const incomesCollection = usePayloadCollection({
+    collection: "incomes",
+    fetchOnInit: false,
+    clearOnStart: false,
+    ...(true && { query }),
+  });
 
   const { data, loading } = useApi("./api/tableData", {
     method: "POST",

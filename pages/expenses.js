@@ -15,7 +15,7 @@ export async function getServerSideProps(context) {
   if (!session) {
     return {
       redirect: {
-        destination: '/login',
+        destination: "/login",
         permanent: false,
       },
     };
@@ -33,18 +33,15 @@ export async function getServerSideProps(context) {
 }
 
 export default function Expenses({ tableData }) {
-  const {
-    currentYear,
-    setCurrentYear,
-    //gmailApi: { loading: gmailLoading },
-    //gmailResponse,
-  } = useExpensesContext();
+  // const {
+  //   currentYear,
+  //   setCurrentYear,
+  //   //gmailApi: { loading: gmailLoading },
+  //   //gmailResponse,
+  // } = useExpensesContext();
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      padding="md"
-    >
+    <AppShell header={{ height: 60 }} padding="md">
       <AppShell.Header>
         <Group>
           <LoginBtn />
@@ -54,10 +51,9 @@ export default function Expenses({ tableData }) {
       <meta name="description" content="Expenses tracking." />
       <link rel="icon" href="/favicon.ico" />
 
-
       <AppShell.Main>
         <Paper mih={550} m="xl" p="xl" withBorder shadow="lg">
-          <Stack gap={'lg'} align="center">
+          <Stack gap={"lg"} align="center">
             {/* <FileUploader /> */}
             <Table data={tableData} />
           </Stack>

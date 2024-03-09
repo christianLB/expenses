@@ -29,6 +29,8 @@ interface CategoryRowProps extends CategoryData {
   sortableProps?: any;
   dragListeners?: any;
   sortable: boolean;
+  expenseGroups?: any;
+  expenseCategories?: any;
 }
 
 const CategoryRow = (props: CategoryRowProps) => {
@@ -39,15 +41,25 @@ const CategoryRow = (props: CategoryRowProps) => {
     hoveredCategory,
   } = useContext<TableContextProps>(TableContext);
 
-  const { sortableProps, dragListeners, sortable = true, ...category } = props;
+  const {
+    sortableProps,
+    dragListeners,
+    sortable = true,
+    expenseGroups,
+    expenseCategories,
+    ...category
+  } = props;
   const isCollapsed = !collapsedKeys.has(category?.id);
   const isIncome = category?.name === "Income";
   const isHovered = category?.id === hoveredCategory?.id;
-  {
-  }
+
   return (
     <>
-      <CategoryDetail category={category} />
+      <CategoryDetail
+        category={category}
+        expenseGroups={expenseGroups}
+        expenseCategories={expenseCategories}
+      />
       <Table.Tr>
         <Table.Td
           style={{
@@ -73,7 +85,7 @@ const CategoryRow = (props: CategoryRowProps) => {
             onClick={() => handleCellClick(category, index)}
             onMouseMove={() => setHoveredCategory(category)}
           >
-            {total > 0 ? total.toFixed(2) : "-"}
+            {total === 0 ? "-" : total.toFixed(2)}
           </TableCell>
         ))}
       </Table.Tr>

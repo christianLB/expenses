@@ -18,16 +18,21 @@ const getTotals = (expenses = []) => {
   }, Array(13).fill(0));
 };
 
-
-
-
 const calculateBalance = (incomeTotals, summaryTotals) => {
   return incomeTotals.map(
     (incomeTotal, index) => incomeTotal - summaryTotals[index]
   );
 };
 
-const groupExpensesByCategory = (expenses, categories, groups, clients, income, firstExpense, lastExpense) => {
+const groupExpensesByCategory = (
+  expenses,
+  categories,
+  groups,
+  clients,
+  income,
+  firstExpense,
+  lastExpense
+) => {
   const uncategorized = {
     id: "0",
     name: "Uncategorized",
@@ -54,59 +59,79 @@ const groupExpensesByCategory = (expenses, categories, groups, clients, income, 
   };
 
   const expensesByCategory = _(expenses)
-    .groupBy((expense) => (expense?.category && expense?.category?.id) || "0")
+    .groupBy((expense) => expense?.category?.id || "0")
     .value();
 
   const expensesByGroup = (categoryExpenses) =>
     _(categoryExpenses)
-      .groupBy((expense) => (expense?.group && expense.group.id) || "0")
+      .groupBy((expense) => expense?.group?.id || "0")
       .value();
 
   // Agrupar ingresos por cliente
-  const groupedIncomeByClient = clients.concat(noClient).map((client) => {
-    const clientIncomes = incomeByClient(income)[client.id] || [];
-    const totals = getTotals(clientIncomes);
+  const groupedIncomeByClient = clients
+    .concat(noClient)
+    .map((client) => {
+      const clientIncomes = incomeByClient(income)[client.id] || [];
+      const totals = getTotals(clientIncomes);
 
-    if (totals.some(total => total > 0)) {
-      return {
-        id: client.id,
-        name: client.name || "No Client",
-        expenses: clientIncomes,
-        totals,
-      };
-    }
-    return null;
-  }).filter(client => client !== null); // Eliminar clientes nulos
-
-  const categoryObjects = categories.concat(uncategorized).map((category) => {
-    const categoryExpenses = expensesByCategory[category.id] || [];
-    const groupedExpensesByGroup = groups.concat(noGroup).map((group) => {
-      const groupExpenses = expensesByGroup(categoryExpenses)[group.id] || [];
-      const totals = getTotals(groupExpenses);
-
-      // Filtra los grupos con total de gastos igual a cero
-      if (totals.some(total => total > 0)) {
+      if (totals.some((total) => total > 0)) {
         return {
-          id: group.id,
-          name: group.name,
-          expenses: groupExpenses,
+          id: client.id,
+          name: client.name || "No Client",
+          expenses: clientIncomes,
           totals,
         };
       }
       return null;
-    }).filter(group => group !== null); // Elimina los grupos nulos (sin gastos)
+    })
+    .filter((client) => client !== null); // Eliminar clientes nulos
 
-    const totals = getTotals(categoryExpenses);
-    if (totals.some(total => total > 0)) {
+  const categoryObjects = categories.map((category) => {
+    const categoryExpenses = expensesByCategory[category.id] || [];
+    const groupedExpensesByGroup = groups.map((group) => {
+      const groupExpenses = expensesByGroup(categoryExpenses)[group.id] || [];
       return {
-        ...category,
-        groups: groupedExpensesByGroup,
-        expenses: categoryExpenses,
-        totals,
+        id: group.id,
+        name: group.name,
+        expenses: groupExpenses,
+        totals: getTotals(groupExpenses),
       };
-    }
-    return null;
-  }).filter(category => category !== null); // Elimina las categorías nulas (sin gastos)
+    });
+
+    // Always include 'No Group' even if it has no expenses
+    const noGroupExpenses = expensesByGroup(categoryExpenses)["0"] || [];
+    groupedExpensesByGroup.push({
+      id: "0",
+      name: "No Group",
+      expenses: noGroupExpenses,
+      totals: getTotals(noGroupExpenses),
+    });
+
+    return {
+      ...category,
+      groups: groupedExpensesByGroup,
+      totals: getTotals(categoryExpenses),
+    };
+  });
+
+  // Always include 'Uncategorized' even if it has no expenses
+  const uncategorizedExpenses = expensesByCategory["0"] || [];
+  const uncategorizedObject = {
+    id: "0",
+    name: "Uncategorized",
+    color: "#da9898",
+    groups: [
+      {
+        id: "0",
+        name: "No Group",
+        expenses: uncategorizedExpenses,
+        totals: getTotals(uncategorizedExpenses),
+      },
+    ],
+    totals: getTotals(uncategorizedExpenses),
+  };
+
+  categoryObjects.push(uncategorizedObject);
 
   // Prepend the incomeCategory to the categoryObjects array
   // Actualizar la categoría de ingresos con la nueva agrupación por cliente
@@ -137,6 +162,8 @@ const groupExpensesByCategory = (expenses, categories, groups, clients, income, 
   };
   groupedExpenses.push(balanceCategory);
   return {
+    expenseCategories: categories,
+    expenseGroups: groups,
     categories: groupedExpenses,
     years: getAvailableYears(firstExpense, lastExpense),
   };
@@ -151,13 +178,13 @@ const getAvailableYears = (firstExpense, lastExpense) => {
     years.push(year);
   }
   return years;
-}
+};
 
 const generateYearlyQuery = (year) => {
   // Comenzar desde el final del día anterior al 1 de enero del año indicado en UTC
   // Esto es para capturar cualquier registro que podría interpretarse como el día anterior
   // debido a la zona horaria. Por ejemplo, para compensar hasta 24 horas, restamos un día (en milisegundos).
-  const startDate = new Date(Date.UTC(year, 0, 1) - (24 * 60 * 60 * 1000)); // Resta 24 horas para cubrir el día anterior
+  const startDate = new Date(Date.UTC(year, 0, 1) - 24 * 60 * 60 * 1000); // Resta 24 horas para cubrir el día anterior
 
   // El endDate es el inicio del próximo año, no necesita ajuste adicional
   const endDate = new Date(Date.UTC(year + 1, 0, 1));
@@ -176,11 +203,10 @@ const generateYearlyQuery = (year) => {
   };
 };
 
-
 // Esta función puede ser invocada directamente para obtener los datos.
 export async function getTableData(req, year) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = year;
+  const currentYear = 2023;
   const query = generateYearlyQuery(currentYear);
   const queryString = qs.stringify({ where: query });
   const headers = {
@@ -197,7 +223,15 @@ export async function getTableData(req, year) {
   const lastExpenseUrl = `${CMS_URL}/expenses?limit=1&sort=-date`;
 
   // Tus llamadas fetch se mantienen igual...
-  const [expenses, groups, categories, clients, incomes, firstExpense, lastExpense] = await Promise.all([
+  const [
+    expenses,
+    groups,
+    categories,
+    clients,
+    incomes,
+    firstExpense,
+    lastExpense,
+  ] = await Promise.all([
     fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),

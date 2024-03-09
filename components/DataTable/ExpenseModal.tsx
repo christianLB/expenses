@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   TextInput,
@@ -7,9 +7,20 @@ import {
   Group,
   Checkbox,
   Select,
+  Textarea,
+  Stack,
 } from "@mantine/core";
 
-const ExpenseModal = ({ expenseData, onSave, onClose, isOpen }) => {
+import { DateInput } from "@mantine/dates";
+
+const ExpenseModal = ({
+  expenseData,
+  onSave,
+  onClose,
+  isOpen,
+  expenseGroups,
+  expenseCategories,
+}) => {
   const [formData, setFormData] = useState({
     ...expenseData,
   });
@@ -27,57 +38,92 @@ const ExpenseModal = ({ expenseData, onSave, onClose, isOpen }) => {
     onClose();
   };
 
-  console.clear();
-  console.log(expenseData, formData);
+  const parseBBVA = async () => {
+    const response = await fetch("./api/parseBBVA", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData.archivos[0]),
+    });
+    const { data } = await response.json();
+    setFormData({ ...formData, ...data });
+  };
+
+  useEffect(() => {
+    if (expenseData) {
+      setFormData({
+        ...expenseData,
+        category: expenseData?.category?.id ?? "",
+        group: expenseData?.group?.id ?? "",
+      });
+    }
+  }, [expenseData]);
 
   return (
-    <Modal opened={isOpen} onClose={onClose} title="Editar gasto">
+    <Modal size="xl" opened={isOpen} onClose={onClose} title="Editar gasto">
       <form onSubmit={handleSave}>
-        <TextInput
-          label="Name"
-          value={formData.name}
-          onChange={(e) => handleInputChange("name", e.target.value)}
-          required
-        />
-        <NumberInput
-          label="Amount"
-          value={formData.amount}
-          onChange={(value) => handleInputChange("amount", value)}
-          required
-        />
-        <TextInput
-          label="Balance"
-          value={formData.balance}
-          onChange={(e) => handleInputChange("balance", e.target.value)}
-        />
-        <TextInput
-          label="Date"
-          type="date"
-          value={formData.date}
-          onChange={(e) => handleInputChange("date", e.target.value)}
-          required
-        />
-        {/* ... Other inputs for account, currency, etc. ... */}
-        <Select
-          label="Category"
-          value={formData.user}
-          onChange={(value) => handleInputChange("user", value)}
-          data={[]}
-        />
-        <Select
-          label="Group"
-          value={formData.user}
-          onChange={(value) => handleInputChange("user", value)}
-          data={[]}
-        />
-        <Checkbox
-          label="Needs Revision"
-          checked={formData.needsRevision}
-          onChange={(e) => handleInputChange("needsRevision", e.target.checked)}
-        />
-        <Group justify="right" mt="md">
-          <Button type="submit">Guardar</Button>
-        </Group>
+        <Stack>
+          <TextInput
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            required
+          />
+          <Group wrap={"nowrap"}>
+            <NumberInput
+              w={"20%"}
+              placeholder="Amount"
+              value={formData.amount}
+              onChange={(value) => handleInputChange("amount", value)}
+              required
+            />
+            <DateInput
+              placeholder="Date"
+              value={new Date(formData.date ?? new Date().toISOString())}
+              onChange={(value) => handleInputChange("date", value)}
+            />
+            {/* ... Other inputs for account, currency, etc. ... */}
+            <Select
+              placeholder="Category"
+              value={formData?.category ?? ""}
+              onChange={(value) => handleInputChange("category", value)}
+              data={(expenseCategories ?? []).map((category) => {
+                return { value: category.id, label: category.name };
+              })}
+            />
+            <Select
+              placeholder="Group"
+              value={formData?.group ?? ""}
+              onChange={(value) => handleInputChange("group", value)}
+              data={(expenseGroups ?? []).map((group) => {
+                return { value: group.id, label: group.name };
+              })}
+            />
+          </Group>
+          <Textarea
+            placeholder="Notes"
+            value={formData?.notes ?? ""}
+            onChange={(value) => handleInputChange("notes", value)}
+          />
+          <Checkbox
+            label="Needs Revision"
+            checked={formData.needsRevision}
+            onChange={(e) =>
+              handleInputChange("needsRevision", e.target.checked)
+            }
+          />
+          <Group justify="right" mt="md">
+            <Button
+              variant="tertiary"
+              disabled={!formData.archivos?.length}
+              onClick={parseBBVA}
+            >
+              BBVA
+            </Button>
+            <Button type="submit">Guardar</Button>
+          </Group>
+        </Stack>
       </form>
     </Modal>
   );
