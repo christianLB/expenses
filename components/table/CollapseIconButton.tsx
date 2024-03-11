@@ -1,6 +1,6 @@
 import React from "react";
-import { IconButton } from "@chakra-ui/react";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import { ActionIcon } from "@mantine/core";
 
 const CollapseIconButton = ({
   collapsed,
@@ -8,13 +8,13 @@ const CollapseIconButton = ({
   ariaLabel = "",
 }) => {
   return (
-    <IconButton
+    <ActionIcon
       onClick={onToggleCollapse}
-      icon={collapsed ? <TriangleUpIcon /> : <TriangleDownIcon />}
-      size="sm"
       variant="ghost"
       aria-label={ariaLabel}
-    />
+    >
+      {collapsed ? <IconChevronUp /> : <IconChevronDown />}
+    </ActionIcon>
   );
 };
 

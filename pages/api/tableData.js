@@ -2,6 +2,15 @@ import qs from "qs";
 import _, { forEach } from "lodash";
 import authorizeRequest from "./authorizeRequest";
 
+function getGroupTotals(expenses) {
+  return expenses.reduce((acc, expense) => {
+    // Asegura que expense.amount sea un número antes de sumarlo.
+    // Esto es útil si los datos no son consistentes.
+    const amount = Number(expense.amount) || 0;
+    return acc + amount;
+  }, 0); // Inicializa el acumulador como 0.
+}
+
 const getTotals = (expenses = []) => {
   return expenses.reduce((acc, expense) => {
     // Crear la fecha directamente desde el string ISO 8601
@@ -88,24 +97,28 @@ const groupExpensesByCategory = (
 
   const categoryObjects = categories.map((category) => {
     const categoryExpenses = expensesByCategory[category.id] || [];
-    const groupedExpensesByGroup = groups.map((group) => {
+    const groupedExpensesByGroup = [];
+    groups.forEach((group) => {
       const groupExpenses = expensesByGroup(categoryExpenses)[group.id] || [];
-      return {
-        id: group.id,
-        name: group.name,
-        expenses: groupExpenses,
-        totals: getTotals(groupExpenses),
-      };
+      if (groupExpenses.length > 0) {
+        groupedExpensesByGroup.push({
+          id: group.id,
+          name: group.name,
+          expenses: [], // groupExpenses,
+          totals: getTotals(groupExpenses),
+        });
+      }
     });
 
     // Always include 'No Group' even if it has no expenses
     const noGroupExpenses = expensesByGroup(categoryExpenses)["0"] || [];
-    groupedExpensesByGroup.push({
-      id: "0",
-      name: "No Group",
-      expenses: noGroupExpenses,
-      totals: getTotals(noGroupExpenses),
-    });
+    if (noGroupExpenses.length > 0)
+      groupedExpensesByGroup.push({
+        id: "0",
+        name: "No Group",
+        expenses: [], // noGroupExpenses,
+        totals: getTotals(noGroupExpenses),
+      });
 
     return {
       ...category,
@@ -206,7 +219,7 @@ const generateYearlyQuery = (year) => {
 // Esta función puede ser invocada directamente para obtener los datos.
 export async function getTableData(req, year) {
   const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = 2023;
+  const currentYear = year;
   const query = generateYearlyQuery(currentYear);
   const queryString = qs.stringify({ where: query });
   const headers = {

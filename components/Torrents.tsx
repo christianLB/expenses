@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Spinner } from "@chakra-ui/react";
-import { Card, CardHeader, CardBody, CardFooter } from "@chakra-ui/react";
-
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-} from "@chakra-ui/react";
-import { Box } from "@chakra-ui/react";
-
 import * as api from "qbittorrent-api-v2";
 import axios from "axios";
+import { Paper, Stack } from "@mantine/core";
 
 const Torrents = () => {
   const containerStyles = {
@@ -103,8 +92,8 @@ const Torrents = () => {
   );
 
   return (
-    <Card style={{ marginTop: "10px" }} w="100%" fontSize={"2xs"}>
-      <CardBody>
+    <Paper style={{ marginTop: "10px" }} w="100%" fs={"2xs"}>
+      <Stack>
         <div className={"flex-col w-full pb-2"}>
           <div>
             <input
@@ -184,9 +173,8 @@ const Torrents = () => {
             })}
           </div>
         </div>
-      </CardBody>
-      <CardFooter className={"justify-evenly"}></CardFooter>
-    </Card>
+      </Stack>
+    </Paper>
   );
 };
 

@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import '@mantine/core/styles.css';
+import "@mantine/core/styles.css";
 import { ExpensesProvider } from "../hooks/expensesContext.tsx";
 import { SessionProvider } from "next-auth/react";
 import { MantineProvider } from "@mantine/core";
@@ -9,9 +9,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     <SessionProvider session={session}>
       <MantineProvider>
         <ExpensesProvider>
-          {/* <ChakraProvider> */}
           <Component {...pageProps} />
-          {/* </ChakraProvider> */}
         </ExpensesProvider>
       </MantineProvider>
     </SessionProvider>

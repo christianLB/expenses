@@ -1,12 +1,13 @@
 // GroupRow.tsx
 import React, { useContext, useRef, useState } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
-import { Collapse } from "@chakra-ui/react";
+import { Collapse } from "@mantine/core";
 
 import useExpandables from "../../hooks/useExpandables";
 import { Group, Stack, Paper, Table, Text, rem, Checkbox } from "@mantine/core";
-import { IconPencil, IconTrash, IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown } from "@tabler/icons-react";
 import ExpenseModal from "./ExpenseModal";
+import Expense from "./Expense";
 
 interface GroupData {
   id: string;
@@ -206,6 +207,12 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
   const expandableProps = getExpandableProps(category.id, !isCollapsed);
   const [editingExpense, setEditingExpense] = useState(null);
 
+  const handleDelete = async (expense) => {
+    await fetch(`./api/expensesApi?id=${expense.id}`, {
+      method: "DELETE",
+    });
+  };
+
   return (
     <>
       <ExpenseModal
@@ -260,9 +267,8 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                   return new Date(expense.date).getMonth() === selectedMonth;
                 });
 
-                if (!monthExpenses.length) return null;
                 const groupIsExpanded = expandedGroups.has(group.id);
-
+                const groupTotals = group.totals[selectedMonth].toFixed(2);
                 return (
                   <Group
                     key={group.id}
@@ -288,8 +294,10 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                       ) : (
                         <IconChevronDown width={20} height={20} />
                       )}
-
-                      {group.name}
+                      <Group w={"97%"} wrap="nowrap" justify="space-between">
+                        <Text>{group.name}</Text>
+                        <Text>{groupTotals}</Text>
+                      </Group>
                     </Group>
                     <Collapse in={groupIsExpanded} style={{ width: "100%" }}>
                       <Stack
@@ -301,50 +309,18 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                       >
                         {monthExpenses.map((expense) => {
                           return (
-                            <Group
-                              w={"100%"}
-                              justify="space-between"
+                            <Expense
                               key={expense.id}
-                            >
-                              <Group gap="md">
-                                <Group gap="xs" mr="xl">
-                                  <Checkbox
-                                    w={20}
-                                    h={20}
-                                    checked={selectedExpenses.includes(
-                                      expense.id
-                                    )}
-                                    onClick={() => {
-                                      handleSelectExpense(expense.id);
-                                    }}
-                                  />
-
-                                  <IconPencil
-                                    width={20}
-                                    height={20}
-                                    cursor={"pointer"}
-                                    onClick={() => {
-                                      setEditingExpense(expense);
-                                    }}
-                                  />
-                                  <IconTrash
-                                    width={20}
-                                    height={20}
-                                    cursor={"pointer"}
-                                  />
-                                </Group>
-                                <Text w={100}>
-                                  {new Date(expense.date).toLocaleDateString(
-                                    "default",
-                                    { day: "2-digit", month: "short" }
-                                  )}
-                                </Text>
-                                <Text>{expense.name}</Text>
-                              </Group>
-                              <Group>
-                                <Text>{expense.amount}</Text>
-                              </Group>
-                            </Group>
+                              expense={expense}
+                              isSelected={selectedExpenses.includes(expense.id)}
+                              onSelect={() => {
+                                handleSelectExpense(expense.id);
+                              }}
+                              onEdit={() => {
+                                setEditingExpense(expense);
+                              }}
+                              onDelete={() => handleDelete(expense)}
+                            />
                           );
                         })}
                       </Stack>

@@ -164,41 +164,45 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
       }}
     >
       <Table withRowBorders={false} c={"gray.1"}>
-        <TableHeader />
-        <CategoryRow {...{ ...incomeCategory }} sortable={false} />
-        {sortableCategories.map((category) => (
+        <Table.Thead>
+          <TableHeader />
+        </Table.Thead>
+        <Table.Tbody>
+          <CategoryRow {...{ ...incomeCategory }} sortable={false} />
+          {sortableCategories.map((category) => (
+            <CategoryRow
+              expenseCategories={expenseCategories}
+              expenseGroups={expenseGroups}
+              key={category.id}
+              sortable={false}
+              {...category}
+            />
+          ))}
+          {!!uncategorizedCategory?.groups.some(
+            (group) => group.expenses.length > 0
+          ) && (
+            <CategoryRow
+              expenseCategories={expenseCategories}
+              expenseGroups={expenseGroups}
+              {...{
+                ...uncategorizedCategory,
+                sortable: false,
+              }}
+            />
+          )}
           <CategoryRow
-            expenseCategories={expenseCategories}
-            expenseGroups={expenseGroups}
-            key={category.id}
             sortable={false}
-            {...category}
-          />
-        ))}
-        {!!uncategorizedCategory?.groups.some(
-          (group) => group.expenses.length > 0
-        ) && (
-          <CategoryRow
+            {...summaryCategory}
             expenseCategories={expenseCategories}
             expenseGroups={expenseGroups}
-            {...{
-              ...uncategorizedCategory,
-              sortable: false,
-            }}
+            color={colors[colors.length - 1]}
           />
-        )}
-        <CategoryRow
-          sortable={false}
-          {...summaryCategory}
-          expenseCategories={expenseCategories}
-          expenseGroups={expenseGroups}
-          color={colors[colors.length - 1]}
-        />
-        <CategoryRow
-          sortable={false}
-          {...balanceCategory}
-          color={colors[colors.length - 1]}
-        />
+          <CategoryRow
+            sortable={false}
+            {...balanceCategory}
+            color={colors[colors.length - 1]}
+          />
+        </Table.Tbody>
       </Table>
       <Group gap="xs" justify="flex-end" align="stretch" w={"100%"}>
         {years.map((_year) => {

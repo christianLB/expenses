@@ -1,4 +1,4 @@
-import { Select } from "@chakra-ui/react";
+import { NativeSelect } from "@mantine/core";
 import { useState } from "react";
 
 const useSelect = ({
@@ -12,7 +12,7 @@ const useSelect = ({
 }) => {
   const [selected, setSelected] = useState();
   const SelectComponent = (
-    <Select
+    <NativeSelect
       placeholder={placeHolder}
       size="xs"
       onChange={(e: any) => {
@@ -30,7 +30,7 @@ const useSelect = ({
           </option>
         );
       })}
-    </Select>
+    </NativeSelect>
   );
 
   return {

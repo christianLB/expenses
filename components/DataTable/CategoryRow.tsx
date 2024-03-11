@@ -1,12 +1,9 @@
 // CategoryRow.tsx
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { TableContext, TableContextProps } from "./DataTable";
-import styles from "./tableStyles.js";
 import TableCell from "./TableCell";
 import CategoryDetail from "./CategoryDetail";
 import { Table, Text } from "@mantine/core";
-
-import nextStyles from "../../styles/Expenses.module.css";
 
 export interface CategoryData {
   id?: string;
@@ -64,7 +61,7 @@ const CategoryRow = (props: CategoryRowProps) => {
         <Table.Td
           style={{
             background: !isCollapsed ? category?.color : "",
-            borderBottom: "1px solid #ccc",
+            //borderBottom: "1px solid #ccc",
           }}
         >
           <Text fw="700" c="gray.8">
