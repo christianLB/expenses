@@ -15,6 +15,7 @@ interface DataTableProps {
     summary: Array<number>;
     balance: Array<number>;
   };
+  year: number;
 }
 
 export interface TableContextProps {

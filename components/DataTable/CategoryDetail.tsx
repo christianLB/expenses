@@ -8,6 +8,7 @@ import { Group, Stack, Paper, Table, Text, rem, Checkbox } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import ExpenseModal from "./ExpenseModal";
 import Expense from "./Expense";
+import { useRouter } from "next/router";
 
 interface GroupData {
   id: string;
@@ -32,6 +33,9 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
     handleSelectAll,
     categories,
   } = useContext<TableContextProps>(TableContext);
+  const router = useRouter();
+  const { year } = router.query;
+  const [groupExpenses, setGroupExpenses] = useState({});
   // const {
   //   expensesCollection: { fetchAll: fetchExpenses, update: updateExpense },
   //   groupsCollection: {
@@ -213,6 +217,30 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
     });
   };
 
+  const handleExpandGroup = async (groupId) => {
+    // El primer día del mes seleccionado
+    const startDate = new Date(Number(year), selectedMonth, 1).toISOString();
+
+    // El último día del mes seleccionado se calcula encontrando el primer día del siguiente mes y restando un día
+    const endDate = new Date(Number(year), selectedMonth + 1, 0).toISOString();
+
+    const queryParameters = new URLSearchParams({
+      groupId,
+      startDate,
+      endDate,
+    }).toString();
+
+    const resp = await fetch(`./api/expensesApi?${queryParameters}`, {
+      method: "GET",
+    });
+
+    const expenses = await resp.json();
+    if (expenses.length > 0) {
+      setGroupExpenses({ ...groupExpenses, [groupId]: expenses });
+      toggleGroupExpansion(groupId);
+    }
+  };
+
   return (
     <>
       <ExpenseModal
@@ -261,6 +289,7 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
               </Group>
 
               {category?.groups?.map((group: GroupData) => {
+                if (group.totals[selectedMonth] == 0) return null;
                 const groupExpensesIds = group.expenses.map((e) => e.id);
                 // Filtrar los gastos según el mes seleccionado
                 const monthExpenses = group.expenses.filter((expense) => {
@@ -279,7 +308,7 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                   >
                     <Group
                       w={"100%"}
-                      onClick={() => toggleGroupExpansion(group.id)}
+                      onClick={() => handleExpandGroup(group.id)}
                     >
                       {groupIsExpanded ? (
                         <Checkbox
@@ -307,7 +336,7 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                         gap={"xs"}
                         style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
                       >
-                        {monthExpenses.map((expense) => {
+                        {(groupExpenses[group.id] ?? []).map((expense) => {
                           return (
                             <Expense
                               key={expense.id}

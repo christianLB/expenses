@@ -1,7 +1,45 @@
-import { createItem, updateItem, deleteItem } from "./cms";
+import { createItem, updateItem, deleteItem, getItem, getItems } from "./cms";
+import qs from "qs";
 import authorizeRequest from "./authorizeRequest";
 
 const collection = "expenses";
+
+const buildQuery = ({
+  groupId,
+  categoryId,
+  startDate = new Date(),
+  endDate = new Date(),
+}) => {
+  const start = new Date(startDate); // Resta 24 horas para cubrir el día anterior
+  const end = new Date(endDate);
+
+  let query = {
+    date: {
+      greater_than_equal: start.toISOString(),
+    },
+    and: [
+      {
+        date: {
+          less_than_equal: end.toISOString(), // Usamos less_than para excluir el inicio del próximo año
+        },
+      },
+    ],
+  };
+
+  // Añadir condiciones de filtro solo si los valores están definidos
+  if (groupId) {
+    query["group"] = {
+      equals: groupId,
+    };
+  }
+  if (categoryId) {
+    query["category"] = {
+      equals: categoryId,
+    };
+  }
+
+  return query;
+};
 
 export default async function handler(req, res) {
   try {
@@ -9,6 +47,21 @@ export default async function handler(req, res) {
 
     try {
       switch (req.method) {
+        case "GET":
+          const expenseId = req.query.id;
+          if (expenseId) {
+            const expense = await getItem(collection, expenseId);
+            return res.status(200).json(expense);
+          }
+          const groupId = req.query.groupId;
+          const categoryId = req.query.categoryId;
+          const startDate = req.query.startDate;
+          const endDate = req.query.endDate;
+          const query = buildQuery({ groupId, categoryId, startDate, endDate });
+          const queryString = qs.stringify({ where: query });
+          const expenses = await getItems(collection, queryString);
+          return res.status(200).json(expenses.docs);
+
         case "POST":
           const itemToCreate = req.body;
           const createResult = await createItem(collection, itemToCreate);

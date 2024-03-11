@@ -4,6 +4,25 @@ const headers = {
   Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
 };
 
+export const getItem = async (collection, id) => {
+  const response = await fetch(`${CMS_URL}/${collection}/${id}`, {
+    method: "GET",
+    headers,
+  });
+  return response.json();
+};
+
+export const getItems = async (collection, queryString, limit = 0) => {
+  const response = await fetch(
+    `${CMS_URL}/${collection}?${queryString}&limit=${limit}`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
+  return response.json();
+};
+
 export const createItem = async (collection, data) => {
   const response = await fetch(`${CMS_URL}/${collection}`, {
     method: "POST",
