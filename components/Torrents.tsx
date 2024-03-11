@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as api from "qbittorrent-api-v2";
 import axios from "axios";
 import { Paper, Stack } from "@mantine/core";
 

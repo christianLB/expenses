@@ -1,8 +1,8 @@
 import Table from "../components/DataTable/DataTable.tsx";
-import { useExpensesContext } from "../hooks/expensesContext.tsx";
+// import { useExpensesContext } from "../hooks/expensesContext.tsx";
 import LoginBtn from "../components/loginbtn.tsx";
 
-import FileUploader from "../components/FileUploader";
+// import FileUploader from "../components/FileUploader";
 import { getSession } from "next-auth/react";
 import { getTableData } from "./api/tableData"; // Ajusta la ruta de importación según sea necesario
 import { AppShell, Paper, Stack, Group } from "@mantine/core";

@@ -39,8 +39,6 @@
     "openai": "^3.2.1",
     "openai-streams": "^5.1.0",
     "pdf2json": "^2.0.2",
-    "qbittorrent-api-client": "^0.4.0",
-    "qbittorrent-api-v2": "^1.2.2",
     "qs": "^6.11.1",
     "querystring": "^0.2.1",
     "react": "^18.0.0",
