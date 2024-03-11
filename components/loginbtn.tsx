@@ -1,6 +1,6 @@
 import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Button } from "@mantine/core";
+import { Button, Group, Text } from "@mantine/core";
 
 export default function Component() {
   const { data: session } = useSession();
@@ -17,15 +17,18 @@ export default function Component() {
   };
 
   return (
-    <div
-      className={`flex p-2 items-center justify-center m-2 ${
-        signedIn ? "self-end" : "self-center"
-      }`}
+    <Group
+      // className={`flex p-2 items-center justify-center m-2 ${
+      //   signedIn ? "self-end" : "self-center"
+      // }`}
+      w={"100%"}
+      justify={signedIn ? "flex-end" : "center"}
+      p="xs"
     >
-      {session?.user?.email}
-      <Button className={"ml-2"} onClick={handleSignIn}>
+      <Text>{session?.user?.email}</Text>
+      <Button onClick={handleSignIn}>
         {signedIn ? "Sign out" : "Sign in"}
       </Button>
-    </div>
+    </Group>
   );
 }
