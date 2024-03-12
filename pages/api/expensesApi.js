@@ -41,9 +41,18 @@ const buildQuery = ({
   return query;
 };
 
+export const getExpensesByYear = async (year) => {
+  const query = buildQuery({
+    startDate: new Date(year, 0, 1),
+    endDate: new Date(year + 1, 0, 1),
+  });
+  const queryString = qs.stringify({ where: query });
+
+  const expenses = await getItems(collection, queryString);
+  return expenses;
+};
+
 export const getAvailableYears = async () => {
-  // const startQuery = qs.stringify({ where: {} });
-  // const endQuery = qs.stringify({ where: {}, sort: "-date", limit: 1 });
   const [startExpense, endExpense] = await Promise.all([
     getItems(collection, "", 1, "date"),
     getItems(collection, "", 1, "-date"),
@@ -72,6 +81,12 @@ export default async function handler(req, res) {
         if (req.query.action === "availableYears") {
           const years = await getAvailableYears();
           return res.status(200).json(years);
+        }
+
+        if (req.query.action === "expensesByYear") {
+          const year = req.query.year || new Date().getFullYear();
+          const expenses = await getExpensesByYear(year);
+          return res.status(200).json(expenses);
         }
 
         const expenseId = req.query.id;

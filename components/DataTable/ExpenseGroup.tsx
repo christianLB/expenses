@@ -68,60 +68,70 @@ const ExpenseGroup = ({
   if (!groupTotals) return null;
 
   return (
-    <Group bg={"gray.8"} mb="xs" p="xs" opacity={0.5}>
-      <Group w={"100%"} onClick={handleExpand}>
-        {loading && (
-          <Group w={20} h={20}>
-            <Loader size={"sm"} />
-          </Group>
-        )}
-        {expanded && !loading ? (
-          <Checkbox
-            w={20}
-            h={20}
-            onClick={(e) => {
-              //e.stopPropagation();
-            }}
-            checked={selected}
-            onChange={onSelect}
-          />
-        ) : (
-          <></>
-        )}
-        {!expanded && !loading && <IconChevronDown width={20} height={20} />}
-
-        <Group w={"97%"} wrap="nowrap" justify="space-between">
+    <>
+      <Group
+        w={"100%"}
+        onClick={handleExpand}
+        bg={`${expanded ? "gray.9" : "gray.8"}`}
+        opacity={0.5}
+        justify="space-between"
+        p="xs"
+      >
+        <Group>
+          {loading && (
+            <Group w={20} h={20}>
+              <Loader size={"sm"} />
+            </Group>
+          )}
+          {!expanded && !loading && (
+            <Group w={20} h={20}>
+              <IconChevronDown width={20} height={20} />
+            </Group>
+          )}
+          {expanded && !loading ? (
+            <Checkbox
+              w={20}
+              h={20}
+              onClick={(e) => {
+                //e.stopPropagation();
+              }}
+              checked={selected}
+              onChange={onSelect}
+            />
+          ) : (
+            <></>
+          )}
           <Text fw={expanded ? "bold" : ""}>{group.name}</Text>
-          <Text fw={expanded ? "bold" : ""}>{groupTotals}</Text>
         </Group>
+        <Text fw={expanded ? "bold" : ""}>{groupTotals}</Text>
       </Group>
-      <Collapse in={expanded} style={{ width: "100%" }}>
-        <Stack
-          w={"100%"}
-          pt={"xs"}
-          justify="space-between"
-          gap={"xs"}
-          style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
-        >
-          {(expenses ?? []).map((expense) => {
-            return (
-              <Expense
-                key={expense.id}
-                expense={expense}
-                //isSelected={selectedExpenses.includes(expense.id)}
-                isSelected={false}
-                onSelect={() => {
-                  //handleSelectExpense(expense.id);
-                }}
-                onEdit={onEdit}
-                //onDelete={() => handleDelete(expense)}
-                onDelete={() => {}}
-              />
-            );
-          })}
-        </Stack>
-      </Collapse>
-    </Group>
+      <Group bg={"gray.9"} opacity={0.5}>
+        <Collapse in={expanded} style={{ width: "100%" }}>
+          <Stack
+            w={"100%"}
+            justify="space-between"
+            style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
+          >
+            {(expenses ?? []).map((expense) => {
+              return (
+                <Expense
+                  key={expense.id}
+                  expense={expense}
+                  //isSelected={selectedExpenses.includes(expense.id)}
+                  isSelected={false}
+                  onSelect={() => {
+                    //handleSelectExpense(expense.id);
+                  }}
+                  onEdit={onEdit}
+                  //onDelete={() => handleDelete(expense)}
+                  onDelete={() => {}}
+                />
+              );
+            })}
+          </Stack>
+        </Collapse>
+      </Group>
+    </>
   );
 };
 

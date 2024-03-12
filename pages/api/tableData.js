@@ -1,7 +1,7 @@
-import qs from "qs";
-import _, { forEach } from "lodash";
+import _ from "lodash";
 import authorizeRequest from "./authorizeRequest";
-import { getAvailableYears } from "./expensesApi";
+import { getAvailableYears, getExpensesByYear } from "./expensesApi";
+import { getItems } from "./cms";
 
 function getGroupTotals(expenses) {
   return expenses.reduce((acc, expense) => {
@@ -181,53 +181,14 @@ const groupExpensesByCategory = async (
   };
 };
 
-const generateYearlyQuery = (year) => {
-  // Comenzar desde el final del día anterior al 1 de enero del año indicado en UTC
-  // Esto es para capturar cualquier registro que podría interpretarse como el día anterior
-  // debido a la zona horaria. Por ejemplo, para compensar hasta 24 horas, restamos un día (en milisegundos).
-  const startDate = new Date(Date.UTC(year, 0, 1) - 24 * 60 * 60 * 1000); // Resta 24 horas para cubrir el día anterior
-
-  // El endDate es el inicio del próximo año, no necesita ajuste adicional
-  const endDate = new Date(Date.UTC(year + 1, 0, 1));
-
-  return {
-    date: {
-      greater_than_equal: startDate.toISOString(),
-    },
-    and: [
-      {
-        date: {
-          less_than_equal: endDate.toISOString(), // Usamos less_than para excluir el inicio del próximo año
-        },
-      },
-    ],
-  };
-};
-
 // Esta función puede ser invocada directamente para obtener los datos.
 export async function getTableData(req, year) {
-  const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-  const currentYear = year;
-  const query = generateYearlyQuery(currentYear);
-  const queryString = qs.stringify({ where: query });
-  const headers = {
-    Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
-  };
-
-  // Tus URLs se mantienen igual...
-  const expensesUrl = `${CMS_URL}/expenses?${queryString}&limit=0&sort=date`;
-  const groupsUrl = `${CMS_URL}/expense-group?limit=0`;
-  const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
-  const clientsUrl = `${CMS_URL}/clients?limit=0`;
-  const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0&sort=-date`;
-
-  // Tus llamadas fetch se mantienen igual...
   const [expenses, groups, categories, clients, incomes] = await Promise.all([
-    fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
+    getExpensesByYear(year),
+    getItems("expense-group"),
+    getItems("expense-category"),
+    getItems("clients"),
+    getItems("incomes"),
   ]);
 
   // Agrupa y combina los datos como antes

@@ -19,7 +19,7 @@ const Expense = ({
   };
 
   return (
-    <Group w={"100%"} justify="space-between" key={expense.id}>
+    <Group w={"100%"} justify="space-between" key={expense.id} p="xs">
       <Group gap="md">
         <Group gap="xs" mr="xl">
           <Checkbox w={20} h={20} checked={isSelected} onChange={onSelect} />
