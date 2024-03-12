@@ -12,6 +12,12 @@ const Expense = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [expense, setExpense] = useState(defaultExpense);
 
+  const handleDelete = async (expense) => {
+    await fetch(`./api/expensesApi?id=${expense.id}`, {
+      method: "DELETE",
+    });
+  };
+
   return (
     <Group w={"100%"} justify="space-between" key={expense.id}>
       <Group gap="md">
@@ -22,7 +28,7 @@ const Expense = ({
             width={20}
             height={20}
             cursor={"pointer"}
-            onClick={onEdit}
+            onClick={() => onEdit(expense)}
           />
           {!isDeleting && (
             <IconTrash

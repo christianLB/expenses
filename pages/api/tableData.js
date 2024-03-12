@@ -1,6 +1,7 @@
 import qs from "qs";
 import _, { forEach } from "lodash";
 import authorizeRequest from "./authorizeRequest";
+import { getAvailableYears } from "./expensesApi";
 
 function getGroupTotals(expenses) {
   return expenses.reduce((acc, expense) => {
@@ -33,14 +34,12 @@ const calculateBalance = (incomeTotals, summaryTotals) => {
   );
 };
 
-const groupExpensesByCategory = (
+const groupExpensesByCategory = async (
   expenses,
   categories,
   groups,
   clients,
-  income,
-  firstExpense,
-  lastExpense
+  income
 ) => {
   const uncategorized = {
     id: "0",
@@ -178,19 +177,8 @@ const groupExpensesByCategory = (
     expenseCategories: categories,
     expenseGroups: groups,
     categories: groupedExpenses,
-    years: getAvailableYears(firstExpense, lastExpense),
+    years: await getAvailableYears(),
   };
-};
-
-const getAvailableYears = (firstExpense, lastExpense) => {
-  const startYear = new Date(firstExpense[0]?.date).getFullYear() ?? 0;
-  const endYear = new Date(lastExpense[0]?.date).getFullYear() ?? 0;
-  const years = [];
-
-  for (let year = startYear; year <= endYear; year++) {
-    years.push(year);
-  }
-  return years;
 };
 
 const generateYearlyQuery = (year) => {
@@ -232,37 +220,23 @@ export async function getTableData(req, year) {
   const categoriesUrl = `${CMS_URL}/expense-category?limit=0`;
   const clientsUrl = `${CMS_URL}/clients?limit=0`;
   const incomesUrl = `${CMS_URL}/incomes?${queryString}&limit=0&sort=-date`;
-  const firstExpenseUrl = `${CMS_URL}/expenses?limit=1&sort=date`;
-  const lastExpenseUrl = `${CMS_URL}/expenses?limit=1&sort=-date`;
 
   // Tus llamadas fetch se mantienen igual...
-  const [
-    expenses,
-    groups,
-    categories,
-    clients,
-    incomes,
-    firstExpense,
-    lastExpense,
-  ] = await Promise.all([
+  const [expenses, groups, categories, clients, incomes] = await Promise.all([
     fetch(expensesUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(groupsUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(categoriesUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(clientsUrl, { method: "GET", headers }).then((r) => r.json()),
     fetch(incomesUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(firstExpenseUrl, { method: "GET", headers }).then((r) => r.json()),
-    fetch(lastExpenseUrl, { method: "GET", headers }).then((r) => r.json()),
   ]);
 
   // Agrupa y combina los datos como antes
-  const data = groupExpensesByCategory(
+  const data = await groupExpensesByCategory(
     expenses.docs,
     categories.docs,
     groups.docs,
     clients.docs,
-    incomes.docs,
-    firstExpense.docs,
-    lastExpense.docs
+    incomes.docs
   );
 
   return data;

@@ -12,9 +12,11 @@ export const getItem = async (collection, id) => {
   return response.json();
 };
 
-export const getItems = async (collection, queryString, limit = 0) => {
+export const getItems = async (collection, queryString, limit = 0, sort) => {
   const response = await fetch(
-    `${CMS_URL}/${collection}?${queryString}&limit=${limit}`,
+    `${CMS_URL}/${collection}?limit=${limit}${sort ? `&sort=${sort}` : ""}${
+      queryString ? `&${queryString}` : ""
+    }`,
     {
       method: "GET",
       headers,
