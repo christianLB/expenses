@@ -170,7 +170,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
         </Table.Thead>
         <Table.Tbody>
           <CategoryRow {...{ ...incomeCategory }} sortable={false} />
-          {sortableCategories.map((category) => (
+          {(sortableCategories ?? []).map((category) => (
             <CategoryRow
               expenseCategories={expenseCategories}
               expenseGroups={expenseGroups}
@@ -206,7 +206,7 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
         </Table.Tbody>
       </Table>
       <Group gap="xs" justify="flex-end" align="stretch" w={"100%"}>
-        {years.map((_year) => {
+        {(years ?? []).map((_year) => {
           return (
             <Text
               key={_year}

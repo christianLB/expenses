@@ -10,8 +10,24 @@ const buildQuery = ({
   startDate = new Date(),
   endDate = new Date(),
 }) => {
-  const start = new Date(startDate); // Resta 24 horas para cubrir el día anterior
-  const end = new Date(endDate);
+  const start = new Date(
+    Date.UTC(
+      startDate.getUTCFullYear(),
+      startDate.getUTCMonth(),
+      startDate.getUTCDate()
+    )
+  );
+  const end = new Date(
+    Date.UTC(
+      endDate.getUTCFullYear(),
+      endDate.getUTCMonth(),
+      endDate.getUTCDate(),
+      23,
+      59,
+      59,
+      999
+    )
+  );
 
   let query = {
     date: {
@@ -20,7 +36,7 @@ const buildQuery = ({
     and: [
       {
         date: {
-          less_than_equal: end.toISOString(), // Usamos less_than para excluir el inicio del próximo año
+          less_than_equal: end.toISOString(),
         },
       },
     ],
@@ -42,14 +58,27 @@ const buildQuery = ({
 };
 
 export const getExpensesByYear = async (year) => {
-  const query = buildQuery({
-    startDate: new Date(year, 0, 1),
-    endDate: new Date(year + 1, 0, 1),
-  });
+  // Crear fechas en UTC
+  const startDate = new Date(Date.UTC(year, 0, 1)); // Primer día del año indicado en UTC
+  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // Primer día del siguiente año en UTC
+
+  const query = buildQuery({ startDate, endDate });
   const queryString = qs.stringify({ where: query });
 
   const expenses = await getItems(collection, queryString);
   return expenses;
+};
+
+export const getIncomeByYear = async (year) => {
+  // Crear fechas en UTC
+  const startDate = new Date(Date.UTC(year, 0, 1)); // Primer día del año indicado en UTC
+  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // Primer día del siguiente año en UTC
+
+  const query = buildQuery({ startDate, endDate });
+  const queryString = qs.stringify({ where: query });
+
+  const incomes = await getItems("incomes", queryString);
+  return incomes;
 };
 
 export const getAvailableYears = async () => {
@@ -72,6 +101,26 @@ export const getAvailableYears = async () => {
   return [];
 };
 
+export const expensesByCategoryGroupYearMonth = async ({
+  date,
+  categoryId,
+  groupId,
+}) => {
+  // Crear fechas en UTC
+  const year = new Date(date).getFullYear();
+  const month = new Date(date).getUTCMonth();
+
+  const startDate = new Date(Date.UTC(year, month, 0));
+  const endDate = new Date(Date.UTC(year, month, 31));
+
+  const query = buildQuery({ startDate, endDate, categoryId, groupId });
+  const queryString = qs.stringify({ where: query });
+
+  const expenses = await getItems(collection, queryString);
+  console.log(expenses);
+  return expenses.docs;
+};
+
 export default async function handler(req, res) {
   try {
     //await authorizeRequest(req);
@@ -86,6 +135,24 @@ export default async function handler(req, res) {
         if (req.query.action === "expensesByYear") {
           const year = req.query.year || new Date().getFullYear();
           const expenses = await getExpensesByYear(year);
+          return res.status(200).json(expenses);
+        }
+
+        if (req.query.action === "getIncomeByYear") {
+          const year = req.query.year || new Date().getFullYear();
+          const incomes = await getIncomeByYear(year);
+          return res.status(200).json(incomes);
+        }
+
+        if (req.query.action === "expensesByCategoryGroupYearMonth") {
+          const date = req.query.date;
+          const groupId = req.query.groupId;
+          const categoryId = req.query.categoryId;
+          const expenses = await expensesByCategoryGroupYearMonth({
+            date,
+            groupId,
+            categoryId,
+          });
           return res.status(200).json(expenses);
         }
 

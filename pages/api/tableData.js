@@ -1,16 +1,11 @@
 import _ from "lodash";
 import authorizeRequest from "./authorizeRequest";
-import { getAvailableYears, getExpensesByYear } from "./expensesApi";
+import {
+  getAvailableYears,
+  getExpensesByYear,
+  getIncomeByYear,
+} from "./expensesApi";
 import { getItems } from "./cms";
-
-function getGroupTotals(expenses) {
-  return expenses.reduce((acc, expense) => {
-    // Asegura que expense.amount sea un número antes de sumarlo.
-    // Esto es útil si los datos no son consistentes.
-    const amount = Number(expense.amount) || 0;
-    return acc + amount;
-  }, 0); // Inicializa el acumulador como 0.
-}
 
 const getTotals = (expenses = []) => {
   return expenses.reduce((acc, expense) => {
@@ -188,7 +183,7 @@ export async function getTableData(req, year) {
     getItems("expense-group"),
     getItems("expense-category"),
     getItems("clients"),
-    getItems("incomes"),
+    getIncomeByYear(year),
   ]);
 
   // Agrupa y combina los datos como antes

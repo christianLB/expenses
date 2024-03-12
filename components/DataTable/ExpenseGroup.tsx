@@ -3,7 +3,6 @@ import { IconChevronDown } from "@tabler/icons-react";
 import Expense from "./Expense";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import exp from "constants";
 
 const ExpenseGroup = ({
   group,
@@ -14,7 +13,7 @@ const ExpenseGroup = ({
   onExpand,
   onEdit,
 }) => {
-  const groupTotals = group.totals[selectedMonth].toFixed(2);
+  const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
   const [expenses, setExpenses] = useState([]);
   const [expanded, toggleExpanded] = useState(false);
   const [error, setError] = useState(null);
@@ -24,14 +23,13 @@ const ExpenseGroup = ({
   const { year } = router.query;
 
   const refresh = async () => {
-    const startDate = new Date(Number(year), selectedMonth, 1).toISOString();
-    const endDate = new Date(Number(year), selectedMonth + 1, 0).toISOString();
+    const date = new Date(Number(year), selectedMonth, 0).toISOString();
 
     const queryParameters = new URLSearchParams({
+      action: "expensesByCategoryGroupYearMonth",
       categoryId: category.id,
       groupId: group.id,
-      startDate,
-      endDate,
+      date,
     }).toString();
 
     try {
@@ -65,10 +63,8 @@ const ExpenseGroup = ({
     toggleExpanded(false);
   }, [selectedMonth]);
 
-  if (!groupTotals) return null;
-
   return (
-    <>
+    <Collapse in={!!groupTotals} style={{ width: "100%" }}>
       <Group
         w={"100%"}
         onClick={handleExpand}
@@ -108,8 +104,8 @@ const ExpenseGroup = ({
       <Group bg={"gray.9"} opacity={0.5}>
         <Collapse in={expanded} style={{ width: "100%" }}>
           <Stack
+            gap={"0.1rem"}
             w={"100%"}
-            justify="space-between"
             style={{ borderTop: `1px solid rgba(255,255,255,0.3)` }}
           >
             {(expenses ?? []).map((expense) => {
@@ -131,7 +127,7 @@ const ExpenseGroup = ({
           </Stack>
         </Collapse>
       </Group>
-    </>
+    </Collapse>
   );
 };
 
