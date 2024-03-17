@@ -116,10 +116,6 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
     ];
     if (hiddenCategories.includes(category)) return false;
 
-    // Filter out the uncategorized category if it's empty
-    if (category === uncategorizedCategory && category.totals[12] <= 0)
-      return false;
-
     return true;
   });
 
@@ -179,18 +175,6 @@ const DataTable: React.FC<DataTableProps> = ({ data }: any) => {
               {...category}
             />
           ))}
-          {!!uncategorizedCategory?.groups.some(
-            (group) => group.expenses.length > 0
-          ) && (
-            <CategoryRow
-              expenseCategories={expenseCategories}
-              expenseGroups={expenseGroups}
-              {...{
-                ...uncategorizedCategory,
-                sortable: false,
-              }}
-            />
-          )}
           <CategoryRow
             sortable={false}
             {...summaryCategory}

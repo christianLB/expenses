@@ -13,9 +13,9 @@ const ExpenseGroup = ({
   onExpand,
   onEdit,
 }) => {
-  const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
   const [expenses, setExpenses] = useState([]);
   const [expanded, toggleExpanded] = useState(false);
+  const [visible, toggleVisible] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
 
@@ -23,7 +23,15 @@ const ExpenseGroup = ({
   const { year } = router.query;
 
   const refresh = async () => {
-    const date = new Date(Number(year), selectedMonth, 0).toISOString();
+    const date = new Date(
+      Number(year),
+      selectedMonth + 1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ).toISOString();
 
     const queryParameters = new URLSearchParams({
       action: "expensesByCategoryGroupYearMonth",
@@ -31,7 +39,7 @@ const ExpenseGroup = ({
       groupId: group.id,
       date,
     }).toString();
-
+    console.log(queryParameters);
     try {
       setLoading(true);
 
@@ -60,18 +68,26 @@ const ExpenseGroup = ({
   };
 
   useEffect(() => {
-    toggleExpanded(false);
+    const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
+    if (expanded) refresh();
+    //toggleExpanded(false);
+    //toggleVisible(groupTotals > 0 || category.name === "Otros" ? true : false);
   }, [selectedMonth]);
 
   return (
-    <Collapse in={!!groupTotals} style={{ width: "100%" }}>
+    <Collapse
+      in={true}
+      style={{ width: "100%" }}
+      mb={expanded ? "0.5rem" : "0.0rem"}
+    >
       <Group
         w={"100%"}
         onClick={handleExpand}
-        bg={`${expanded ? "gray.9" : "gray.8"}`}
+        bg={`${expanded ? "gray.8" : "gray.7"}`}
         opacity={0.5}
         justify="space-between"
         p="xs"
+        pr={expanded ? "lg" : "xs"}
       >
         <Group>
           {loading && (
@@ -99,7 +115,9 @@ const ExpenseGroup = ({
           )}
           <Text fw={expanded ? "bold" : ""}>{group.name}</Text>
         </Group>
-        <Text fw={expanded ? "bold" : ""}>{groupTotals}</Text>
+        <Text fw={expanded ? "bold" : ""} size={expanded ? "xl" : ""}>
+          {group.totals[selectedMonth].toFixed(2)}
+        </Text>
       </Group>
       <Group bg={"gray.9"} opacity={0.5}>
         <Collapse in={expanded} style={{ width: "100%" }}>

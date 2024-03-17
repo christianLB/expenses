@@ -1,3 +1,4 @@
+import { endOfMonth } from "date-fns";
 import { createItem, updateItem, deleteItem, getItem, getItems } from "./cms";
 import qs from "qs";
 import authorizeRequest from "./authorizeRequest";
@@ -10,33 +11,14 @@ const buildQuery = ({
   startDate = new Date(),
   endDate = new Date(),
 }) => {
-  const start = new Date(
-    Date.UTC(
-      startDate.getUTCFullYear(),
-      startDate.getUTCMonth(),
-      startDate.getUTCDate()
-    )
-  );
-  const end = new Date(
-    Date.UTC(
-      endDate.getUTCFullYear(),
-      endDate.getUTCMonth(),
-      endDate.getUTCDate(),
-      23,
-      59,
-      59,
-      999
-    )
-  );
-
   let query = {
     date: {
-      greater_than_equal: start.toISOString(),
+      greater_than_equal: startDate.toISOString(),
     },
     and: [
       {
         date: {
-          less_than_equal: end.toISOString(),
+          less_than_equal: endDate.toISOString(),
         },
       },
     ],
@@ -44,9 +26,11 @@ const buildQuery = ({
 
   // Añadir condiciones de filtro solo si los valores están definidos
   if (groupId) {
-    query["group"] = {
-      equals: groupId,
-    };
+    if (groupId == "0") {
+      query.and.push({ group: { exists: false } });
+    } else {
+      query.and.push({ group: { equals: groupId } });
+    }
   }
   if (categoryId) {
     query["category"] = {
@@ -57,22 +41,30 @@ const buildQuery = ({
   return query;
 };
 
+const getYearRange = (year) => {
+  const startDate = new Date(Date.UTC(year, 0, 1)); // Primer día del año en UTC
+  const endDate = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999)); // Último momento del último día del año en UTC
+  return { startDate, endDate };
+};
+
 export const getExpensesByYear = async (year) => {
-  // Crear fechas en UTC
-  const startDate = new Date(Date.UTC(year, 0, 1)); // Primer día del año indicado en UTC
-  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // Primer día del siguiente año en UTC
+  try {
+    const { startDate, endDate } = getYearRange(year);
 
-  const query = buildQuery({ startDate, endDate });
-  const queryString = qs.stringify({ where: query });
+    const query = buildQuery({ startDate, endDate });
 
-  const expenses = await getItems(collection, queryString);
-  return expenses;
+    const queryString = qs.stringify({ where: query });
+    const expenses = await getItems(collection, queryString);
+
+    return expenses;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 };
 
 export const getIncomeByYear = async (year) => {
-  // Crear fechas en UTC
-  const startDate = new Date(Date.UTC(year, 0, 1)); // Primer día del año indicado en UTC
-  const endDate = new Date(Date.UTC(year + 1, 0, 1)); // Primer día del siguiente año en UTC
+  const { startDate, endDate } = getYearRange(year);
 
   const query = buildQuery({ startDate, endDate });
   const queryString = qs.stringify({ where: query });
@@ -107,19 +99,53 @@ export const expensesByCategoryGroupYearMonth = async ({
   groupId,
 }) => {
   // Crear fechas en UTC
-  const year = new Date(date).getFullYear();
-  const month = new Date(date).getUTCMonth();
 
-  const startDate = new Date(Date.UTC(year, month, 0));
-  const endDate = new Date(Date.UTC(year, month, 31));
+  const inputDate = new Date(date);
+  const year = inputDate.getUTCFullYear();
+  const month = inputDate.getUTCMonth();
+
+  const startDate = new Date(Date.UTC(year, month, 1));
+  const endDate = endOfMonth(startDate);
 
   const query = buildQuery({ startDate, endDate, categoryId, groupId });
   const queryString = qs.stringify({ where: query });
 
-  const expenses = await getItems(collection, queryString);
-  console.log(expenses);
+  const expenses = await getItems(collection, queryString, 0, "-date");
+  console.log({ date, year, month, startDate, endDate, queryString });
   return expenses.docs;
 };
+// export const expensesByCategoryGroupYearMonth = async ({
+//   date,
+//   categoryId,
+//   groupId,
+// }) => {
+//   // Crear fechas en UTC
+//   let query = {
+//     date: {
+//       greater_than_equal: startDate.toISOString(),
+//     },
+//     and: [
+//       {
+//         date: {
+//           less_than_equal: endDate.toISOString(),
+//         },
+//       },
+//     ],
+//   };
+
+//   const inputDate = new Date(date);
+//   const year = inputDate.getUTCFullYear();
+//   const month = inputDate.getUTCMonth();
+
+//   const startDate = new Date(Date.UTC(year, 0, 1));
+//   const endDate = new Date(Date.UTC(year, 11, 31, 23, 59, 999));
+
+//   const queryString = qs.stringify({ where: query });
+
+//   const expenses = await getItems(collection, queryString, 0, "-date");
+//   console.log({ date, year, month, startDate, endDate, queryString });
+//   return expenses.docs;
+// };
 
 export default async function handler(req, res) {
   try {
@@ -127,49 +153,45 @@ export default async function handler(req, res) {
 
     switch (req.method) {
       case "GET":
-        if (req.query.action === "availableYears") {
-          const years = await getAvailableYears();
-          return res.status(200).json(years);
+        switch (req.query.action) {
+          case "availableYears":
+            const years = await getAvailableYears();
+            return res.status(200).json(years);
+          case "expensesByYear":
+            const yearExpenses = req.query.year || new Date().getFullYear();
+            console.log("hola", yearExpenses);
+            const expenses = await getExpensesByYear(yearExpenses);
+            return res.status(200).json(expenses);
+          case "getIncomeByYear":
+            const yearIncome = req.query.year || new Date().getFullYear();
+            const incomes = await getIncomeByYear(yearIncome);
+            return res.status(200).json(incomes);
+          case "expensesByCategoryGroupYearMonth":
+            const { date, groupId, categoryId } = req.query;
+            const expensesByGroup = await expensesByCategoryGroupYearMonth({
+              date,
+              groupId,
+              categoryId,
+            });
+            return res.status(200).json(expensesByGroup);
+          default:
+            // Manejo de la lógica cuando no hay una acción específica o para recuperar un ítem específico
+            const expenseId = req.query.id;
+            if (expenseId) {
+              const expense = await getItem(collection, expenseId);
+              return res.status(200).json(expense);
+            }
+            // Si no se solicita un ítem específico, se devuelve una lista de ítems basada en otros parámetros de consulta
+            const generalQuery = buildQuery({
+              groupId: req.query.groupId,
+              categoryId: req.query.categoryId,
+              startDate: req.query.startDate,
+              endDate: req.query.endDate,
+            });
+            const queryString = qs.stringify({ where: generalQuery });
+            const expensesList = await getItems(collection, queryString);
+            return res.status(200).json(expensesList.docs);
         }
-
-        if (req.query.action === "expensesByYear") {
-          const year = req.query.year || new Date().getFullYear();
-          const expenses = await getExpensesByYear(year);
-          return res.status(200).json(expenses);
-        }
-
-        if (req.query.action === "getIncomeByYear") {
-          const year = req.query.year || new Date().getFullYear();
-          const incomes = await getIncomeByYear(year);
-          return res.status(200).json(incomes);
-        }
-
-        if (req.query.action === "expensesByCategoryGroupYearMonth") {
-          const date = req.query.date;
-          const groupId = req.query.groupId;
-          const categoryId = req.query.categoryId;
-          const expenses = await expensesByCategoryGroupYearMonth({
-            date,
-            groupId,
-            categoryId,
-          });
-          return res.status(200).json(expenses);
-        }
-
-        const expenseId = req.query.id;
-        if (expenseId) {
-          const expense = await getItem(collection, expenseId);
-          return res.status(200).json(expense);
-        }
-        const groupId = req.query.groupId;
-        const categoryId = req.query.categoryId;
-        const startDate = req.query.startDate;
-        const endDate = req.query.endDate;
-        const query = buildQuery({ groupId, categoryId, startDate, endDate });
-        const queryString = qs.stringify({ where: query });
-        const expenses = await getItems(collection, queryString);
-        return res.status(200).json(expenses.docs);
-
       case "POST":
         const itemToCreate = req.body;
         const createResult = await createItem(collection, itemToCreate);

@@ -36,14 +36,6 @@ const groupExpensesByCategory = async (
   clients,
   income
 ) => {
-  const uncategorized = {
-    id: "0",
-    name: "Uncategorized",
-    color: "#da9898",
-  };
-  const noGroup = { id: "0", name: "No Group" };
-  const noClient = { id: "0", name: "No Client" };
-
   // Esta función ahora agrupará los ingresos por cliente
   const incomeByClient = (income) =>
     _(income)
@@ -72,7 +64,6 @@ const groupExpensesByCategory = async (
 
   // Agrupar ingresos por cliente
   const groupedIncomeByClient = clients
-    .concat(noClient)
     .map((client) => {
       const clientIncomes = incomeByClient(income)[client.id] || [];
       const totals = getTotals(clientIncomes);
@@ -104,41 +95,12 @@ const groupExpensesByCategory = async (
       }
     });
 
-    // Always include 'No Group' even if it has no expenses
-    const noGroupExpenses = expensesByGroup(categoryExpenses)["0"] || [];
-    if (noGroupExpenses.length > 0)
-      groupedExpensesByGroup.push({
-        id: "0",
-        name: "No Group",
-        expenses: [], // noGroupExpenses,
-        totals: getTotals(noGroupExpenses),
-      });
-
     return {
       ...category,
       groups: groupedExpensesByGroup,
       totals: getTotals(categoryExpenses),
     };
   });
-
-  // Always include 'Uncategorized' even if it has no expenses
-  const uncategorizedExpenses = expensesByCategory["0"] || [];
-  const uncategorizedObject = {
-    id: "0",
-    name: "Uncategorized",
-    color: "#da9898",
-    groups: [
-      {
-        id: "0",
-        name: "No Group",
-        expenses: uncategorizedExpenses,
-        totals: getTotals(uncategorizedExpenses),
-      },
-    ],
-    totals: getTotals(uncategorizedExpenses),
-  };
-
-  categoryObjects.push(uncategorizedObject);
 
   // Prepend the incomeCategory to the categoryObjects array
   // Actualizar la categoría de ingresos con la nueva agrupación por cliente
@@ -180,8 +142,8 @@ const groupExpensesByCategory = async (
 export async function getTableData(req, year) {
   const [expenses, groups, categories, clients, incomes] = await Promise.all([
     getExpensesByYear(year),
-    getItems("expense-group"),
-    getItems("expense-category"),
+    getItems("expense-group", "", 0, "+name"),
+    getItems("expense-category", "", 0, "+order"),
     getItems("clients"),
     getIncomeByYear(year),
   ]);

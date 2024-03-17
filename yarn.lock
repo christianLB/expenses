@@ -413,14 +413,6 @@
   dependencies:
     "follow-redirects" "^1.14.8"
 
-"axios@^0.27.2":
-  "integrity" "sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
-  "version" "0.27.2"
-  dependencies:
-    "follow-redirects" "^1.14.9"
-    "form-data" "^4.0.0"
-
 "axios@^1.6.2":
   "integrity" "sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A=="
   "resolved" "https://registry.npmjs.org/axios/-/axios-1.6.2.tgz"
@@ -638,6 +630,11 @@
   "version" "2.30.0"
   dependencies:
     "@babel/runtime" "^7.21.0"
+
+"date-fns@^3.4.0":
+  "integrity" "sha512-Akz4R8J9MXBsOgF1QeWeCsbv6pntT5KCPjU0Q9prBxVmWJYPLhwAIsNg3b0QAdr0ttiozYLD3L/af7Ra0jqYXw=="
+  "resolved" "https://registry.npmjs.org/date-fns/-/date-fns-3.4.0.tgz"
+  "version" "3.4.0"
 
 "dayjs@>=1.0.0":
   "integrity" "sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ=="
@@ -1140,7 +1137,7 @@
   "resolved" "https://registry.npmjs.org/flatted/-/flatted-3.2.5.tgz"
   "version" "3.2.5"
 
-"follow-redirects@^1.14.8", "follow-redirects@^1.14.9", "follow-redirects@^1.15.0":
+"follow-redirects@^1.14.8", "follow-redirects@^1.15.0":
   "integrity" "sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA=="
   "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
   "version" "1.15.2"
@@ -2271,20 +2268,6 @@
   "resolved" "https://registry.npmjs.org/punycode/-/punycode-2.1.1.tgz"
   "version" "2.1.1"
 
-"qbittorrent-api-client@^0.4.0":
-  "integrity" "sha512-koN2iIylNWUEYjcZyRVhhf2PiD3yWZxk6AggwgTJHEMXY7hRT3gWE6VcGyVUfdapZtMoevRmpx3iSWy46tsfIQ=="
-  "resolved" "https://registry.npmjs.org/qbittorrent-api-client/-/qbittorrent-api-client-0.4.0.tgz"
-  "version" "0.4.0"
-  dependencies:
-    "axios" "^0.27.2"
-    "form-data" "^4.0.0"
-    "typescript" "^4.7.4"
-
-"qbittorrent-api-v2@^1.2.2":
-  "integrity" "sha512-v9nkeikj8EjZJ2Ud/QAkTr038PAM4Xk8WXtR8scVb3jidFGs8gMOrZIL05gy4JNo4b0/vxKlwcC2Zu4IpuMslw=="
-  "resolved" "https://registry.npmjs.org/qbittorrent-api-v2/-/qbittorrent-api-v2-1.2.2.tgz"
-  "version" "1.2.2"
-
 "qs@^6.11.1", "qs@^6.7.0":
   "integrity" "sha512-0wsrzgTz/kAVIeuxSjnpGC56rzYtr6JT/2BwEvMaPhFIoYa1aGO8LbzuU1R0uUYQkLpWBTOj0l/CLAJB64J6nQ=="
   "resolved" "https://registry.npmjs.org/qs/-/qs-6.11.1.tgz"
@@ -2782,7 +2765,7 @@
   "resolved" "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   "version" "0.0.6"
 
-"typescript@^4.7.4", "typescript@^4.9.4", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.3.1":
+"typescript@^4.9.4", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta", "typescript@>=3.3.1":
   "integrity" "sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.9.4.tgz"
   "version" "4.9.4"

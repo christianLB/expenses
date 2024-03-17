@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "concurrently \"node cron.js\" \"next start -p 3001\"",
     "lint": "next lint",
-    "cron": "node cron.js"
+    "cron": "node cron.js",
+    "export": "next export"
   },
   "dependencies": {
     "@mantine/core": "^7.5.1",
@@ -19,6 +20,7 @@
     "axios": "^1.6.2",
     "concurrently": "^8.2.1",
     "cross-env": "^7.0.3",
+    "date-fns": "^3.4.0",
     "dotenv": "^16.0.3",
     "embla-carousel-react": "^7.1.0",
     "file-saver": "^2.0.5",

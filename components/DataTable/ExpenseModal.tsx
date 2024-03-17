@@ -76,7 +76,7 @@ const ExpenseModal = ({
       size="xl"
       opened={isOpen}
       onClose={onClose}
-      title="Editar gasto"
+      title={`Editar gasto ${formData.id}`}
       centered
     >
       <form onSubmit={handleSave}>
