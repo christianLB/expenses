@@ -10,7 +10,11 @@ import {
   Textarea,
   Stack,
   Loader,
+  Paper,
+  Text,
 } from "@mantine/core";
+
+import { IconFileTypePdf, IconTrash } from "@tabler/icons-react";
 
 import { DateInput } from "@mantine/dates";
 
@@ -38,12 +42,13 @@ const ExpenseModal = ({
   const handleSave = async (event) => {
     setUpdating(true);
     event.preventDefault();
+    delete formData.archivos;
     await onSave(formData);
     setUpdating(false);
     onClose();
   };
 
-  const parseBBVA = async () => {
+  const parseBBVA = async (documento) => {
     try {
       setUpdating(true);
       const response = await fetch("./api/parseBBVA", {
@@ -51,7 +56,7 @@ const ExpenseModal = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData.archivos[0]),
+        body: JSON.stringify(documento),
       });
       const { data } = await response.json();
       setFormData({ ...formData, ...data });
@@ -126,7 +131,7 @@ const ExpenseModal = ({
           <Textarea
             placeholder="Notes"
             value={formData?.notes ?? ""}
-            onChange={(value) => handleInputChange("notes", value)}
+            onChange={(e) => handleInputChange("notes", e.target.value)}
             disabled={updating}
           />
           <Checkbox
@@ -137,15 +142,33 @@ const ExpenseModal = ({
             }
             disabled={updating}
           />
+          {formData.archivos?.map(({ documento }, index) => {
+            return (
+              <Paper mx="xs" p="xs" withBorder key={index}>
+                <Group justify="space-between">
+                  <Group>
+                    <IconFileTypePdf width="20" height="20" />
+                    <Text>
+                      {documento.filename}
+                      {documento?.createdAt ?? ""}
+                    </Text>
+                  </Group>
+                  <Group>
+                    <Button
+                      variant="tertiary"
+                      disabled={!formData.archivos?.length || updating}
+                      onClick={() => parseBBVA(documento)}
+                    >
+                      BBVA
+                    </Button>
+                    <IconTrash width="20" height="20" />
+                  </Group>
+                </Group>
+              </Paper>
+            );
+          })}
           <Group justify="right" mt="md">
             {updating && <Loader />}
-            <Button
-              variant="tertiary"
-              disabled={!formData.archivos?.length || updating}
-              onClick={parseBBVA}
-            >
-              BBVA
-            </Button>
             <Button type="submit">Guardar</Button>
           </Group>
         </Stack>

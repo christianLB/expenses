@@ -1,17 +1,18 @@
 import { Group, Checkbox, Collapse, Stack, Text, Loader } from "@mantine/core";
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconCirclePlus } from "@tabler/icons-react";
 import Expense from "./Expense";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 const ExpenseGroup = ({
+  categories,
+  groups,
   group,
   category,
   selectedMonth,
   selected,
   onSelect,
   onExpand,
-  onEdit,
 }) => {
   const [expenses, setExpenses] = useState([]);
   const [expanded, toggleExpanded] = useState(false);
@@ -39,7 +40,7 @@ const ExpenseGroup = ({
       groupId: group.id,
       date,
     }).toString();
-    console.log(queryParameters);
+
     try {
       setLoading(true);
 
@@ -47,10 +48,9 @@ const ExpenseGroup = ({
         method: "GET",
       });
       const expenses = await resp.json();
-      if (expenses.length > 0) {
-        setExpenses(expenses);
-        return expenses;
-      }
+      setExpenses([...expenses]);
+      if (!expenses) toggleExpanded(false);
+      return expenses;
     } catch {
       setError(true);
     } finally {
@@ -63,15 +63,34 @@ const ExpenseGroup = ({
       toggleExpanded(false);
       return;
     }
-    const expenses = await refresh();
-    if (expenses?.length) toggleExpanded(true);
+    await refresh();
+    toggleExpanded(true);
+  };
+
+  const handleNewExpense = async () => {
+    const newExpense = {
+      name: "Nuevo gasto",
+      amount: 0,
+      category: category.id,
+      group: group.id,
+      date: new Date(Date.UTC(Number(year), selectedMonth, 1)),
+    };
+    try {
+      setLoading(true);
+      const resp = await fetch(`./api/expensesApi`, {
+        method: "POST",
+        body: JSON.stringify(newExpense),
+      });
+      refresh();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
+    //const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
     if (expanded) refresh();
-    //toggleExpanded(false);
-    //toggleVisible(groupTotals > 0 || category.name === "Otros" ? true : false);
   }, [selectedMonth]);
 
   return (
@@ -131,17 +150,26 @@ const ExpenseGroup = ({
                 <Expense
                   key={expense.id}
                   expense={expense}
+                  categories={categories}
+                  groups={groups}
                   //isSelected={selectedExpenses.includes(expense.id)}
                   isSelected={false}
                   onSelect={() => {
                     //handleSelectExpense(expense.id);
                   }}
-                  onEdit={onEdit}
-                  //onDelete={() => handleDelete(expense)}
-                  onDelete={() => {}}
+                  onEdit={() => refresh()}
+                  onDelete={refresh}
                 />
               );
             })}
+            <Group w={"100%"} justify="center" px="xs" py="5">
+              <IconCirclePlus
+                width={30}
+                height={30}
+                cursor={"pointer"}
+                onClick={handleNewExpense}
+              />
+            </Group>
           </Stack>
         </Collapse>
       </Group>

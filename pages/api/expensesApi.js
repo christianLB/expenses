@@ -1,7 +1,11 @@
+const FormData = require('form-data');
+const fetch = require('node-fetch'); // Asegúrate de tener node-fetch si no estás en un entorno de navegador
 import { endOfMonth } from "date-fns";
 import { createItem, updateItem, deleteItem, getItem, getItems } from "./cms";
 import qs from "qs";
 import authorizeRequest from "./authorizeRequest";
+import axios from 'axios'
+
 
 const collection = "expenses";
 
@@ -114,38 +118,90 @@ export const expensesByCategoryGroupYearMonth = async ({
   console.log({ date, year, month, startDate, endDate, queryString });
   return expenses.docs;
 };
-// export const expensesByCategoryGroupYearMonth = async ({
-//   date,
-//   categoryId,
-//   groupId,
-// }) => {
-//   // Crear fechas en UTC
-//   let query = {
-//     date: {
-//       greater_than_equal: startDate.toISOString(),
-//     },
-//     and: [
-//       {
-//         date: {
-//           less_than_equal: endDate.toISOString(),
-//         },
-//       },
-//     ],
-//   };
 
-//   const inputDate = new Date(date);
-//   const year = inputDate.getUTCFullYear();
-//   const month = inputDate.getUTCMonth();
+export const createWithMedia = async (mediaId, expense = {}) => {
+  console.log('creating with media id:', mediaId);
+  const newExpense = {
+    name: 'nuevo movimiento (doc adjunto)',
+    amount: 0.0,
+    date: new Date(),
+    ...expense,
+    category: '65f4427e24a70b002dd8853e',
+    group: '65f410b957fd09665b52474a',
+    archivos: [
+      {
+        documento: mediaId,
+        enableAPIKey: true,
+      },
+    ],
+  };
 
-//   const startDate = new Date(Date.UTC(year, 0, 1));
-//   const endDate = new Date(Date.UTC(year, 11, 31, 23, 59, 999));
+  const createResult = await createItem(collection, newExpense); // Asegúrate de que 'collection' sea 'expenses' o la colección correspondiente
+  console.log('-----CREATED EXPENSE-----', { doc: createResult.doc.name, mediaId });
+  return createResult.doc;
+}
 
-//   const queryString = qs.stringify({ where: query });
+export const findByDateAmount = async (date, amount) => {
+  const startDate = new Date(date);
+  startDate.setUTCHours(0, 0, 0, 0); // Asegurar que la búsqueda comienza al inicio del día
 
-//   const expenses = await getItems(collection, queryString, 0, "-date");
-//   console.log({ date, year, month, startDate, endDate, queryString });
-//   return expenses.docs;
-// };
+  const endDate = new Date(date);
+  endDate.setUTCHours(23, 59, 59, 999); // Asegurar que la búsqueda termina al final del día
+
+  const query = {
+    date: {
+      greater_than_equal: startDate.toISOString(),
+      less_than_equal: endDate.toISOString(),
+    },
+    and: [
+      {
+        amount: {
+          equals: amount,
+        },
+      },
+    ],
+  };
+
+  const queryString = qs.stringify({ where: query });
+  const items = await getItems(collection, queryString);
+  return items.docs; // Asumiendo que .docs contiene los documentos recuperados
+};
+
+export const addMediaToExpense = async (mediaId, { date, totalAmount }) => {
+  const expenses = await findByDateAmount(date, totalAmount);
+
+  if (expenses.length > 0) {
+    // Toma el primer gasto encontrado
+    const expenseToUpdate = expenses[0];
+    console.log('Gasto encontrado para actualizar:', expenseToUpdate.name);
+
+    // Preparar solo la actualización del campo 'archivos' añadiendo el nuevo documento
+    const updatedArchivos = [
+      ...expenseToUpdate.archivos.map(archivo => ({ documento: archivo.documento.id })),
+      {
+        documento: mediaId,
+        enableAPIKey: true,
+      },
+    ];
+
+    // Objeto de actualización que incluye solo lo que necesitamos actualizar
+    const updateData = { archivos: updatedArchivos };
+
+    try {
+      // Llama a updateItem para actualizar el gasto con solo el campo 'archivos'
+      const updateResult = await updateItem(collection, expenseToUpdate.id, updateData);
+      console.log('Gasto actualizado con éxito:', updateResult);
+      return updateResult;
+    } catch (error) {
+      console.error('Error al actualizar el gasto:', error);
+      throw error;
+    }
+  } else {
+    console.log('No se encontraron gastos para la fecha y monto dados.');
+    return null;
+  }
+};
+
 
 export default async function handler(req, res) {
   try {
@@ -159,7 +215,6 @@ export default async function handler(req, res) {
             return res.status(200).json(years);
           case "expensesByYear":
             const yearExpenses = req.query.year || new Date().getFullYear();
-            console.log("hola", yearExpenses);
             const expenses = await getExpensesByYear(yearExpenses);
             return res.status(200).json(expenses);
           case "getIncomeByYear":
@@ -193,9 +248,20 @@ export default async function handler(req, res) {
             return res.status(200).json(expensesList.docs);
         }
       case "POST":
-        const itemToCreate = req.body;
-        const createResult = await createItem(collection, itemToCreate);
-        return res.status(200).json(createResult);
+        switch (req.query.action) {
+          case "createWithMedia":
+            await uploadMedia(req, res, async (doc) => {
+              if (doc.id) {
+                const newExpense = await createWithMedia(doc.id);
+                return res.status(200).json(newExpense);
+              }
+            });
+            break;
+          default:
+            //  Manejo para la creación de items sin media
+            const createResult = await createItem(collection, JSON.parse(req.body));
+            return res.status(200).json(createResult);
+        }
 
       case "PATCH":
         const { id, ...itemToUpdate } = req.body;

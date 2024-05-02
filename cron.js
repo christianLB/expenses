@@ -1,17 +1,31 @@
 // Importa las dependencias necesarias
 const cron = require('node-cron');
-const axios = require('axios');
+const fetch = require('node-fetch');
 
-// URL de tu endpoint
-const endpointURL = `https://www.anaxi.net/api/checkMail`;
+// Codifica las etiquetas de las URLs
+const checkBBVAUrl = `https://www.anaxi.net/api/checkMail?label=${encodeURIComponent('BBVA/gastos')}`;
+const checkMercadonaUrl = `https://www.anaxi.net/api/checkMail?label=${encodeURIComponent('Mercadona')}`;
 
-// Programa la tarea para que se ejecute cada minuto
+// Programa la tarea para que se ejecute cada minuto para BBVA
 cron.schedule('*/1 * * * *', () => {
-  axios.get(endpointURL)
-    .then(response => {
-      console.log('Respuesta del endpoint:', response.data);
+  fetch(checkBBVAUrl)
+    .then(response => response.json()) // Asegúrate de convertir la respuesta a JSON
+    .then(data => {
+      console.log('Respuesta del endpoint BBVA:', data);
     })
     .catch(error => {
-      console.error('Error al realizar la solicitud GET:', error);
+      console.error('Error al realizar la solicitud GET a BBVA:', error);
+    });
+});
+
+// Programa la tarea para que se ejecute cada dos minutos para Mercadona
+cron.schedule('*/2 * * * *', () => {
+  fetch(checkMercadonaUrl)
+    .then(response => response.json()) // Asegúrate de convertir la respuesta a JSON
+    .then(data => {
+      console.log('Respuesta del endpoint Mercadona:', data);
+    })
+    .catch(error => {
+      console.error('Error al realizar la solicitud GET a Mercadona:', error);
     });
 });

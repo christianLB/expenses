@@ -5,7 +5,7 @@ import LoginBtn from "../components/loginbtn.tsx";
 // import FileUploader from "../components/FileUploader";
 import { getSession } from "next-auth/react";
 import { getTableData } from "./api/tableData"; // Ajusta la ruta de importación según sea necesario
-import { AppShell, Paper, Stack, Group } from "@mantine/core";
+import { AppShell, Paper, Stack, Group, Button } from "@mantine/core";
 
 export async function getServerSideProps(context) {
   const session = await getSession({ req: context.req });

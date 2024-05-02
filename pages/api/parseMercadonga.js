@@ -32,16 +32,15 @@ async function convertPdfToBase64(pdfUrl) {
   return base64;
 }
 
-const parseBBVA = async ({ id }) => {
+const parseMercadonga = async ({ id }) => {
   const file = await fetchMediaFile(id);
   const pdfBase64 = await convertPdfToBase64(file.url); // mediaFileUrl obtenido de fetchMediaFile
-  // Luego, envías esta cadena base64 a tu endpoint de pdf2json
+  // Luego, envías esta cadena base64 a tu endpoint de pdf2json  
   const params = new URLSearchParams();
   params.append("pdfData", pdfBase64); // Usa la cadena base64 aquí
-  params.append("password", "72298830D");
   // Añade otros parámetros según sea necesario
 
-  const response = await fetch(`${API_URL}/pdf2json`, {
+  const response = await fetch(`${API_URL}/pdf2json?label=Mercadonga`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params,
@@ -52,7 +51,7 @@ const parseBBVA = async ({ id }) => {
 
 export default async function handler(req, res) {
   try {
-    const data = await parseBBVA(req.body); // Usa la función refactorizada.
+    const data = await parseMercadonga(req.body); // Usa la función refactorizada.
     return res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({ error: error.message });

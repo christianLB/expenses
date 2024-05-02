@@ -1,5 +1,5 @@
-const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
-const headers = {
+export const CMS_URL = process.env.NEXT_PUBLIC_CMS_API_URL;
+export const headers = {
   "Content-Type": "application/json",
   Authorization: `users API-Key ${process.env.PAYLOAD_ADMIN_API_KEY}`,
 };
@@ -14,8 +14,7 @@ export const getItem = async (collection, id) => {
 
 export const getItems = async (collection, queryString, limit = 0, sort) => {
   const response = await fetch(
-    `${CMS_URL}/${collection}?limit=${limit}${sort ? `&sort=${sort}` : ""}${
-      queryString ? `&${queryString}` : ""
+    `${CMS_URL}/${collection}?limit=${limit}${sort ? `&sort=${sort}` : ""}${queryString ? `&${queryString}` : ""
     }`,
     {
       method: "GET",

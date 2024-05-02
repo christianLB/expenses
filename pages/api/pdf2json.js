@@ -2,6 +2,7 @@ import PDFParser from "pdf2json";
 
 export default async function handler(req, res) {
   try {
+    const { label } = req.query;
     const { pdfData, password } = req.body;
     const buffer = Buffer.from(pdfData, "base64");
 
@@ -14,7 +15,8 @@ export default async function handler(req, res) {
       });
 
       pdfParser.on("pdfParser_dataReady", (pdfData) => {
-        const text = extractTextFromPdfData(pdfData);
+        const text = extractTextFromPdfData(pdfData, label);
+
         resolve(text);
       });
     });
@@ -29,7 +31,7 @@ export default async function handler(req, res) {
   }
 }
 
-function extractTextFromPdfData(pdfJson) {
+function extractTextFromPdfData(pdfJson, label) {
   let text = "";
 
   for (let page of pdfJson.Pages) {
@@ -42,10 +44,15 @@ function extractTextFromPdfData(pdfJson) {
     text += "\n";
   }
 
-  return parseText(text);
+  switch (label) {
+    case 'BBVA':
+      return parseBBVA(text);
+    case 'Mercadonga':
+      return extractDateAndTotalAmount(text);
+  }
 }
 
-function parseText(text) {
+function parseBBVA(text) {
   // Parsing for the first debit movements.
   let descriptionMatch = text.match(/Descripción (.*?) Importe/);
   let amountMatch = text.match(/Importe (.*?) Divisa/);
@@ -104,6 +111,20 @@ function parseText(text) {
     valueDate,
     currency,
   };
+}
+
+function extractDateAndTotalAmount(text) {
+  // Buscar la fecha en el formato dd/mm/yyyy.
+  const dateRegex = /\d{2}\/\d{2}\/\d{4}/;
+  const dateMatch = text.match(dateRegex);
+  const date = dateMatch ? dateMatch[0] : null;
+
+  // Buscar el importe total, buscando la palabra "TOTAL" seguida de una cantidad numérica.
+  const totalAmountRegex = /TOTAL \(€\)\s+(\d+,\d{2})/;
+  const totalAmountMatch = text.match(totalAmountRegex);
+  const totalAmount = totalAmountMatch ? parseFloat(totalAmountMatch[1].replace(',', '.')) : null;
+
+  return { date, totalAmount };
 }
 
 export const formatDate = (date) => {

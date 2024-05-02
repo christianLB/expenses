@@ -29,26 +29,9 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
   const { getExpandableProps, toggleExpand } = useExpandables();
 
   const expandableProps = getExpandableProps(category.id, !isCollapsed);
-  const [editingExpense, setEditingExpense] = useState(null);
 
   return (
     <>
-      <ExpenseModal
-        expenseGroups={expenseGroups}
-        expenseCategories={expenseCategories}
-        isOpen={!!editingExpense}
-        expenseData={editingExpense}
-        onClose={() => setEditingExpense(null)}
-        onSave={async (expense) => {
-          await fetch("./api/expensesApi", {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(expense),
-          });
-        }}
-      />
       <Table.Tr p="0">
         <Table.Td
           colSpan={14}
@@ -83,13 +66,14 @@ const CategoryDetail = ({ category, expenseGroups, expenseCategories }) => {
                 return (
                   <ExpenseGroup
                     category={category}
+                    categories={expenseCategories}
+                    groups={expenseGroups}
                     selected={isAllSelected(groupExpensesIds)}
                     selectedMonth={selectedMonth}
                     key={group.id}
                     group={group}
                     onSelect={() => {}}
                     onExpand={() => {}}
-                    onEdit={(expense) => setEditingExpense(expense)}
                   />
                 );
               })}

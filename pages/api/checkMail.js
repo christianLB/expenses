@@ -1,6 +1,8 @@
-// pages/api/readmail.js
+import FormData from 'form-data';
+import fetch from 'node-fetch';
 import Imap from 'node-imap';
 import { simpleParser } from 'mailparser';
+import { createWithMedia, addMediaToExpense } from './expensesApi'
 
 const imapConfig1 = {
   user: process.env.GMAIL_USER,
@@ -13,22 +15,27 @@ const imapConfig1 = {
   tlsOptions: { rejectUnauthorized: false },
 };
 
-// Esta función asume que tu endpoint puede manejar la carga de archivos
-const FormData = require('form-data');
-const fetch = require('node-fetch'); // Asegúrate de tener node-fetch si no estás en un entorno de navegador
+const { API_URL } = process.env
 
-async function sendAttachmentToEndpoint(attachmentData) {
+
+const labels = {
+  'BBVA/gastos': { url: `${API_URL}/parseBBVA`, next: createWithMedia },
+  'Mercadona': { url: `${API_URL}/parseMercadonga`, next: addMediaToExpense }
+}
+
+async function uploadAttachment(attachmentData, label) {
   try {
     const formData = new FormData();
 
     // Convertir el contenido del adjunto en un stream o buffer adecuado
     const buffer = Buffer.from(attachmentData.content, 'binary');
-    formData.append('file', buffer, attachmentData.filename);
-
-    const response = await fetch(`${process.env.API_URL}/addExpenseWithMedia`, {
-      method: 'POST',
+    formData.append('file', buffer, { filename: `${label}-${attachmentData.filename}` });
+    formData.append('label', label);
+    // fetch espera una URL completa para el endpoint, ajusta según sea necesario
+    const response = await fetch(`${API_URL}/payloadUpload`, { // Ajusta la URL según sea necesario
+      method: "POST",
       body: formData,
-      headers: formData.getHeaders() // Importante para incluir los encabezados correctos del formulario
+      headers: formData.getHeaders(), // Esto es necesario en Node.js; en el navegador, omitir
     });
 
     if (!response.ok) {
@@ -36,22 +43,28 @@ async function sendAttachmentToEndpoint(attachmentData) {
     }
 
     const responseData = await response.json();
-    console.log('Adjunto enviado correctamente:', responseData);
+    console.log('Adjunto enviado correctamente:', responseData.doc);
+    return responseData.doc; // Devuelve los datos de respuesta para su uso externo
   } catch (error) {
-    console.error('Error al enviar adjunto:', error);
+    console.error('Error al enviar adjunto:', error.message);
+    throw error; // Lanzar el error permite manejarlo donde se llame a esta función
   }
 }
+
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
+      const { label } = req.query;
+      if (!label) throw "Missing label in query."
+
       const getEmails = new Promise((resolve, reject) => {
-        console.log('getting emails')
+        console.log('getting emails', label)
         const imap = new Imap(imapConfig1);
         //const imap = new Imap(imapConfig2)
 
         imap.on('error', function (err) {
-          console.log('IMAP Error:', err);
+          console.log('IMAP Error:', err.message);
           reject(err);
         });
 
@@ -62,7 +75,7 @@ export default async function handler(req, res) {
             imap.connect();
           }
 
-          imap.openBox('BBVA/gastos', false, () => {
+          imap.openBox(label, false, () => {
             imap.search(['UNSEEN', ['SINCE', new Date('2023-01-01')]], (err, results) => {
               if (err) {
                 console.log('Error en búsqueda:', err);
@@ -76,22 +89,29 @@ export default async function handler(req, res) {
                   msg.on('body', stream => {
                     simpleParser(stream, async (err, parsed) => {
                       if (err) {
-                        console.log('Error en el parseo:', err);
+                        console.log('Error en el parseo:', err.message);
                         reject(err);
                       }
 
                       // Procesar cada adjunto
                       for (const attachment of parsed.attachments) {
-                        // Aquí procesas cada adjunto y lo preparas para ser enviado
-                        // Puedes convertirlo en base64 o manejarlo de la forma que tu endpoint requiere
-                        const attachmentData = {
-                          filename: attachment.filename,
-                          content: attachment.content, // o attachment.content.toString('base64')
-                          contentType: attachment.contentType
-                        };
+                        const { url, next } = labels[label];
 
-                        // Enviar el adjunto a tu endpoint
-                        await sendAttachmentToEndpoint(attachmentData);
+                        const media = await uploadAttachment(attachment, label);
+                        console.log('Adjunto procesado:', media);
+
+                        const parsed = await fetch(url, {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(media),
+                        });
+                        const { data } = await parsed.json();
+                        console.log(`----PARSED ${label}---`)
+                        //console.log(data)
+                        console.log(`----PARSED ${label}---`)
+                        await next(media.id, data);
                       }
                     });
                   });

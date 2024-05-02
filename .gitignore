@@ -32,3 +32,5 @@ sampledata.json
 # vercel
 .vercel
 .aider*
+
+/tmp
