@@ -41,12 +41,13 @@ const parseBBVA = async ({ id }) => {
   params.append("password", "72298830D");
   // Añade otros parámetros según sea necesario
 
-  const response = await fetch(`${API_URL}/pdf2json`, {
+  const response = await fetch(`${API_URL}/pdf2json?label=BBVA`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params,
   });
   const data = await response.json();
+  console.log(file.url, data);
   return data.text;
 };
 

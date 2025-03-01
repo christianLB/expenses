@@ -167,6 +167,100 @@ export const findByDateAmount = async (date, amount) => {
   return items.docs; // Asumiendo que .docs contiene los documentos recuperados
 };
 
+export const getExpenseCategories = async () => {
+  const categories = await getItems("expense-category", "", 0, "name");
+  return categories.docs;
+};
+
+export const getExpenseGroups = async () => {
+  const groups = await getItems("expense-group", "", 0, "name");
+  return groups.docs;
+};
+
+export const getClients = async () => {
+  const clients = await getItems("clients", "", 0, "name");
+  return clients.docs;
+};
+
+export const checkForDuplicateIncome = async (income) => {
+  const query = {
+    amount: { equals: income.amount },
+    and: [
+      { name: { equals: income.name } },
+      { date: { equals: income.date } }
+    ]
+  };
+  const queryString = qs.stringify({ where: query });
+  const response = await getItems("incomes", queryString);
+  return response.totalDocs > 0;
+};
+
+export const createBulkIncomes = async (incomes) => {
+  const results = [];
+  const errors = [];
+
+  for (const income of incomes) {
+    try {
+      const isDuplicate = await checkForDuplicateIncome(income);
+      if (isDuplicate) {
+        errors.push({ income, error: "Duplicate income" });
+        continue;
+      }
+
+      const result = await createItem("incomes", income);
+      results.push(result);
+    } catch (error) {
+      errors.push({ income, error: error.message });
+    }
+  }
+
+  return { results, errors };
+};
+
+export const checkForDuplicateExpense = async (expense) => {
+  const query = {
+    amount: {
+      equals: expense.amount,
+    },
+    and: [
+      {
+        name: {
+          equals: expense.name,
+        },
+        date: {
+          equals: expense.date,
+        },
+      },
+    ],
+  };
+
+  const queryString = qs.stringify({ where: query });
+  const response = await getItems(collection, queryString);
+  return response.totalDocs > 0;
+};
+
+export const createBulkExpenses = async (expenses) => {
+  const results = [];
+  const errors = [];
+
+  for (const expense of expenses) {
+    try {
+      const isDuplicate = await checkForDuplicateExpense(expense);
+      if (isDuplicate) {
+        errors.push({ expense, error: "Duplicate expense" });
+        continue;
+      }
+
+      const result = await createItem(collection, expense);
+      results.push(result);
+    } catch (error) {
+      errors.push({ expense, error: error.message });
+    }
+  }
+
+  return { results, errors };
+};
+
 export const addMediaToExpense = async (mediaId, { date, totalAmount }) => {
   const expenses = await findByDateAmount(date, totalAmount);
 
@@ -229,6 +323,15 @@ export default async function handler(req, res) {
               categoryId,
             });
             return res.status(200).json(expensesByGroup);
+          case "getCategories":
+            const categories = await getExpenseCategories();
+            return res.status(200).json(categories);
+          case "getGroups":
+            const groups = await getExpenseGroups();
+            return res.status(200).json(groups);
+          case "getClients":
+            const clients = await getClients();
+            return res.status(200).json(clients);
           default:
             // Manejo de la lógica cuando no hay una acción específica o para recuperar un ítem específico
             const expenseId = req.query.id;
@@ -257,6 +360,20 @@ export default async function handler(req, res) {
               }
             });
             break;
+          case "createBulk":
+            const { expenses } = req.body;
+            const bulkResult = await createBulkExpenses(expenses);
+            return res.status(200).json(bulkResult);
+          case "createBulkIncomes":
+            const { incomes } = req.body;
+            const bulkIncomeResult = await createBulkIncomes(incomes);
+            return res.status(200).json(bulkIncomeResult);
+          case "checkDuplicate":
+            const isDuplicate = await checkForDuplicateExpense(req.body);
+            return res.status(200).json({ isDuplicate });
+          case "checkDuplicateIncome":
+            const isIncomeDuplicate = await checkForDuplicateIncome(req.body);
+            return res.status(200).json({ isDuplicate: isIncomeDuplicate });
           default:
             //  Manejo para la creación de items sin media
             const createResult = await createItem(collection, JSON.parse(req.body));

@@ -91,7 +91,7 @@ const ExpenseGroup = ({
   useEffect(() => {
     //const groupTotals = Number(group.totals[selectedMonth].toFixed(2));
     if (expanded) refresh();
-  }, [selectedMonth]);
+  }, [selectedMonth, expanded, refresh]);
 
   return (
     <Collapse
