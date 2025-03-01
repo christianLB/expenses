@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  nextjs_app:
+    image: k2600x/k2600x-dashboard:latest # O lo que uses en tu build
+    container_name: nextjs_app
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - nextjs_env:/app/.env # Volumen para compartir el .env
+    environment:
+      - NODE_ENV=production
+    networks:
+      - nextjs_network
+
+volumes:
+  nextjs_env:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /ruta/donde/guardas/el/env/.env # Cambiar a la ruta real donde está el .env en el host
+
+networks:
+  nextjs_network:
+    driver: bridge
